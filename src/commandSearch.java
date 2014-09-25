@@ -5,7 +5,7 @@ package todo_manager;
 
 import java.util.ArrayList;
 
-public class commandSearch {
+public class CommandSearch {
 	private ArrayList<Entry> storage;
 	
 	public commandSearch(ArrayList<Entry> storage){
