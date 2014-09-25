@@ -61,8 +61,6 @@ public class ToDoManager {
 			return null; //TODO
 		}
 	}
-	
-	
 	/**
 	 * 
 	 * @author Khye An
@@ -105,8 +103,11 @@ public class ToDoManager {
 	public static class Executable{
 		CommandType _command = null;
 		String _info = null;
-		DateTime _dateTime = null;
-		DateTime _dateTimeEnd = null;
+		String _startingDate = null;
+		String _endingDate = null;
+		String _startingTime = null;
+		String _endingTime = null;
+		Boolean _doneness = false;
 		
 		public Executable(CommandType command){
 			_command = command;
@@ -117,11 +118,11 @@ public class ToDoManager {
 			_command = command;
 		}
 		
-		public Executable(CommandType command, String info, DateTime start, DateTime end){
+		public Executable(CommandType command, String info, String start, String end){
 			_info = info;
 			_command = command;
-			_dateTime = start;
-			_dateTimeEnd = end;
+			_startingTime = start;
+			_endingTime = end;
 		}
 		
 		public CommandType getCommand(){
@@ -132,12 +133,20 @@ public class ToDoManager {
 			return _info; 
 		}
 		
-		public DateTime getDateTime(){
-			return _dateTime; 
+		public String getStartingDate(){
+			return _startingDate; 
 		}
 		
-		public DateTime getDateTimeEnd(){
-			return _dateTimeEnd; 
+		public String getEndingDate(){
+			return _endingDate; 
+		}
+		
+		public String getStartingTime(){
+			return _startingTime;
+		}
+		
+		public String getEndingTime(){
+			return _endingTime;
 		}
 	}
 	
@@ -159,6 +168,11 @@ public class ToDoManager {
 		 *  No idea what this is for, but if i dont put this here eclipse complains. Anyone knows?
 		 */
 		private static final long serialVersionUID = -1625638209526224271L;
+		private Entry _head;
+		public void EntryList(){
+			_head = null;
+			
+		}
 		
 	}
 	
