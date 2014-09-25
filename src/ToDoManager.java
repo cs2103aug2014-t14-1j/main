@@ -10,11 +10,12 @@ public class ToDoManager {
 		CMD_ADD, CMD_DELETE, CMD_CLEAR, CMD_EDIT, CMD_UNDO, CMD_SEARCH, CMD_DISPLAY, CMD_DONE
 	}
 	
-	private static final String MESSAGE_WELCOME = null;
+	private static final String MESSAGE_WELCOME = "Welcome to ToDo Manager!";
 	
 	public static void main(String[] args){
-		UserInterface.showToUser(MESSAGE_WELCOME);
-		//TODO
+		showToUser(MESSAGE_WELCOME);
+		setup();
+		
 	}
 	
 	
@@ -190,5 +191,19 @@ public class ToDoManager {
 		private static final long serialVersionUID = -7851999266553632272L;
 
 		
+	}
+	
+	/**
+	 * Prints text for the user to read
+	 * @param String s
+	 */
+	public static void showToUser(String s){
+		System.out.println(s);
+	}
+	
+	public static void setup(){
+		//initialising of reader / writer
+		//creation and filling out of linked lists
+		//TODO
 	}
 }
