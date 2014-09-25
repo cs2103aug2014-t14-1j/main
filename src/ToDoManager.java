@@ -147,58 +147,6 @@ public class ToDoManager {
 	 * @author Khye An
 	 *
 	 */
-	public static class Entry{
-		String _info;
-		DateTime _dateTime, _dateTimeEnd;
-		Boolean _doneness;
-		
-		public Entry(String info){
-			_info = info;
-			_doneness = false;
-		}
-		
-		public Entry(String info, DateTime dateTime, DateTime dateTimeEnd){
-			_info = info;
-			_dateTime = dateTime;
-			_dateTimeEnd = dateTimeEnd;
-			_doneness = false;
-		}
-		
-		public void setDone(boolean doneness){
-			_doneness = doneness;
-		}
-		
-		public boolean getDone(){
-			return _doneness;
-		}
-		
-		public void setInfo(String info){
-			_info = info;
-		}
-		
-		public String getInfo(){
-			return _info;
-		}
-		
-		public void setDateTime(DateTime dateTime){
-			_dateTime = dateTime;
-		}
-		
-		public DateTime getDateTime(DateTime dateTime){
-			return _dateTime;
-		}
-		
-		public void setDateTimeEnd(DateTime dateTimeEnd){
-			_dateTimeEnd = dateTimeEnd;
-		}
-		
-		public DateTime getDateTimeEnd(DateTime dateTimeEnd){
-			return _dateTimeEnd;
-		}
-		
-		//TODO implement comparator
-		//TODO implement containsWord(String Word)
-	}
 	
 	/**
 	 * Temporary storage of entries in .txt file. Call Storage.writeFile after modifying this
