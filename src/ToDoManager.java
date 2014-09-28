@@ -10,11 +10,12 @@ public class ToDoManager {
 		CMD_ADD, CMD_DELETE, CMD_CLEAR, CMD_EDIT, CMD_UNDO, CMD_SEARCH, CMD_DISPLAY, CMD_DONE
 	}
 	
-	private static final String MESSAGE_WELCOME = null;
+	private static final String MESSAGE_WELCOME = "Welcome to ToDo Manager!";
 	
 	public static void main(String[] args){
-		UserInterface.showToUser(MESSAGE_WELCOME);
-		//TODO
+		showToUser(MESSAGE_WELCOME);
+		setup();
+		
 	}
 	
 	
@@ -61,8 +62,6 @@ public class ToDoManager {
 			return null; //TODO
 		}
 	}
-	
-	
 	/**
 	 * 
 	 * @author Khye An
@@ -105,8 +104,11 @@ public class ToDoManager {
 	public static class Executable{
 		CommandType _command = null;
 		String _info = null;
-		DateTime _dateTime = null;
-		DateTime _dateTimeEnd = null;
+		String _startingDate = null;
+		String _endingDate = null;
+		String _startingTime = null;
+		String _endingTime = null;
+		Boolean _doneness = false;
 		
 		public Executable(CommandType command){
 			_command = command;
@@ -117,11 +119,11 @@ public class ToDoManager {
 			_command = command;
 		}
 		
-		public Executable(CommandType command, String info, DateTime start, DateTime end){
+		public Executable(CommandType command, String info, String start, String end){
 			_info = info;
 			_command = command;
-			_dateTime = start;
-			_dateTimeEnd = end;
+			_startingTime = start;
+			_endingTime = end;
 		}
 		
 		public CommandType getCommand(){
@@ -132,12 +134,20 @@ public class ToDoManager {
 			return _info; 
 		}
 		
-		public DateTime getDateTime(){
-			return _dateTime; 
+		public String getStartingDate(){
+			return _startingDate; 
 		}
 		
-		public DateTime getDateTimeEnd(){
-			return _dateTimeEnd; 
+		public String getEndingDate(){
+			return _endingDate; 
+		}
+		
+		public String getStartingTime(){
+			return _startingTime;
+		}
+		
+		public String getEndingTime(){
+			return _endingTime;
 		}
 	}
 	
@@ -159,6 +169,11 @@ public class ToDoManager {
 		 *  No idea what this is for, but if i dont put this here eclipse complains. Anyone knows?
 		 */
 		private static final long serialVersionUID = -1625638209526224271L;
+		private Entry _head;
+		public void EntryList(){
+			_head = null;
+			
+		}
 		
 	}
 	
@@ -176,5 +191,19 @@ public class ToDoManager {
 		private static final long serialVersionUID = -7851999266553632272L;
 
 		
+	}
+	
+	/**
+	 * Prints text for the user to read
+	 * @param String s
+	 */
+	public static void showToUser(String s){
+		System.out.println(s);
+	}
+	
+	public static void setup(){
+		//initialising of reader / writer
+		//creation and filling out of linked lists
+		//TODO
 	}
 }

@@ -1,77 +1,79 @@
-import java.util.Date;
+package todo_manager;
 
 public class Entry{
-		String _name;
-		String _startingDate, _endingDate;
-		String _startingTime, _endingTime;
-		Boolean _doneness;
-		
-		public Entry(String info){
-			_name = info;
-			_startingDate = null;
-			_endingDate = null;
-			_startingTime = null;
-			_endingTime = null;
-			_doneness = false;
-		}
-		
-		public Entry(String info, String startingDate, String endingDate, String startingTime, String endingTime ){
-			_name = info;
-			_startingDate = startingDate;
-			_endingDate = endingDate;
-			_startingTime = startingTime;
-			_endingTime = endingTime;
-			_doneness = false;
-		}
-		
-		public void setDone(boolean doneness){
-			_doneness = doneness;
-		}
-		
-		public boolean getDone(){
-			return _doneness;
-		}
-		
-		public void setInfo(String name){
-			_name = name;
-		}
-		
-		public String getInfo(){
-			return _name;
-		}
-		
-		public void setStartingDate(String date){
-			_startingDate = date;
-		}
-		
-		public String getStartingDate(){
-			return _startingDate;
-		}
-		
-		public void setEndingDate(String date){
-			_endingDate = date;
-		}
-		
-		public String getEndingDate(){
-			return _endingDate;
-		}
-		
-		public void setStartingTime(String time){
-			_startingTime = time;
-		}
-		
-		public String getStartingTime(){
-			return _startingTime;
-		}
-		
-		public void setEndingTime(String time){
-			_endingTime = time;
-		}
-		
-		public String getEndingTime(){
-			return _endingTime;
-		}
-		
-		//TODO implement comparator
-		//TODO implement containsWord(String Word)
-	}
+    public String name;
+    public String startingDate;
+    public String endingDate;
+    public String startingTime;
+    public String endingTime;
+    public Boolean doneness;
+    
+    public Entry(String info){
+        name = info;
+        startingDate = null;
+        endingDate = null;
+        startingTime = null;
+        endingTime = null;
+        doneness = false;
+    }
+    
+    public Entry(String info, String startingDate, String endingDate, String startingTime, String endingTime ){
+        name = info;
+        this.startingDate = startingDate;
+        this.endingDate = endingDate;
+        this.startingTime = startingTime;
+        this.endingTime = endingTime;
+        this.doneness = false;
+    }
+    
+    public void setDone(boolean doneness){
+        this.doneness = doneness;
+    }
+    
+    public boolean getDone(){
+        return doneness;
+    }
+    
+    public void setInfo(String name){
+        this.name = name;
+    }
+    
+    public String getInfo(){
+        return name;
+    }
+    
+    public void setStartingDate(String date){
+        startingDate = date;
+    }
+    
+    public String getStartingDate(){
+        return startingDate;
+    }
+    
+    public void setEndingDate(String date){
+        endingDate = date;
+    }
+    
+    public String getEndingDate(){
+        return endingDate;
+    }
+    
+    public void setStartingTime(String time){
+        startingTime = time;
+    }
+    
+    public String getStartingTime(){
+        return startingTime;
+    }
+    
+    public void setEndingTime(String time){
+        endingTime = time;
+    }
+    
+    public String getEndingTime(){
+        return endingTime;
+    }
+    
+    //TODO implement comparator
+    //TODO implement containsWord(String Word)
+}
