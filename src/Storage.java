@@ -1,3 +1,5 @@
+package todo_manager;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -29,15 +31,15 @@ public class Storage {
 					position = detectSymbol[positionIndex]+1;
 				}
 				
-				insert._name = sCurrentLine.substring(6, detectSymbol[0]-1);
-				insert._startingDate = sCurrentLine.substring(detectSymbol[0]+16, detectSymbol[1]-1);
-				insert._endingDate = sCurrentLine.substring(detectSymbol[1]+14, detectSymbol[2]-1);
-				insert._startingTime = sCurrentLine.substring(detectSymbol[2]+16, detectSymbol[3]-1);
-				insert._endingTime = sCurrentLine.substring(detectSymbol[3]+14, detectSymbol[4]-1);
+				insert.name = sCurrentLine.substring(6, detectSymbol[0]-1);
+				insert.startingDate = sCurrentLine.substring(detectSymbol[0]+16, detectSymbol[1]-1);
+				insert.endingDate = sCurrentLine.substring(detectSymbol[1]+14, detectSymbol[2]-1);
+				insert.startingTime = sCurrentLine.substring(detectSymbol[2]+16, detectSymbol[3]-1);
+				insert.endingTime = sCurrentLine.substring(detectSymbol[3]+14, detectSymbol[4]-1);
 				if(sCurrentLine.length() - detectSymbol[4]+11 >6)
-					insert._doneness = false;
+					insert.doneness = false;
 				else
-					insert._doneness = true;
+					insert.doneness = true;
 				
 				
 				storageList.add(insert);
@@ -72,12 +74,12 @@ public class Storage {
 		    	
 		    	Entry temp = storageList.get(i);
 		    	
-		    	if(temp._doneness == true)
+		    	if(temp.doneness == true)
 		    		done = "Done";
 		    	else
 		    		done = "Not Yet Done";
 		    	
-		    	String insertItem[] = {temp._name,temp._startingDate, temp._endingDate, temp._startingTime, temp._endingTime, done};
+		    	String insertItem[] = {temp.name,temp.startingDate, temp.endingDate, temp.startingTime, temp.endingTime, done};
 		    	
 		    	for(int j = 0; j < 6; j++){
 		    		writeValue = writeValue.concat(insertTitle[j]);

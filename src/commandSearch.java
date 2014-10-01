@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class CommandSearch {
 	private ArrayList<Entry> storage;
 	
-	public commandSearch(ArrayList<Entry> storage){
+	public CommandSearch(ArrayList<Entry> storage){
 		this.storage = storage;
 	}
 	

@@ -17,6 +17,15 @@ public class Entry{
         doneness = false;
     }
     
+    public Entry(){
+        name = null;
+        startingDate = null;
+        endingDate = null;
+        startingTime = null;
+        endingTime = null;
+        doneness = false;
+    }
+    
     public Entry(String info, String startingDate, String endingDate, String startingTime, String endingTime ){
         name = info;
         this.startingDate = startingDate;
