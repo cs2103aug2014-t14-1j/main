@@ -1,4 +1,7 @@
+package todo_manager;
+
 import java.util.ArrayList;
+import java.util.Scanner;
 
 
 
@@ -11,62 +14,24 @@ public class ToDoManager {
 	}
 	
 	private static final String MESSAGE_WELCOME = "Welcome to ToDo Manager!";
+	private static final String MESSAGE_COMMAND_PROMPT = "command : ";
 	
+	
+
 	public static void main(String[] args){
-		showToUser(MESSAGE_WELCOME);
+		String userInput;
 		setup();
-		
-	}
-	
-	
-	/**
-	 * Date encapsulation object
-	 * @param String time 		time given in 4-digit format, eg. "0030" , "2359", or "1400" 
-	 * @param int day			day of the month, must be between 1 and 31, inclusive
-	 * @param int month 		month of the year, must be between 1 and 12, inclusive
-	 * @param int year 			Year. Must be greater than 0
-	 * @throws InvalidDateException			throws this exception if date format given is not valid. Use try/catch when creating date object
-	 * @author Khye An
-	 *
-	 */
-	public static class DateTime{
-		int _day, _month, _year;
-		String _time;
-		
-		public DateTime(String time, int day, int month, int year) throws InvalidDateException{
-			if (! validityCheck(time, day, month, year)){
-				throw new InvalidDateException();
-			}
-			_time = time;
-			_day = day;
-			_month = month;
-			_year = year;
-		}
-		
-		private boolean validityCheck(String time, int day, int month, int year) {
-			int num_time = Integer.parseInt(time);
-			if (num_time < 0 || num_time > 2359) {
-				return false;
-			} else if (day <= 0 || day > 31) {
-				return false;
-			} else if (month <= 0 || month > 12) {
-				return false;
-			} else if (year <= 0) {
-				return false;
-			} else {
-				return true;
-			}
-		}
-		
-		public String toString(){
-			return null; //TODO
+		UserInterface.showToUser(MESSAGE_WELCOME);
+		while (true) {
+			userInput = UserInterface.getNextCommand();
+			////// dummy code start //////
+			String s = userInput.substring(5);
+			UserInterface.showToUser(s + " added.");
+			////// dummy code end   //////
+			Logic.actOnUserInput(userInput);
 		}
 	}
-	/**
-	 * 
-	 * @author Khye An
-	 *
-	 */
+	
 	public static class InvalidDateException extends Exception {
 
 		/**
@@ -91,6 +56,55 @@ public class ToDoManager {
 		}
 	}
 	
+	public static class EmptyInputException extends Exception {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 8501096073450889230L;
+
+		public EmptyInputException() { 
+			  super(); 
+		}
+		
+		public EmptyInputException(String message) { 
+			super(message); 
+		}
+		
+		public EmptyInputException(String message, Throwable cause) { 
+			super(message, cause); 
+		}
+		
+		public EmptyInputException(Throwable cause) { 
+			super(cause); 
+		}
+	}
+	
+	public static class InvalidInputException extends Exception {
+
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 4463352598274800204L;
+
+		public InvalidInputException() { 
+			  super(); 
+		}
+		
+		public InvalidInputException(String message) { 
+			super(message); 
+		}
+		
+		public InvalidInputException(String message, Throwable cause) { 
+			super(message, cause); 
+		}
+		
+		public InvalidInputException(Throwable cause) { 
+			super(cause); 
+		}
+	}
+	
 	/**
 	 * Executable object that encapsulates everything that Logic needs to execute the command
 	 * Properties cannot be changed after instantiation
@@ -102,61 +116,55 @@ public class ToDoManager {
 	 *
 	 */
 	public static class Executable{
-		CommandType _command = null;
-		String _info = null;
-		String _startingDate = null;
-		String _endingDate = null;
-		String _startingTime = null;
-		String _endingTime = null;
-		Boolean _doneness = false;
+		CommandType command = null;
+		String info = null;
+		String startingDate = null;
+		String endingDate = null;
+		String startingTime = null;
+		String endingTime = null;
+		Boolean doneness = false;
 		
-		public Executable(CommandType command){
-			_command = command;
+		public Executable(CommandType commandInput){
+			command = commandInput;
 		}
 		
-		public Executable(CommandType command, String info){
-			_info = info;
-			_command = command;
+		public Executable(CommandType commandInput, String infoInput){
+			info = infoInput;
+			command = commandInput;
 		}
 		
-		public Executable(CommandType command, String info, String start, String end){
-			_info = info;
-			_command = command;
-			_startingTime = start;
-			_endingTime = end;
+		public Executable(CommandType commandInput, String infoInput, String startInput, String endInput){
+			info = infoInput;
+			command = commandInput;
+			startingTime = startInput;
+			endingTime = endInput;
 		}
 		
 		public CommandType getCommand(){
-			return _command;
+			return command;
 		}
 		
 		public String getInfo(){
-			return _info; 
+			return info; 
 		}
 		
 		public String getStartingDate(){
-			return _startingDate; 
+			return startingDate; 
 		}
 		
 		public String getEndingDate(){
-			return _endingDate; 
+			return endingDate; 
 		}
 		
 		public String getStartingTime(){
-			return _startingTime;
+			return startingTime;
 		}
 		
 		public String getEndingTime(){
-			return _endingTime;
+			return endingTime;
 		}
 	}
 	
-
-	/**
-	 * Object to represent an entry in the txt file while we are making changes to the entries
-	 * @author Khye An
-	 *
-	 */
 	
 	/**
 	 * Temporary storage of entries in .txt file. Call Storage.writeFile after modifying this
@@ -166,7 +174,7 @@ public class ToDoManager {
 	public class EntryList extends ArrayList<Entry>{
 
 		/**
-		 *  No idea what this is for, but if i dont put this here eclipse complains. Anyone knows?
+		 *  
 		 */
 		private static final long serialVersionUID = -1625638209526224271L;
 		private Entry _head;
@@ -193,17 +201,38 @@ public class ToDoManager {
 		
 	}
 	
-	/**
-	 * Prints text for the user to read
-	 * @param String s
-	 */
-	public static void showToUser(String s){
-		System.out.println(s);
+	public static class UserInterface {
+		
+		static Scanner scannerInstance;
+		
+		/**
+		 * Prints text for the user to read, and goes to the next line
+		 * @param String s
+		 */
+		public static void showToUser(String s){
+			System.out.println(s);
+		}
+
+		public static String getNextCommand() {
+			System.out.print(MESSAGE_COMMAND_PROMPT);
+			String userCommand = scannerInstance.nextLine();
+			return userCommand;
+		}
+
+		public static void setup() {
+			scannerInstance = new Scanner(System.in);
+		}
 	}
 	
+	
+	//TODO	
 	public static void setup(){
-		//initialising of reader / writer
-		//creation and filling out of linked lists
-		//TODO
+        UserInterface.setup();
+//		Interpreter.setup();
+//		Logic.setup();   //creation and filling out of linked lists
+//		Storage.setup(); //initializing of reader / writer
+//		
+
+		
 	}
 }
