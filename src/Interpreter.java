@@ -5,7 +5,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 import todo_manager.ToDoManager.CommandType;
-import todo_manager.ToDoManager.Executable;
 import todo_manager.ToDoManager.EmptyInputException;
 import todo_manager.ToDoManager.InvalidInputException;
 
@@ -39,8 +38,7 @@ import todo_manager.ToDoManager.InvalidInputException;
  *  /mark <date> : startingDate and endingDate are equal to given date
  *  /mark <keywords> : info is filled with String of all keywords 
  *  
- * cle
- * @author Khye An
+ * @author Qingtao
  *
  */
 
@@ -52,13 +50,19 @@ public class Interpreter {
 	//TODO : make one of this in ToDoManager and have all classes call it
 	private static final String DATE_FORMAT = "ddMMyy"; 
 	
-	public static ToDoManager.Executable parseCommand(String s) throws Exception{
+	public Interpreter() {
+	}
+
+	public Executable parseCommand(String s) throws Exception{
+		
 		s = s.trim();
 		if (s.equals(EMPTY_STRING)){
 			throw new EmptyInputException();
 		}
+		
 		String[] words = s.split(" ");
 		String cmdWord = words[0].toLowerCase();
+		
 		Executable exe;
 		
 		switch (cmdWord) {
@@ -87,7 +91,8 @@ public class Interpreter {
 				break;
 				
 			case "/display" :
-				exe = processDisplay(words);
+				//exe = processDisplay(words);
+				exe = new Executable(CommandType.CMD_DISPLAY);
 				break;
 				
 			case "/mark" :
@@ -101,8 +106,10 @@ public class Interpreter {
 		return exe;
 	}
 
-	private static Executable processAdd(String[] words) throws Exception {
+	private Executable processAdd(String[] words) throws Exception {
+		
 		Executable exe = new Executable(CommandType.CMD_ADD);
+	
 		String word;
 		boolean addBasic = true;
 		
@@ -135,13 +142,13 @@ public class Interpreter {
 		return exe;
 	}
 
-	private static void processAddBasic(Executable exe, String[] words) {
-		exe.info = recombine(words, 1, words.length);
+	private void processAddBasic(Executable exe, String[] words) {
+		exe.setInfo(recombine(words, 1, words.length));
 	}
 
 	private static void processAddBy(Executable exe, String[] words, 
 			                         int i) throws InvalidInputException {
-		exe.info = recombine(words, 1, i);
+		exe.setInfo(recombine(words, 1, i));
 		
 		if (words.length == i + 1){ // nothing after keyword
 			throw new InvalidInputException();
@@ -149,12 +156,12 @@ public class Interpreter {
 		
 		String date = recombine(words, i+1, words.length);
 		//TODO valid check on date
-		exe.endingDate = date;
+		exe.setEndingDate(date);
 	}
 
 	private static void processAddOn(Executable exe, String[] words,
 			                         int i) throws InvalidInputException {
-		exe.info = recombine(words, 1, i);
+		exe.setInfo(recombine(words, 1, i));
 		
 		if (words.length == i + 1){ // nothing after keyword
 			throw new InvalidInputException();
@@ -162,12 +169,13 @@ public class Interpreter {
 		
 		String date = recombine(words, i+1, words.length);
 		//TODO valid check on date
-		exe.startingDate = exe.endingDate = date;
+		exe.setStartingDate(date); 
+		exe.setEndingDate(date);
 	}
 
 	private static void processAddFrom(Executable exe, String[] words, 
 			                           int i) throws InvalidInputException {
-		exe.info = recombine(words, 1, i);
+		exe.setInfo(recombine(words, 1, i));
 		
 		if (words.length == i + 1){ // nothing after keyword /for
 			throw new InvalidInputException();
@@ -185,8 +193,8 @@ public class Interpreter {
 		if (words.length == j + 1){ // nothing after /to
 			throw new InvalidInputException();
 		} else{
-			exe.startingDate = recombine(words, i + 1, j);
-			exe.endingDate = recombine(words, j + 1, words.length);
+			exe.setStartingDate(recombine(words, i + 1, j));
+			exe.setEndingDate(recombine(words, j + 1, words.length));
 		}
 	}
 
@@ -199,9 +207,12 @@ public class Interpreter {
 			
 			//if extra info is a date
 			if (ValidationCheck.isValidDate(extraWords)) {
-				exe.startingDate = exe.endingDate = extraWords;
+				
+				exe.setStartingDate(extraWords); 
+				exe.setEndingDate(extraWords);
+			
 			} else { // else, extra info is keywords
-				exe.info = extraWords;
+				exe.setInfo(extraWords);
 			}
 		}
 		return exe;
@@ -219,9 +230,10 @@ public class Interpreter {
 			
 			//if extra info is a date
 			if (ValidationCheck.isValidDate(extraWords)) {
-				exe.startingDate = exe.endingDate = extraWords;
+				exe.setStartingDate(extraWords); 
+				exe.setEndingDate(extraWords);
 			} else { // else, extra info is keywords
-				exe.info = extraWords;
+				exe.setInfo(extraWords);
 			}
 		}
 		return exe;
@@ -240,9 +252,10 @@ public class Interpreter {
 			
 			//if extra info is a date
 			if (ValidationCheck.isValidDate(extraWords)) {
-				exe.startingDate = exe.endingDate = extraWords;
+				exe.setStartingDate(extraWords); 
+				exe.setEndingDate(extraWords);
 			} else { // else, extra info is keywords
-				exe.info = extraWords;
+				exe.setInfo(extraWords);
 			}
 		}
 		return exe;
@@ -251,7 +264,7 @@ public class Interpreter {
 	private static Executable processDisplay(String[] words) throws InvalidInputException {
 		Executable exe = new Executable(CommandType.CMD_SEARCH);
 		if (! doesNotHaveExtraText(words)) { // no search keywords, defaults to display all
-			exe.info = "all";
+			exe.setInfo("all");
 		} else if (words[1].equals("today")){ //display today
 			DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
 			Date date = new Date();
@@ -261,9 +274,10 @@ public class Interpreter {
 			
 			//if extra info is a date
 			if (ValidationCheck.isValidDate(extraWords)) {
-				exe.startingDate = exe.endingDate = extraWords;
+				exe.setStartingDate(extraWords); 
+				exe.setEndingDate(extraWords);
 			} else { // else, extra info is keywords
-				exe.info = extraWords;
+				exe.setInfo(extraWords);
 			}
 		}
 		return exe;
@@ -278,9 +292,10 @@ public class Interpreter {
 			
 			//if extra info is a date
 			if (ValidationCheck.isValidDate(extraWords)) {
-				exe.startingDate = exe.endingDate = extraWords;
+				exe.setStartingDate(extraWords); 
+				exe.setEndingDate(extraWords);
 			} else { // else, extra info is keywords
-				exe.info = extraWords;
+				exe.setInfo(extraWords);
 			}
 		}
 		return exe;

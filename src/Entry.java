@@ -1,12 +1,13 @@
 package todo_manager;
 
 public class Entry{
-    public String name;
-    public String startingDate;
-    public String endingDate;
-    public String startingTime;
-    public String endingTime;
-    public Boolean doneness;
+	
+    private String name;
+    private String startingDate;
+    private String endingDate;
+    private String startingTime;
+    private String endingTime;
+    private Boolean doneness;
     
     public Entry(String info){
         name = info;
@@ -34,54 +35,56 @@ public class Entry{
         this.endingTime = endingTime;
         this.doneness = false;
     }
-    
-    public void setDone(boolean doneness){
-        this.doneness = doneness;
-    }
-    
-    public boolean getDone(){
-        return doneness;
-    }
-    
-    public void setInfo(String name){
-        this.name = name;
-    }
-    
-    public String getInfo(){
-        return name;
-    }
-    
-    public void setStartingDate(String date){
-        startingDate = date;
-    }
-    
-    public String getStartingDate(){
-        return startingDate;
-    }
-    
-    public void setEndingDate(String date){
-        endingDate = date;
-    }
-    
-    public String getEndingDate(){
-        return endingDate;
-    }
-    
-    public void setStartingTime(String time){
-        startingTime = time;
-    }
-    
-    public String getStartingTime(){
-        return startingTime;
-    }
-    
-    public void setEndingTime(String time){
-        endingTime = time;
-    }
-    
-    public String getEndingTime(){
-        return endingTime;
-    }
+
+	
+    public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getStartingDate() {
+		return startingDate;
+	}
+
+	public void setStartingDate(String startingDate) {
+		this.startingDate = startingDate;
+	}
+
+	public String getEndingDate() {
+		return endingDate;
+	}
+
+	public void setEndingDate(String endingDate) {
+		this.endingDate = endingDate;
+	}
+
+	public String getStartingTime() {
+		return startingTime;
+	}
+
+	public void setStartingTime(String startingTime) {
+		this.startingTime = startingTime;
+	}
+
+	public String getEndingTime() {
+		return endingTime;
+	}
+
+	public void setEndingTime(String endingTime) {
+		this.endingTime = endingTime;
+	}
+
+	public Boolean getDoneness() {
+		return doneness;
+	}
+
+	public void setDoneness(Boolean doneness) {
+		this.doneness = doneness;
+	}
+
     
     //TODO implement comparator
     //TODO implement containsWord(String Word)
