@@ -20,7 +20,7 @@ public class CommandSearch {
 		
 		if(isDate){
 			for(Entry entry: storage){
-				if(entry.startingDate == searchContent ||entry.endingDate == searchContent ){
+				if(entry.getStartingDate() == searchContent ||entry.getEndingDate() == searchContent ){
 					searchResult.add(entry);
 				}
 			}
@@ -28,7 +28,7 @@ public class CommandSearch {
 		else{
 			searchContent = searchContent.toLowerCase();
 			for(Entry entry: storage){
-				String temp = entry.name.toLowerCase();
+				String temp = entry.getName().toLowerCase();
 				if(temp.contains(searchContent)){
 					searchResult.add(entry);
 				}
