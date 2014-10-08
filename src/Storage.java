@@ -3,6 +3,7 @@ package todo_manager;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -10,11 +11,11 @@ import java.util.LinkedList;
 
 public class Storage {
 	public LinkedList<Entry> storageList = new LinkedList<Entry>();
-	public String fileName = "toDoManager.txt";
+	public String fileName = "ToDoManager.txt";
 	
-	private ToDoManager.EntryList readFile(){
+	public LinkedList<Entry> readFile(){
 		
-		try(BufferedReader reader = new BufferedReader(new FileReader("fileName")))
+		try(BufferedReader reader = new BufferedReader(new FileReader(fileName)))
 		{
 			
 			String sCurrentLine;
@@ -31,20 +32,30 @@ public class Storage {
 					position = detectSymbol[positionIndex]+1;
 				}
 				
-				insert.name = sCurrentLine.substring(6, detectSymbol[0]-1);
-				insert.startingDate = sCurrentLine.substring(detectSymbol[0]+16, detectSymbol[1]-1);
-				insert.endingDate = sCurrentLine.substring(detectSymbol[1]+14, detectSymbol[2]-1);
-				insert.startingTime = sCurrentLine.substring(detectSymbol[2]+16, detectSymbol[3]-1);
-				insert.endingTime = sCurrentLine.substring(detectSymbol[3]+14, detectSymbol[4]-1);
-				if(sCurrentLine.length() - detectSymbol[4]+11 >6)
-					insert.doneness = false;
-				else
-					insert.doneness = true;
-				
-				
+				insert.setName(sCurrentLine.substring(6, detectSymbol[0]-1));
+				insert.setStartingDate(sCurrentLine.substring(detectSymbol[0]+16, detectSymbol[1]-1));
+				insert.setEndingDate(sCurrentLine.substring(detectSymbol[1]+14, detectSymbol[2]-1));
+				insert.setStartingTime(sCurrentLine.substring(detectSymbol[2]+16, detectSymbol[3]-1));
+				insert.setEndingTime(sCurrentLine.substring(detectSymbol[3]+14, detectSymbol[4]-1));
+				if(sCurrentLine.length() - detectSymbol[4]+11 >6){
+					insert.setDoneness(false);
+				} else {
+					insert.setDoneness(true);
+				}
+					
 				storageList.add(insert);
 			}
 			
+		}
+		catch(FileNotFoundException e) 
+		{
+			File file = new File(fileName);
+		    try {
+				file.createNewFile();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 		catch(IOException e)
 		{
@@ -52,13 +63,13 @@ public class Storage {
 			e.printStackTrace();
 		}
 		
-		return null; //TODO
+		return storageList; //TODO
 	}
 	
-	private void writeFile(ToDoManager.EntryList entryList) {
+	public void writeFile(LinkedList<Entry> entryList) {
 		try 
 		{
-		    File file = new File("fileName");
+		    File file = new File(fileName);
 		    
 		    if(!file.exists()){
 		    	file.createNewFile();
@@ -74,16 +85,22 @@ public class Storage {
 		    	
 		    	Entry temp = storageList.get(i);
 		    	
-		    	if(temp.doneness == true)
+		    	if(temp.getDoneness() == true)
 		    		done = "Done";
 		    	else
 		    		done = "Not Yet Done";
 		    	
-		    	String insertItem[] = {temp.name,temp.startingDate, temp.endingDate, temp.startingTime, temp.endingTime, done};
+		    	String insertItem[] = {temp.getName(), temp.getStartingDate(), temp.getEndingDate(), 
+		    			               temp.getStartingTime(), temp.getEndingTime(), done};
 		    	
 		    	for(int j = 0; j < 6; j++){
 		    		writeValue = writeValue.concat(insertTitle[j]);
-		    		writeValue = writeValue.concat(insertItem[j]);
+		    		if (insertItem[j] != null) {
+		    			writeValue = writeValue.concat(insertItem[j]);
+		    		} else {
+		    			writeValue = writeValue.concat("");
+		    		}
+		    		
 		    	}
 		    	
 		    	 writer.write(writeValue);
@@ -91,7 +108,7 @@ public class Storage {
 		    }
 		    writer.close();
 		    
-		    System.out.println("List insert");
+//		    System.out.println("List insert");
 		    
 		} 
 		catch (IOException ex) 

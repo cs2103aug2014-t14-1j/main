@@ -6,11 +6,15 @@ import java.util.ListIterator;
 import todo_manager.ToDoManager.CommandType;
 
 public class Logic {
+	Storage storage;
 	
 	private static LinkedList<Entry> entryList = new LinkedList<Entry>();
 	private static LinkedList<Executable> exeList = new LinkedList<Executable>();
 	
-	public Logic() {
+	
+	void setup(ToDoManager toDoManager){
+		storage = toDoManager.storage;
+		entryList = readFromStorage();
 	}
 	
 	//UI module will call this method 
@@ -23,12 +27,12 @@ public class Logic {
 			memoriseActionForUndo(exe);
 			execute(exe);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+//			e.printStackTrace();
+			UserInterface.showToUser(ToDoManager.MESSAGE_GENERIC_ERROR);
 		}
 	}
 	
-	public static void execute(Executable task){
+	public void execute(Executable task){
 		//TODO
 		CommandType command = task.getCommand();
 		
@@ -55,15 +59,16 @@ public class Logic {
 			
 	}
 	
-	public static void executeAdd(Executable task){
+	private void executeAdd(Executable task){
 		
 		Entry entry = new Entry();
 		entry.setName(task.getInfo());
 		entryList.add(entry);
+		writeToStorage();
 		
 	}
 
-	public static void executeDelete(Executable task){
+	private void executeDelete(Executable task){
 		
 		String str = task.getInfo();
 		int toDelete = -1;
@@ -71,49 +76,59 @@ public class Logic {
 		for (int i = 0; i < entryList.size(); i++) {
             if(entryList.get(i).getName().equals(str)){
             	toDelete = i;
+            	break;
             }
         }
 		
 		if(toDelete != -1)
 		{
 			entryList.remove(toDelete);
+			writeToStorage();
 		}
 	}
 	
-	public static void executeClear(Executable task){
+	private void executeClear(Executable task){
 		//TODO
 	}
 	
-	public static void executeEdit(Executable task){
+	private void executeEdit(Executable task){
 		//TODO
 	}
 	
-	public static void memoriseActionForUndo(Executable task){
+	private void memoriseActionForUndo(Executable task){
 		//TODO
 		exeList.add(task);
 	}
 	
-	public static void executeUndo(Executable task){
+	private void executeUndo(Executable task){
 		//TODO
 	}
 	
-	public static void executeSearch(Executable task){
+	private void executeSearch(Executable task){
 		//TODO
 	}
 	
-	public static void executeDisplay(Executable task){
+	private void executeDisplay(Executable task){
 		//TODO
 		//if(task.getInfo().equals("all")){
 			
-		 ListIterator<Entry> listIterator = entryList.listIterator();
-	        while (listIterator.hasNext()) {
-	            System.out.println(listIterator.next().getName());
-	        }
-	        
-	//	}
+		//ListIterator<Entry> listIterator = entryList.listIterator();
+		int count = 1;
+		for (Entry e : entryList) {
+			UserInterface.showToUser(count+". "+e.getName());
+		    count++;
+		}
 	}
 	
-	public static void executeDone(Executable task){
+	private void executeDone(Executable task){
 		//TODO
+	}
+	
+	private void writeToStorage(){
+		storage.writeFile(entryList);
+	}
+	
+	private LinkedList<Entry> readFromStorage(){
+		return storage.readFile();
 	}
 }

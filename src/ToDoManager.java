@@ -7,30 +7,41 @@ public class ToDoManager {
 		CMD_ADD, CMD_DELETE, CMD_CLEAR, CMD_EDIT, CMD_UNDO, CMD_SEARCH, CMD_DISPLAY, CMD_DONE
 	}
 	
-	private static final String MESSAGE_WELCOME = "Welcome to ToDo Manager!";
+	static final String MESSAGE_WELCOME = "Welcome to ToDo Manager!";
+	static final String MESSAGE_GENERIC_ERROR = "An error has occurred.";
+	Logic logic;
+	UserInterface userInterface;
+	Storage storage;
+	Interpreter interpreter;
 	
 	public static void main(String[] args){
+		ToDoManager toDoManager = new ToDoManager();
+		toDoManager.setup();
 		
 		String userInput;
-		setup();
 		UserInterface.showToUser(MESSAGE_WELCOME);
 		
 		while (true) {
 			
 			userInput = UserInterface.getNextCommand();
-			Logic logic = new Logic();
-			logic.actOnUserInput(userInput);
+			toDoManager.logic.actOnUserInput(userInput);
 			
 		}
 	}
 	
 	
 //TODO	
-	public static void setup(){
-	        UserInterface.setup();
+	public void setup(){
+		 logic = new Logic();
+		 userInterface = new UserInterface();
+		 storage = new Storage();
+		 interpreter = new Interpreter();
+		
+		
+	        userInterface.setup();
 //			Interpreter.setup();
-//			Logic.setup();   //creation and filling out of linked lists
-//			Storage.setup(); //initializing of reader / writer
+			logic.setup(this);   //creation and filling out of linked lists
+//			storage.setup(); //initializing of reader / writer
    }
 	
 	public static class InvalidDateException extends Exception {
