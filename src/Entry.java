@@ -1,6 +1,6 @@
 package todo_manager;
 
-public class Entry{
+public class Entry implements Comparable<Entry>{
 	
     private String name;
     private String startingDate;
@@ -84,8 +84,26 @@ public class Entry{
 	public void setDoneness(Boolean doneness) {
 		this.doneness = doneness;
 	}
-
+	
+	private int changeEndingDate(){
+		int endingDate = Integer.parseInt(this.endingDate);
+		int year = endingDate % 1000;
+		int month = ((int)(endingDate/100)) % 100;
+		int day = endingDate /1000;
+		return year*100 + month*10 + day;
+	}
     
+	public int compareTo(Entry compareEntry) {
+		 
+		int compareDate = ((Entry) compareEntry).changeEndingDate(); 
+ 
+		//ascending order
+		return this.changeEndingDate() - compareDate;
+ 
+		//descending order
+		//return compareQuantity - this.quantity;
+ 
+	}	
     //TODO implement comparator
     //TODO implement containsWord(String Word)
 }
