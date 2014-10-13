@@ -23,7 +23,17 @@ public class Executable {
 	private String startingTime = null;
 	private String endingTime = null;
 	private Boolean doneness = false;
+
+	private String preStr;
 	
+	public String getPreStr() {
+		return preStr;
+	}
+
+	public void setPreStr(String preStr) {
+		this.preStr = preStr;
+	}
+
 	public Executable(CommandType commandInput){
 		command = commandInput;
 	}

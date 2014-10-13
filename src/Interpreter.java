@@ -99,6 +99,9 @@ public class Interpreter {
 				exe = processMark(words);
 				break;
 				
+			case "/sort" :
+				exe = new Executable(CommandType.CMD_SORT);
+				break;
 			default : 
 				throw new InvalidInputException();			
 		}
