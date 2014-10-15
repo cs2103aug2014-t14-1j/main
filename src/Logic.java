@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 import todo_manager.ToDoManager.CommandType;
+import todo_manager.ToDoManager.EmptyInputException;
 
 public class Logic {
 	Storage storage;
@@ -25,13 +26,13 @@ public class Logic {
 		
 		Executable exe;
 		try {
-			Interpreter interpreter = new Interpreter();
-			exe = interpreter.parseCommand(userInput);
+			exe = Interpreter.parseCommand(userInput);
 			execute(exe);
 			memoriseActionForUndo(exe);
+		} catch (EmptyInputException e) {
+			UserInterface.showToUser(ToDoManager.MESSAGE_ERROR_EMPTY_INPUT);
 		} catch (Exception e) {
-//			e.printStackTrace();
-			UserInterface.showToUser(ToDoManager.MESSAGE_GENERIC_ERROR);
+			UserInterface.showToUser(ToDoManager.MESSAGE_ERROR_GENERIC);
 		}
 	}
 	
@@ -115,7 +116,7 @@ public class Logic {
 		
 		
 		String str = task.getInfo();
-		int num = Integer.parseInt(task.getInfo().substring(0,1));
+		int num = Integer.parseInt(task.getInfo().substring(0,1)); // cant assume that the number is single digit
 		
 		String preStr = entryList.get(num-1).getName();
 		
