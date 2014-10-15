@@ -23,7 +23,6 @@ public class Storage {
 			int detectSymbol[] = {0,0,0,0,0};
 			Entry insert;
 			
-			
 			storageList.clear();
 			
 			while((sCurrentLine = reader.readLine()) != null){
@@ -104,13 +103,11 @@ public class Storage {
 		    		}
 		    		
 		    	}
-		    	
+		    	 writeValue = writeValue.concat("\n");
 		    	 writer.write(writeValue);
-		    	 writer.write("\n");
 		    }
 		    writer.close();
 		    
-//		    System.out.println("List insert");
 		    
 		} 
 		catch (IOException ex) 
