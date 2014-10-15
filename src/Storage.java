@@ -12,7 +12,6 @@ import java.util.LinkedList;
 public class Storage {
 	public LinkedList<Entry> storageList = new LinkedList<Entry>();
 	public String fileName = "ToDoManager.txt";
-	
 	public LinkedList<Entry> readFile(){
 		
 		try(BufferedReader reader = new BufferedReader(new FileReader(fileName)))
@@ -21,11 +20,12 @@ public class Storage {
 			String sCurrentLine;
 			int position;
 			int detectSymbol[] = {0,0,0,0,0};
-			Entry insert = new Entry();
+			Entry insert;
 			
 			storageList.clear();
 			
 			while((sCurrentLine = reader.readLine()) != null){
+				insert = new Entry();
 				position = 0;
 				for(int positionIndex = 0; positionIndex < 5; positionIndex++){
 					detectSymbol[positionIndex] = sCurrentLine.indexOf('|', position);
@@ -102,13 +102,11 @@ public class Storage {
 		    		}
 		    		
 		    	}
-		    	
+		    	 writeValue = writeValue.concat("\n");
 		    	 writer.write(writeValue);
-		    	 writer.write("\n");
 		    }
 		    writer.close();
 		    
-//		    System.out.println("List insert");
 		    
 		} 
 		catch (IOException ex) 
