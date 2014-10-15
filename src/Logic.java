@@ -218,12 +218,4 @@ public class Logic {
 	private LinkedList<Entry> readFromStorage(){
 		return storage.readFile();
 	}
-	
-	private void writeToStorage(){
-		storage.writeFile(entryList);
-	}
-	
-	private LinkedList<Entry> readFromStorage(){
-		return storage.readFile();
-	}
 }

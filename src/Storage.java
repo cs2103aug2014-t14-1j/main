@@ -21,11 +21,13 @@ public class Storage {
 			String sCurrentLine;
 			int position;
 			int detectSymbol[] = {0,0,0,0,0};
-			Entry insert = new Entry();
+			Entry insert;
+			
 			
 			storageList.clear();
 			
 			while((sCurrentLine = reader.readLine()) != null){
+				insert = new Entry();
 				position = 0;
 				for(int positionIndex = 0; positionIndex < 5; positionIndex++){
 					detectSymbol[positionIndex] = sCurrentLine.indexOf('|', position);
@@ -62,8 +64,8 @@ public class Storage {
 			System.out.println("Cannot output the file");
 			e.printStackTrace();
 		}
-		
-		return storageList; //TODO
+
+		return storageList; 
 	}
 	
 	public void writeFile(LinkedList<Entry> entryList) {
