@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 
 import todo_manager.ToDoManager.CommandType;
 import todo_manager.ToDoManager.EmptyInputException;
-import todo_manager.ToDoManager.InvalidInputException;
 
 /**
  * Summary of the internal state of the Executable object that is returned
@@ -38,7 +37,6 @@ import todo_manager.ToDoManager.InvalidInputException;
  *  /mark <date> : startingDate and endingDate are equal to given date
  *  /mark <keywords> : info is filled with String of all keywords 
  *  
- * @author Qingtao
  *
  */
 
@@ -53,7 +51,7 @@ public class Interpreter {
 	public Interpreter() {
 	}
 
-	public Executable parseCommand(String s) throws Exception{
+	public static Executable parseCommand(String s) throws Exception{
 		
 		s = s.trim();
 		if (s.equals(EMPTY_STRING)){
@@ -102,14 +100,15 @@ public class Interpreter {
 			case "/sort" :
 				exe = new Executable(CommandType.CMD_SORT);
 				break;
+				
 			default : 
-				throw new InvalidInputException();			
+				throw new IllegalArgumentException();
 		}
 		
 		return exe;
 	}
 
-	private Executable processAdd(String[] words) throws Exception {
+	private static Executable processAdd(String[] words) throws Exception {
 		
 		Executable exe = new Executable(CommandType.CMD_ADD);
 	
@@ -145,16 +144,16 @@ public class Interpreter {
 		return exe;
 	}
 
-	private void processAddBasic(Executable exe, String[] words) {
+	private static void processAddBasic(Executable exe, String[] words) {
 		exe.setInfo(recombine(words, 1, words.length));
 	}
 
 	private static void processAddBy(Executable exe, String[] words, 
-			                         int i) throws InvalidInputException {
+			                         int i) throws IllegalArgumentException {
 		exe.setInfo(recombine(words, 1, i));
 		
 		if (words.length == i + 1){ // nothing after keyword
-			throw new InvalidInputException();
+			throw new IllegalArgumentException();
 		} 
 		
 		String date = recombine(words, i+1, words.length);
@@ -163,11 +162,11 @@ public class Interpreter {
 	}
 
 	private static void processAddOn(Executable exe, String[] words,
-			                         int i) throws InvalidInputException {
+			                         int i) throws IllegalArgumentException {
 		exe.setInfo(recombine(words, 1, i));
 		
 		if (words.length == i + 1){ // nothing after keyword
-			throw new InvalidInputException();
+			throw new IllegalArgumentException();
 		} 
 		
 		String date = recombine(words, i+1, words.length);
@@ -177,11 +176,11 @@ public class Interpreter {
 	}
 
 	private static void processAddFrom(Executable exe, String[] words, 
-			                           int i) throws InvalidInputException {
+			                           int i) throws IllegalArgumentException {
 		exe.setInfo(recombine(words, 1, i));
 		
 		if (words.length == i + 1){ // nothing after keyword /for
-			throw new InvalidInputException();
+			throw new IllegalArgumentException();
 		} 
 		
 		int j;
@@ -194,17 +193,17 @@ public class Interpreter {
 		}
 		
 		if (words.length == j + 1){ // nothing after /to
-			throw new InvalidInputException();
+			throw new IllegalArgumentException();
 		} else{
 			exe.setStartingDate(recombine(words, i + 1, j));
 			exe.setEndingDate(recombine(words, j + 1, words.length));
 		}
 	}
 
-	private static Executable processDelete(String[] words) throws InvalidInputException {
+	private static Executable processDelete(String[] words) throws IllegalArgumentException {
 		Executable exe = new Executable(CommandType.CMD_DELETE);
 		if (doesNotHaveExtraText(words)){ // no identifiers on what to delete
-			throw new InvalidInputException();
+			throw new IllegalArgumentException();
 		} else { //has more words
 			String extraWords = recombine(words, 1, words.length);
 			
@@ -246,10 +245,10 @@ public class Interpreter {
 		return new Executable(CommandType.CMD_UNDO);
 	}
 
-	private static Executable processSearch(String[] words) throws InvalidInputException {
+	private static Executable processSearch(String[] words) throws IllegalArgumentException {
 		Executable exe = new Executable(CommandType.CMD_SEARCH);
 		if (! doesNotHaveExtraText(words)) { // no search keywords
-			throw new InvalidInputException();
+			throw new IllegalArgumentException();
 		} else { //processing of search keywords
 			String extraWords = recombine(words, 1, words.length);
 			
@@ -264,7 +263,7 @@ public class Interpreter {
 		return exe;
 	}
 	
-	private static Executable processDisplay(String[] words) throws InvalidInputException {
+	private static Executable processDisplay(String[] words){
 		Executable exe = new Executable(CommandType.CMD_SEARCH);
 		if (! doesNotHaveExtraText(words)) { // no search keywords, defaults to display all
 			exe.setInfo("all");
@@ -286,10 +285,10 @@ public class Interpreter {
 		return exe;
 	}
 
-	private static Executable processMark(String[] words) throws InvalidInputException {
+	private static Executable processMark(String[] words) throws IllegalArgumentException {
 		Executable exe = new Executable(CommandType.CMD_DONE);
 		if (doesNotHaveExtraText(words)){ // no identifiers
-			throw new InvalidInputException();
+			throw new IllegalArgumentException();
 		} else {  //has more words
 			String extraWords = recombine(words, 1, words.length);
 			
