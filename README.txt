@@ -1,3 +1,51 @@
+Outcome of Friday's Discussion
+
+DisplayList
+displaylist is to be a linkedlist within Logic that stores the most recent list of tasks shown to user
+Reason for this is that searching and sorting may not modify the .txt and entrylist, and shows a different list to the user
+Displaylist thus keeps track of what was shown to the user so that delete and edit can reference this index.
+
+format for display:
+/display
+this will be the only format supported for display. Everything else will be pushed to search
+
+format for search:
+/search /today
+/search <date>
+/search <keyword>
+/search <doneness>
+each of these can be an issue by itself, not necessarily for one person to implement it on his/her own
+
+format for edit
+/edit <int displaylist index> <new task name>
+/edit <int displaylist index> /from <new date>
+/edit <int displaylist index> /to <new date>
+/edit <int displaylist index> /by <new date>
+/edit <int displaylist index> /on <new date>
+edit will be a one-line command, no follow-up command is required. This makes it simpler for the user
+
+format for delete:
+/delete <int displaylist index>
+this will be the only format for delete we are supporting for now
+
+Sort
+Sort will load entrylist into displaylist, then sort displaylist.
+User will be given an option to save sorted order after he calls sort
+
+Testing
+Each module to have some basic tests up by next tutorial. 
+Create a new testing module and put all the tests there. 
+
+Extra features
+extra features will be implemented after this round of fixes are done.
+features to be added one by one, making sure one works properly before adding the next
+
+Coding Standard
+Try to follow the coding standard for all new code you write. 
+Coding standard can be found here : 
+https://docs.google.com/document/pub?id=1iAESIXM0zSxEa5OY7dFURam_SgLiSMhPQtU0drQagrs&amp&embedded=true
+
+
 
 Notes on Github
 
