@@ -12,7 +12,6 @@ public class Logic {
 	private static LinkedList<Entry> entryList = new LinkedList<Entry>();
 	private static LinkedList<Executable> exeList = new LinkedList<Executable>();
 	
-	private static Logging logObj = Logging.getInstance();
 
 	private static  LinkedList<Entry> preventryList;
 
@@ -79,13 +78,11 @@ public class Logic {
 	}
 
 	private void executeAdd(Executable task){
-
-		logObj.writeToLoggingFile("Trying to add");
+		
 		Entry entry = new Entry();
 		entry.setName(task.getInfo());
 		entryList.add(entry);
 		writeToStorage();
-		logObj.writeToLoggingFile("Done adding task");
 		
 	}
 
