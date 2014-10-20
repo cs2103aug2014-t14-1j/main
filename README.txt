@@ -12,9 +12,13 @@ this will be the only format supported for display. Everything else will be push
 format for search:
 /search /today
 /search <date>
+/search /from <date>
+/search /by <date>
 /search <keyword>
 /search <doneness>
 each of these can be an issue by itself, not necessarily for one person to implement it on his/her own
+exe.getDoneness() will be set to null if doneness is not being searched for. False or true if it is being searched for.
+Note that doneness defaults to false for all other operations.
 
 format for edit
 /edit <int displaylist index> <new task name>
