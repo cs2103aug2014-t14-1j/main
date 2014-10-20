@@ -22,17 +22,22 @@ import todo_manager.ToDoManager.EmptyInputException;
  *  /undo : no extra info
  *  /clear : no extra info
  *  
- *  /edit <date> : startingDate and endingDate are equal to given date
- *  /edit <keywords> : info is filled with String of all keywords
+ *  /edit <int displaylist index> <new task name> : new name stored under exe info
+ *  /edit <int displaylist index> /from <new date> /to <new date2> : dates stored in startingDate and endingDate
+ *  /edit <int displaylist index> /by <new date> : date stored in endingDate
+ *  /edit <int displaylist index> /on <new date> : date stored in startingDate and endingDate 
  *  
- *  /search <date> : startingDate and endingDate are equal to given date
- *  /search <keywords> : info is filled with String of all keywords
+ *  /display : command set to display, no other info will be given
  *  
- *  /display  : defaults to display all, info set to "all"
- *  /display all : info set to "all"
- *  /display today : startingDate and endingDate set to today's date
- *  /display <date> : startingDate and endingDate are equal to given date
- *  /display <keywords> : info is filled with String of all keywords 
+ *  /search today : startingDate = endingDate = today's date
+ *  /search <date> : startingDate = endingDate = <date>
+ *  /search /from <date> : startingDate = <date>
+ *  /search /by <date> : endingDate = <date>
+ *  /search <keyword> : info is the string of keyword or keywords as given by the user
+ *  /search done : doneness = true
+ *  /search undone : doneness = false
+ *  Note that Doneness will be set to null if doneness is not being searched for. False or true if it is being searched for.
+ *  doneness defaults to false for all other operations, like add or delete.
  *  
  *  /mark <date> : startingDate and endingDate are equal to given date
  *  /mark <keywords> : info is filled with String of all keywords 
@@ -44,6 +49,7 @@ import todo_manager.ToDoManager.EmptyInputException;
 public class Interpreter {
 	
 	private static final String EMPTY_STRING = "";
+	private static final boolean DEBUG = false;
 	
 	//TODO : make one of this in ToDoManager and have all classes call it
 	private static final String DATE_FORMAT = "ddMMyy"; 
@@ -89,8 +95,7 @@ public class Interpreter {
 				break;
 				
 			case "/display" :
-				//exe = processDisplay(words);
-				exe = new Executable(CommandType.CMD_DISPLAY);
+				exe = processDisplay(words);
 				break;
 				
 			case "/mark" :
@@ -103,6 +108,10 @@ public class Interpreter {
 				
 			default : 
 				throw new IllegalArgumentException();
+		}
+		
+		if (DEBUG) {
+			printExe(exe); // for debugging, to view the contents of executable
 		}
 		
 		return exe;
@@ -202,21 +211,12 @@ public class Interpreter {
 
 	private static Executable processDelete(String[] words) throws IllegalArgumentException {
 		Executable exe = new Executable(CommandType.CMD_DELETE);
-		if (doesNotHaveExtraText(words)){ // no identifiers on what to delete
+		if (doesNotHaveExtraText(words)) { // no identifiers on what to delete
 			throw new IllegalArgumentException();
-		} else { //has more words
-			String extraWords = recombine(words, 1, words.length);
-			
-			//if extra info is a date
-			if (ValidationCheck.isValidDate(extraWords)) {
-				
-				exe.setStartingDate(extraWords); 
-				exe.setEndingDate(extraWords);
-			
-			} else { // else, extra info is keywords
-				exe.setInfo(extraWords);
-			}
 		}
+		
+		int index = Integer.parseInt( words[1] );
+		exe.setDisplayIndex(index);
 		return exe;
 	}
 
@@ -224,20 +224,34 @@ public class Interpreter {
 		return new Executable(CommandType.CMD_CLEAR);
 	}
 	
-	//TODO figure out what the follow up command to edit will look like
-	private static Executable processEdit(String[] words) {
+	private static Executable processEdit(String[] words) throws IllegalArgumentException {
 		Executable exe = new Executable(CommandType.CMD_EDIT);
-		if (! doesNotHaveExtraText(words)){ //has more words
-			String extraWords = recombine(words, 1, words.length);
-			
-			//if extra info is a date
-			if (ValidationCheck.isValidDate(extraWords)) {
-				exe.setStartingDate(extraWords); 
-				exe.setEndingDate(extraWords);
-			} else { // else, extra info is keywords
-				exe.setInfo(extraWords);
-			}
+		
+		if (words.length <= 2){ // not enough info to edit
+			throw new IllegalArgumentException();
 		}
+		
+		exe.setDisplayIndex(Integer.parseInt(words[1]));
+		
+		if (words[2].equals("/by")) { // edit date to "by" format
+			exe.setEndingDate(words[3]);
+			
+		} else if (words[2].equals("/on")) { // edit date to "on" format
+			exe.setStartingDate(words[3]);
+			exe.setEndingDate(words[3]);
+			
+		} else if (words[2].equals("/from") && words[4].equals("/to")) { // edit date to "from-to" format
+			if (words.length < 6 || ! words[4].equals("/to")){ //incorrect or insufficient commands from user
+				throw new IllegalArgumentException();
+			}
+			exe.setStartingDate(words[3]);
+			exe.setEndingDate(words[5]);
+			
+		} else { // edit entry name
+			String keywords = recombine(words, 2, words.length);
+			exe.setInfo(keywords);
+		}
+		
 		return exe;
 	}
 
@@ -246,42 +260,77 @@ public class Interpreter {
 	}
 
 	private static Executable processSearch(String[] words) throws IllegalArgumentException {
+		
 		Executable exe = new Executable(CommandType.CMD_SEARCH);
-		if (! doesNotHaveExtraText(words)) { // no search keywords
-			throw new IllegalArgumentException();
-		} else { //processing of search keywords
-			String extraWords = recombine(words, 1, words.length);
+		
+		//set doneness null so that can differentiate between 
+		//search done (true), search undone (false), and others (null)
+		exe.setDoneness(null);
+		
+		if (doesNotHaveExtraText(words)) { // no search keywords
+			throw new IllegalArgumentException(); //TODO refine exception to be more informative
 			
-			//if extra info is a date
-			if (ValidationCheck.isValidDate(extraWords)) {
-				exe.setStartingDate(extraWords); 
-				exe.setEndingDate(extraWords);
-			} else { // else, extra info is keywords
-				exe.setInfo(extraWords);
+		} else if (words[1].equals("today")){   //search today
+			DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+			Date date = new Date();
+			exe.setStartingDate(dateFormat.format(date));
+			exe.setEndingDate(dateFormat.format(date));
+			
+		} else if (isDate(words[1])) { //search for one date
+			exe.setStartingDate(words[1]);
+			exe.setEndingDate(words[1]);
+			
+		} else if (words[1].equals("/from")) { //search for entries after a particular date
+			if (words.length < 3 || !isDate(words[2])){ 
+				// no date or invalid date
+				throw new IllegalArgumentException();
 			}
+			exe.setStartingDate(words[2]);
+		} else if (words[1].equals("/by")) { //search for entries before a particular date
+			if (words.length < 3 || !isDate(words[2])){ 
+				// no date or invalid date
+				throw new IllegalArgumentException();
+			}
+			exe.setEndingDate(words[2]);
+			
+		} else if (words[1].equals("done")) { 
+			//search for entries that are marked done
+			exe.setDoneness(true);
+			
+		} else if (words[1].equals("undone")) { 
+			//search for entries that are marked undone
+			exe.setDoneness(false);
+			
+		} else { //searching for some keywords
+			String extraWords = recombine(words, 1, words.length);
+			exe.setInfo(extraWords);
 		}
+		
 		return exe;
 	}
 	
 	private static Executable processDisplay(String[] words){
-		Executable exe = new Executable(CommandType.CMD_SEARCH);
-		if (! doesNotHaveExtraText(words)) { // no search keywords, defaults to display all
-			exe.setInfo("all");
-		} else if (words[1].equals("today")){ //display today
-			DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
-			Date date = new Date();
-			System.out.println(dateFormat.format(date));
-		} else { // display date or keywords
-			String extraWords = recombine(words, 1, words.length);
-			
-			//if extra info is a date
-			if (ValidationCheck.isValidDate(extraWords)) {
-				exe.setStartingDate(extraWords); 
-				exe.setEndingDate(extraWords);
-			} else { // else, extra info is keywords
-				exe.setInfo(extraWords);
-			}
-		}
+		Executable exe = new Executable(CommandType.CMD_DISPLAY);
+		
+		//functionality no longer needed. display now takes no arguments
+		//search now does all of this
+//		if (! doesNotHaveExtraText(words)) { // no search keywords, defaults to display all
+//			exe.setInfo("all");
+//		} else if (words[1].equals("today")){ //display today
+//			DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+//			Date date = new Date();
+//			exe.setStartingDate(dateFormat.format(date));
+//		} else { // display date or keywords
+//			String extraWords = recombine(words, 1, words.length);
+//			
+//			//if extra info is a date
+//			if (isDate(extraWords)) {
+//				exe.setStartingDate(extraWords); 
+//				exe.setEndingDate(extraWords);
+//			} else { // else, extra info is keywords
+//				exe.setInfo(extraWords);
+//			}
+//		}
 		return exe;
 	}
 
@@ -293,7 +342,7 @@ public class Interpreter {
 			String extraWords = recombine(words, 1, words.length);
 			
 			//if extra info is a date
-			if (ValidationCheck.isValidDate(extraWords)) {
+			if (isDate(extraWords)) {
 				exe.setStartingDate(extraWords); 
 				exe.setEndingDate(extraWords);
 			} else { // else, extra info is keywords
@@ -321,6 +370,23 @@ public class Interpreter {
 			line += words[i]+" ";
 		}
 		return line.trim();
+	}
+	
+	private static boolean isDate(String date) {
+		return ValidationCheck.isValidDate(date);
+	}
+	
+	private static void printExe(Executable exe){
+		String out = "---Executable Begin---\n" + "Command : ";
+		out += exe.getCommand() + "\n" + "Name : ";
+		out += exe.getInfo() + "\n" + "StartingDate : ";
+		out += exe.getStartingDate() + "\n" + "EndingDate : ";
+		out += exe.getEndingDate() + "\n" + "Doneness : ";
+		out += exe.getDoneness() + "\n" + "displayIndex : ";
+		out += exe.getDisplayIndex() + "\n";
+		out += "---Executable End---\n\n";
+		
+		System.out.println(out);
 	}
 
 }
