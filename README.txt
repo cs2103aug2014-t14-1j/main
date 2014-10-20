@@ -10,20 +10,19 @@ format for display:
 this will be the only format supported for display. Everything else will be pushed to search
 
 format for search:
-/search /today
+/search today
 /search <date>
 /search /from <date>
 /search /by <date>
-/search <keyword>
 /search <doneness>
+/search <keyword>
 each of these can be an issue by itself, not necessarily for one person to implement it on his/her own
 exe.getDoneness() will be set to null if doneness is not being searched for. False or true if it is being searched for.
 Note that doneness defaults to false for all other operations.
 
 format for edit
 /edit <int displaylist index> <new task name>
-/edit <int displaylist index> /from <new date>
-/edit <int displaylist index> /to <new date>
+/edit <int displaylist index> /from <new date> /to <new date2>
 /edit <int displaylist index> /by <new date>
 /edit <int displaylist index> /on <new date>
 edit will be a one-line command, no follow-up command is required. This makes it simpler for the user
