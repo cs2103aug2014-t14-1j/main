@@ -9,7 +9,7 @@ import todo_manager.ToDoManager.EmptyInputException;
 public class Logic {
 	Storage storage;
 	
-	private static LinkedList<Entry> entryList = new LinkedList<Entry>();
+	public static LinkedList<Entry> entryList = new LinkedList<Entry>();
 	private static LinkedList<Entry> preventryList;
 	private static LinkedList<Entry> displayList = new LinkedList<Entry>();
 	private static LinkedList<Executable> exeList = new LinkedList<Executable>();
@@ -186,13 +186,18 @@ public class Logic {
 		
 	}
 
+<<<<<<< HEAD
 	private void executeSearch(Executable task){
+		/*String keyword;
+=======
+	public LinkedList<Entry> executeSearch(Executable task){
 		/*
 		String keyword;
+>>>>>>> origin/master
 		boolean doneness;
-		displayList = null;
+		displayList.clear();
 		
-		if(task.getInfo() != ""){
+		if(task.getInfo() !=  null){
 			keyword = task.getInfo().toLowerCase();
 			for (int i = 0; i < entryList.size(); i++) {
 	            if(entryList.get(i).getName().toLowerCase().contains(keyword)){
@@ -200,7 +205,7 @@ public class Logic {
 	            }
 	        }
 		}
-		else if(task.getStartingDate() != ""){
+		else if(task.getStartingDate() != null){
 			keyword = task.getStartingDate();
 			for (int i = 0; i < entryList.size(); i++) {
 	            if(entryList.get(i).getStartingDate().contains(keyword)){
@@ -208,7 +213,7 @@ public class Logic {
 	            }
 	        }
 		}
-		else if(task.getEndingDate() != ""){
+		else if(task.getEndingDate() != null){
 			keyword = task.getEndingDate();
 			for (int i = 0; i < entryList.size(); i++) {
 	            if(entryList.get(i).getEndingDate().contains(keyword)){
@@ -216,7 +221,7 @@ public class Logic {
 	            }
 	        }
 		}
-		else if(task.getStartingTime() != ""){
+		else if(task.getStartingTime() != null){
 			keyword = task.getStartingTime();
 			for (int i = 0; i < entryList.size(); i++) {
 	            if(entryList.get(i).getStartingTime().contains(keyword)){
@@ -224,7 +229,7 @@ public class Logic {
 	            }
 	        }
 		}
-		else if(task.getEndingTime() != ""){
+		else if(task.getEndingTime() != null){
 			keyword = task.getEndingTime();
 			for (int i = 0; i < entryList.size(); i++) {
 	            if(entryList.get(i).getEndingTime().contains(keyword)){
@@ -239,13 +244,39 @@ public class Logic {
 	            	displayList.add(entryList.get(i));
 	            }
 	        }
+<<<<<<< HEAD
+		}*/
+=======
 		}
 		*/
+		String searchContent = task.getInfo().trim();
+		ValidationCheck validCheck = new ValidationCheck();
+		boolean isDate = validCheck.isValidDate(searchContent);
+>>>>>>> origin/master
 		
-		commandSearch mySearch = new commandSearch(entryList);
-		LinkedList<Entry> listForDisplay = mySearch.search(task.getInfo());
-		executeDisplay(listForDisplay);
+		
+		LinkedList<Entry> searchResult = new LinkedList<Entry>();
+		
+		if(isDate){
+			for(Entry entry: entryList){
+				if(entry.getStartingDate() == searchContent ||entry.getEndingDate() == searchContent ){
+					searchResult.add(entry);
+				}
+			}
+		}
+		else{
+			searchContent = searchContent.toLowerCase();
+			for(Entry entry: entryList){
+				String temp = entry.getName().toLowerCase();
+				if(temp.contains(searchContent)){
+					searchResult.add(entry);
+				}
+			}
+		}
+		executeDisplay(searchResult);
+		return searchResult;
 	}
+	
 	
 	
 	private void executeDisplay(LinkedList<Entry> list){
@@ -261,7 +292,7 @@ public class Logic {
 		    count++;
 		}
 		if(list.size() == 0){
-			System.out.println("no entry found!");
+			System.out.println("No search result found!");
 		}
 	}
 	
