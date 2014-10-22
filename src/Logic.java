@@ -102,22 +102,13 @@ public class Logic {
 	}
 
 	private void executeDelete(Executable task){
-		
-		String str = task.getInfo();
-		int toDelete = -1;
-		
-		for (int i = 0; i < entryList.size(); i++) {
-            if(entryList.get(i).getName().equals(str)){
-            	toDelete = i;
-            	break;
-            }
-        }
-		
-		if(toDelete != -1)
-		{
-			entryList.remove(toDelete);
-			writeToStorage();
+		int index = task.getDisplayIndex() - 1;
+		Entry removedEntry = displayList.remove(index);
+		if (! displayList.equals(entryList)){ 
+			//if they are the same then no need to remove again
+			entryList.remove(removedEntry);
 		}
+		writeToStorage();
 	}
 	
 	private void executeClear(Executable task){

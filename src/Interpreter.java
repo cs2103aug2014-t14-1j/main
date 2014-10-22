@@ -17,7 +17,6 @@ import todo_manager.ToDoManager.EmptyInputException;
  *  /add /on : info filled, startingDate and endingDate are equal to /on date
  * 
  *  /delete <date> : startingDate and endingDate are equal to given date
- *  /delete <keywords> : info is filled with String of all keywords
  *  
  *  /undo : no extra info
  *  /clear : no extra info
@@ -48,8 +47,9 @@ import todo_manager.ToDoManager.EmptyInputException;
 
 public class Interpreter {
 	
-	private static final String EMPTY_STRING = "";
 	private static final boolean DEBUG = false;
+	
+	private static final String EMPTY_STRING = "";
 	
 	//TODO : make one of this in ToDoManager and have all classes call it
 	private static final String DATE_FORMAT = "ddMMyy"; 
@@ -311,26 +311,6 @@ public class Interpreter {
 	
 	private static Executable processDisplay(String[] words){
 		Executable exe = new Executable(CommandType.CMD_DISPLAY);
-		
-		//functionality no longer needed. display now takes no arguments
-		//search now does all of this
-//		if (! doesNotHaveExtraText(words)) { // no search keywords, defaults to display all
-//			exe.setInfo("all");
-//		} else if (words[1].equals("today")){ //display today
-//			DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
-//			Date date = new Date();
-//			exe.setStartingDate(dateFormat.format(date));
-//		} else { // display date or keywords
-//			String extraWords = recombine(words, 1, words.length);
-//			
-//			//if extra info is a date
-//			if (isDate(extraWords)) {
-//				exe.setStartingDate(extraWords); 
-//				exe.setEndingDate(extraWords);
-//			} else { // else, extra info is keywords
-//				exe.setInfo(extraWords);
-//			}
-//		}
 		return exe;
 	}
 
