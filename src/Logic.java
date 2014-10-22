@@ -188,6 +188,7 @@ public class Logic {
 	}
 
 	private void executeSearch(Executable task){
+		/*
 		String keyword;
 		boolean doneness;
 		displayList = null;
@@ -240,6 +241,7 @@ public class Logic {
 	            }
 	        }
 		}
+		*/
 	}
 	
 	private void executeDisplay(LinkedList<Entry> list){

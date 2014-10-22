@@ -28,9 +28,7 @@ public class commandSearch {
 		if(isDate){
 			for(Entry entry: entryList){
 				if(entry.getStartingDate() == searchContent ||entry.getEndingDate() == searchContent ){
-					System.out.println(entry.getStartingDate()+"ending date is "+entry.getEndingDate());
 					searchResult.add(entry);
-					System.out.println("There is a date match");
 				}
 			}
 		}
