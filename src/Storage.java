@@ -1,3 +1,8 @@
+/*
+@author: Cheuk Ting
+ */
+
+
 package todo_manager;
 
 import java.io.BufferedReader;
@@ -10,6 +15,8 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 public class Storage {
+	public final int noOfItem = 6;
+	public final String insertTitle[] = {"Name:","|Starting Date:","|Ending Date:","|Starting Time:","|Ending Time:", "|Doneness:"};
 	public LinkedList<Entry> storageList = new LinkedList<Entry>();
 	public String fileName = "ToDoManager.txt";
 	
@@ -18,32 +25,56 @@ public class Storage {
 		try(BufferedReader reader = new BufferedReader(new FileReader(fileName)))
 		{
 			
-			String sCurrentLine;
-			int position;
-			int detectSymbol[] = {0,0,0,0,0};
+			String readLine;
+			int pos;
+			int start[] = {0,0,0,0,0,0};
+			int end[] = {0,0,0,0,0,0};
+			String recordContent[] = {null, null ,null, null ,null, null};
 			Entry insert;
 			
 			storageList.clear();
 			
-			while((sCurrentLine = reader.readLine()) != null){
+			while((readLine = reader.readLine()) != null){
+				
 				insert = new Entry();
-				position = 0;
-				for(int positionIndex = 0; positionIndex < 5; positionIndex++){
-					detectSymbol[positionIndex] = sCurrentLine.indexOf('|', position);
-					position = detectSymbol[positionIndex]+1;
+				
+				//get the starting index of each extracting string
+				pos = 0;
+				for(int i = 0; i < noOfItem; i++){
+					start[i] = readLine.indexOf(':', pos) + 1;
+					pos = start[i];
 				}
 				
-				insert.setName(sCurrentLine.substring(6, detectSymbol[0]-1));
-				insert.setStartingDate(sCurrentLine.substring(detectSymbol[0]+16, detectSymbol[1]-1));
-				insert.setEndingDate(sCurrentLine.substring(detectSymbol[1]+14, detectSymbol[2]-1));
-				insert.setStartingTime(sCurrentLine.substring(detectSymbol[2]+16, detectSymbol[3]-1));
-				insert.setEndingTime(sCurrentLine.substring(detectSymbol[3]+14, detectSymbol[4]-1));
-				if(sCurrentLine.length() - detectSymbol[4]+11 >6){
-					insert.setDoneness(false);
-				} else {
-					insert.setDoneness(true);
+				//get the ending index of each extracting string
+				pos = 0;
+				for(int i = 0; i < noOfItem; i++){
+					end[i] = readLine.indexOf('|', pos);
+					pos = end[i]+1;
 				}
-					
+				
+				
+				//get the content of record
+				for(int i = 0; i < noOfItem; i++){
+					recordContent[i] = readLine.substring(start[i], end[i]);
+				}
+				
+				//set the value of each record (will change the magic numbers later)
+				//0: Name				1: Starting Date		2: Ending Date		
+				//3: Starting Time		4: Ending Time			5: Doneness
+				insert.setName(recordContent[0]);
+				insert.setStartingDate(recordContent[1]);
+				insert.setEndingDate(recordContent[2]);
+				insert.setStartingTime(recordContent[3]);
+				insert.setEndingTime(recordContent[4]);
+				
+				
+				//set the doneness of each record
+				if(recordContent[5].equals("Done") ){
+					insert.setDoneness(true);
+				} else {
+					insert.setDoneness(false);
+				}
+				
 				storageList.add(insert);
 			}
 			
@@ -63,8 +94,8 @@ public class Storage {
 			System.out.println("Cannot output the file");
 			e.printStackTrace();
 		}
-
-		return storageList; 
+		
+		return storageList; //TODO
 	}
 	
 	public void writeFile(LinkedList<Entry> entryList) {
@@ -76,35 +107,40 @@ public class Storage {
 		    	file.createNewFile();
 		    }
 		    
-		    String insertTitle[] = {"Name: "," |Starting Date: ", " |Ending Date: ", " |Starting Time: ", " |Ending Time: ", " |Doneness: "};
+		    
 		    String done;
-		    String writeValue;
+		    String writeItem;
 		    
 		    BufferedWriter writer = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
 		    for(int i=0; i<storageList.size(); i++){
-		    	writeValue = "";
 		    	
-		    	Entry temp = storageList.get(i);
+		    	// Store the writing item
+		    	writeItem = "";
+		    	Entry writeRecord = storageList.get(i);
 		    	
-		    	if(temp.getDoneness() == true)
+		    	// Set up the doneness
+		    	if(writeRecord.getDoneness() == true)
 		    		done = "Done";
 		    	else
 		    		done = "Not Yet Done";
 		    	
-		    	String insertItem[] = {temp.getName(), temp.getStartingDate(), temp.getEndingDate(), 
-		    			               temp.getStartingTime(), temp.getEndingTime(), done};
+		    	String insertItem[] = {writeRecord.getName(), writeRecord.getStartingDate(), writeRecord.getEndingDate(), 
+		    						   writeRecord.getStartingTime(), writeRecord.getEndingTime(), done};
 		    	
-		    	for(int j = 0; j < 6; j++){
-		    		writeValue = writeValue.concat(insertTitle[j]);
+		    	for(int j = 0; j < noOfItem; j++){
+		    		writeItem = writeItem.concat(insertTitle[j]);
 		    		if (insertItem[j] != null) {
-		    			writeValue = writeValue.concat(insertItem[j]);
-		    		} else {
-		    			writeValue = writeValue.concat("");
+		    			writeItem = writeItem.concat(insertItem[j]);
+		    		} 
+		    		else {
+		    			writeItem = writeItem.concat("");
 		    		}
 		    		
 		    	}
-		    	 writeValue = writeValue.concat("\n");
-		    	 writer.write(writeValue);
+		    	
+		    	// insert the separator to separate each item
+		    	writeItem = writeItem.concat("|\n");
+		    	writer.write(writeItem);
 		    }
 		    writer.close();
 		    
