@@ -10,11 +10,13 @@ public class Logic {
 	Storage storage;
 	
 	private static LinkedList<Entry> entryList = new LinkedList<Entry>();
+	private static LinkedList<Entry> preventryList;
+	private static LinkedList<Entry> displayList = new LinkedList<Entry>();
 	private static LinkedList<Executable> exeList = new LinkedList<Executable>();
 	
 	private static Logging logObj = Logging.getInstance();
 
-	private static  LinkedList<Entry> preventryList;
+	
 
 	
 	void setup(ToDoManager toDoManager){
@@ -43,30 +45,40 @@ public class Logic {
 		CommandType command = task.getCommand();
 		
 		switch (command) {
-		case CMD_ADD: executeAdd(task);
-		executeDisplay();
+		case CMD_ADD: 
+			executeAdd(task);
+			executeDisplay(entryList);
 			break;
-		case CMD_CLEAR: executeClear(task);
-		executeDisplay();
+		case CMD_CLEAR: 
+			executeClear(task);
+			executeDisplay(entryList);
 			break;
-		case CMD_DELETE: executeDelete(task);
-		executeDisplay();
+		case CMD_DELETE: 
+			executeDelete(task);
+			executeDisplay(entryList);
 			break;
-		case CMD_DISPLAY: executeDisplay();
+		case CMD_DISPLAY: 
+			executeDisplay(entryList);
 			break;
-		case CMD_DONE: executeDone(task);
-		executeDisplay();
+		case CMD_DONE: 
+			executeDone(task);
+			executeDisplay(entryList);
 			break;
-		case CMD_EDIT: executeEdit(task);
-		executeDisplay();
+		case CMD_EDIT: 
+			executeEdit(task);
+			executeDisplay(entryList);
 			break;
-		case CMD_SEARCH: executeSearch(task);
+		case CMD_SEARCH: 
+			executeSearch(task);
+			executeDisplay(displayList);
 			break;
-		case CMD_UNDO: executeUndo(task);
-		executeDisplay();
+		case CMD_UNDO: 
+			executeUndo(task);
+			executeDisplay(entryList);
 			break;
-		case CMD_SORT: executeSort(task);
-		executeDisplay();
+		case CMD_SORT: 
+			executeSort(task);
+			executeDisplay(displayList);
 		default:
 			break;
 		}
@@ -188,13 +200,11 @@ public class Logic {
 		//TODO
 	}
 	
-	private void executeDisplay(){
-		//TODO
-		//if(task.getInfo().equals("all")){
-			
-		//ListIterator<Entry> listIterator = entryList.listIterator();
+	private void executeDisplay(LinkedList<Entry> list){
+
+		displayList = list;
 		int count = 1;
-		for (Entry e : entryList) {
+		for (Entry e : list) {
 			if(e.getDoneness()==true){
 				UserInterface.showToUser(count+". "+e.getName()+" Done");
 			}else{
