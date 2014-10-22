@@ -23,31 +23,24 @@ public class Executable {
 	private String startingTime = null;
 	private String endingTime = null;
 	private Boolean doneness = false;
-
+	private Integer displayIndex = null;
 	private String preStr;
 	
-	public String getPreStr() {
-		return preStr;
-	}
 
-	public void setPreStr(String preStr) {
-		this.preStr = preStr;
-	}
-
-	public Executable(CommandType commandInput){
-		command = commandInput;
+	public Executable(CommandType command){
+		this.command = command;
 	}
 	
-	public Executable(CommandType commandInput, String infoInput){
-		info = infoInput;
-		command = commandInput;
+	public Executable(CommandType command, String info){
+		this.info = info;
+		this.command = command;
 	}
 	
-	public Executable(CommandType commandInput, String infoInput, String startInput, String endInput){
-		info = infoInput;
-		command = commandInput;
-		startingTime = startInput;
-		endingTime = endInput;
+	public Executable(CommandType command, String info, String start, String end){
+		this.info = info;
+		this.command = command;
+		this.startingTime = start;
+		this.endingTime = end;
 	}
 
 	public CommandType getCommand() {
@@ -104,5 +97,21 @@ public class Executable {
 
 	public void setDoneness(Boolean doneness) {
 		this.doneness = doneness;
+	}
+	
+	public Integer getDisplayIndex() {
+		return displayIndex;
+	}
+
+	public void setDisplayIndex(Integer displayIndex) {
+		this.displayIndex = displayIndex;
+	}
+	
+	public String getPreStr() {
+		return preStr;
+	}
+
+	public void setPreStr(String preStr) {
+		this.preStr = preStr;
 	}
 }

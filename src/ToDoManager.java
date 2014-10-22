@@ -8,11 +8,12 @@ public class ToDoManager {
 	}
 	
 	static final String MESSAGE_WELCOME = "Welcome to ToDo Manager!";
-	static final String MESSAGE_GENERIC_ERROR = "An error has occurred.";
+	static final String MESSAGE_ERROR_GENERIC = "An error has occurred.";
+	static final String MESSAGE_ERROR_EMPTY_INPUT = "No command was given.";
+	
 	Logic logic;
 	UserInterface userInterface;
 	Storage storage;
-	Interpreter interpreter;
 	
 	public static void main(String[] args){
 		ToDoManager toDoManager = new ToDoManager();
@@ -34,13 +35,11 @@ public class ToDoManager {
 	public void setup(){
 		 logic = new Logic();
 		 userInterface = new UserInterface();
-		 storage = new Storage();
-		 interpreter = new Interpreter();
+		 storage = new Storage();		
 		
-		
-	        userInterface.setup();
+	     UserInterface.setup();
 //			Interpreter.setup();
-			logic.setup(this);   //creation and filling out of linked lists
+	     logic.setup(this);   //creation and filling out of linked lists
 //			storage.setup(); //initializing of reader / writer
    }
 	
@@ -88,31 +87,6 @@ public class ToDoManager {
 		}
 		
 		public EmptyInputException(Throwable cause) { 
-			super(cause); 
-		}
-	}
-	
-	public static class InvalidInputException extends Exception {
-
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 4463352598274800204L;
-
-		public InvalidInputException() { 
-			  super(); 
-		}
-		
-		public InvalidInputException(String message) { 
-			super(message); 
-		}
-		
-		public InvalidInputException(String message, Throwable cause) { 
-			super(message, cause); 
-		}
-		
-		public InvalidInputException(Throwable cause) { 
 			super(cause); 
 		}
 	}
