@@ -33,7 +33,8 @@ public class ToDoManager {
 	
 //TODO	
 	public void setup(){
-		 logic = new Logic();
+		
+		 logic = Logic.getInstance();
 		 userInterface = new UserInterface();
 		 storage = new Storage();		
 		

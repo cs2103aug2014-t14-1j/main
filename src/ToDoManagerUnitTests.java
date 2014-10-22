@@ -2,10 +2,13 @@ package todo_manager;
 
 import static org.junit.Assert.*;
 
+import java.util.LinkedList;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 
+import todo_manager.ToDoManager.CommandType;
 import todo_manager.ToDoManager.EmptyInputException;
 
 @SuiteClasses({ ToDoManagerUnitTests.testLogic.class, ToDoManagerUnitTests.testStorage.class, 
@@ -14,6 +17,28 @@ public class ToDoManagerUnitTests {
 
 	public static class testLogic {
 		//TODO
+		@Test
+		public void testAdd(){
+			
+			Executable exe = new Executable(CommandType.CMD_ADD,"test");
+			exe.setEndingDate("000000");
+			
+			Logic logic = Logic.getInstance();
+			
+			logic.getEntryList().clear();
+			
+			logic.execute(exe);
+			
+			Entry testEntry = new Entry("test");
+			testEntry.setEndingDate("000000");
+			
+			LinkedList<Entry> testentryList = new LinkedList<Entry>();
+			testentryList.add(testEntry);
+			
+			assertEquals(logic.getEntryList().getFirst().getName(), testentryList.getFirst().getName());
+			
+		}
+		
 	}
 	
 	public static class testInterpreter {

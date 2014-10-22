@@ -16,12 +16,20 @@ public class Logic {
 	
 	private static Logging logObj = Logging.getInstance();
 
-	
+	public LinkedList<Entry> getEntryList() {
+		return entryList;
+	}
 
+	private Logic(){
+	}
+	
+	public static Logic getInstance(){
+		return new Logic();
+	}
 	
 	void setup(ToDoManager toDoManager){
 		storage = toDoManager.storage;
-		entryList = readFromStorage();
+	//	entryList = readFromStorage();
 	}
 	
 	//UI module will call this method 
@@ -95,8 +103,14 @@ public class Logic {
 		logObj.writeToLoggingFile("Trying to add");
 		Entry entry = new Entry();
 		entry.setName(task.getInfo());
+		
+		if(task.getEndingDate()!=null){
+			entry.setEndingDate(task.getEndingDate());
+		}
+		
+		
 		entryList.add(entry);
-		writeToStorage();
+	//	writeToStorage();
 		logObj.writeToLoggingFile("Done adding task");
 		
 	}
@@ -220,7 +234,7 @@ public class Logic {
 		storage.writeFile(entryList);
 	}
 	
-	private LinkedList<Entry> readFromStorage(){
-		return storage.readFile();
-	}
+//	private LinkedList<Entry> readFromStorage(){
+//		return storage.readFile();
+//	}
 }
