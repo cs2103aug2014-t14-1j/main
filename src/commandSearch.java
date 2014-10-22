@@ -21,7 +21,6 @@ public class commandSearch {
 		ValidationCheck validCheck = new ValidationCheck();
 		boolean isDate = validCheck.isValidDate(searchContent);
 		
-		System.out.println("search content is date: "+isDate);
 		
 		LinkedList<Entry> searchResult = new LinkedList<Entry>();
 		

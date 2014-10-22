@@ -91,7 +91,7 @@ public class Interpreter {
 				break;
 				
 			case "/search" :
-				exe = processSearch(words);
+				exe = processSearch(s);
 				break;
 				
 			case "/display" :
@@ -259,7 +259,8 @@ public class Interpreter {
 		return new Executable(CommandType.CMD_UNDO);
 	}
 
-	private static Executable processSearch(String[] words) throws IllegalArgumentException {
+	private static Executable processSearch(String userInput) throws IllegalArgumentException {
+		/*
 		
 		Executable exe = new Executable(CommandType.CMD_SEARCH);
 		
@@ -306,6 +307,19 @@ public class Interpreter {
 			exe.setInfo(extraWords);
 		}
 		
+		return exe;
+		*/
+		
+		
+		Executable exe = new Executable((CommandType.CMD_SEARCH));
+		userInput = userInput.trim();
+		String searchContent = userInput.substring(7).trim();
+		if(searchContent.compareTo("") == 0){
+			throw new IllegalArgumentException();
+		}
+		else{
+			exe.setInfo(searchContent);
+		}
 		return exe;
 	}
 	

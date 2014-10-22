@@ -70,7 +70,6 @@ public class Logic {
 			break;
 		case CMD_SEARCH: 
 			executeSearch(task);
-			executeDisplay(displayList);
 			break;
 		case CMD_UNDO: 
 			executeUndo(task);
@@ -242,7 +241,12 @@ public class Logic {
 	        }
 		}
 		*/
+		
+		commandSearch mySearch = new commandSearch(entryList);
+		LinkedList<Entry> listForDisplay = mySearch.search(task.getInfo());
+		executeDisplay(listForDisplay);
 	}
+	
 	
 	private void executeDisplay(LinkedList<Entry> list){
 
@@ -255,6 +259,9 @@ public class Logic {
 				UserInterface.showToUser(count+". "+e.getName());
 			}
 		    count++;
+		}
+		if(list.size() == 0){
+			System.out.println("no entry found!");
 		}
 	}
 	
