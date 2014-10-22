@@ -70,7 +70,6 @@ public class Logic {
 			break;
 		case CMD_SEARCH: 
 			executeSearch(task);
-			executeDisplay(displayList);
 			break;
 		case CMD_UNDO: 
 			executeUndo(task);
@@ -188,11 +187,12 @@ public class Logic {
 	}
 
 	private void executeSearch(Executable task){
-		/*String keyword;
+		/*
+		String keyword;
 		boolean doneness;
-		displayList.clear();
+		displayList = null;
 		
-		if(task.getInfo() !=  null){
+		if(task.getInfo() != ""){
 			keyword = task.getInfo().toLowerCase();
 			for (int i = 0; i < entryList.size(); i++) {
 	            if(entryList.get(i).getName().toLowerCase().contains(keyword)){
@@ -200,7 +200,7 @@ public class Logic {
 	            }
 	        }
 		}
-		else if(task.getStartingDate() != null){
+		else if(task.getStartingDate() != ""){
 			keyword = task.getStartingDate();
 			for (int i = 0; i < entryList.size(); i++) {
 	            if(entryList.get(i).getStartingDate().contains(keyword)){
@@ -208,7 +208,7 @@ public class Logic {
 	            }
 	        }
 		}
-		else if(task.getEndingDate() != null){
+		else if(task.getEndingDate() != ""){
 			keyword = task.getEndingDate();
 			for (int i = 0; i < entryList.size(); i++) {
 	            if(entryList.get(i).getEndingDate().contains(keyword)){
@@ -216,7 +216,7 @@ public class Logic {
 	            }
 	        }
 		}
-		else if(task.getStartingTime() != null){
+		else if(task.getStartingTime() != ""){
 			keyword = task.getStartingTime();
 			for (int i = 0; i < entryList.size(); i++) {
 	            if(entryList.get(i).getStartingTime().contains(keyword)){
@@ -224,7 +224,7 @@ public class Logic {
 	            }
 	        }
 		}
-		else if(task.getEndingTime() != null){
+		else if(task.getEndingTime() != ""){
 			keyword = task.getEndingTime();
 			for (int i = 0; i < entryList.size(); i++) {
 	            if(entryList.get(i).getEndingTime().contains(keyword)){
@@ -239,8 +239,14 @@ public class Logic {
 	            	displayList.add(entryList.get(i));
 	            }
 	        }
-		}*/
+		}
+		*/
+		
+		commandSearch mySearch = new commandSearch(entryList);
+		LinkedList<Entry> listForDisplay = mySearch.search(task.getInfo());
+		executeDisplay(listForDisplay);
 	}
+	
 	
 	private void executeDisplay(LinkedList<Entry> list){
 
@@ -253,6 +259,9 @@ public class Logic {
 				UserInterface.showToUser(count+". "+e.getName());
 			}
 		    count++;
+		}
+		if(list.size() == 0){
+			System.out.println("no entry found!");
 		}
 	}
 	
