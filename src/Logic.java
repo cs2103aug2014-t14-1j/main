@@ -188,7 +188,58 @@ public class Logic {
 	}
 
 	private void executeSearch(Executable task){
-		//TODO
+		String keyword;
+		boolean doneness;
+		displayList = null;
+		
+		if(task.getInfo() != ""){
+			keyword = task.getInfo().toLowerCase();
+			for (int i = 0; i < entryList.size(); i++) {
+	            if(entryList.get(i).getName().toLowerCase().contains(keyword)){
+	            	displayList.add(entryList.get(i));
+	            }
+	        }
+		}
+		else if(task.getStartingDate() != ""){
+			keyword = task.getStartingDate();
+			for (int i = 0; i < entryList.size(); i++) {
+	            if(entryList.get(i).getStartingDate().contains(keyword)){
+	            	displayList.add(entryList.get(i));
+	            }
+	        }
+		}
+		else if(task.getEndingDate() != ""){
+			keyword = task.getEndingDate();
+			for (int i = 0; i < entryList.size(); i++) {
+	            if(entryList.get(i).getEndingDate().contains(keyword)){
+	            	displayList.add(entryList.get(i));
+	            }
+	        }
+		}
+		else if(task.getStartingTime() != ""){
+			keyword = task.getStartingTime();
+			for (int i = 0; i < entryList.size(); i++) {
+	            if(entryList.get(i).getStartingTime().contains(keyword)){
+	            	displayList.add(entryList.get(i));
+	            }
+	        }
+		}
+		else if(task.getEndingTime() != ""){
+			keyword = task.getEndingTime();
+			for (int i = 0; i < entryList.size(); i++) {
+	            if(entryList.get(i).getEndingTime().contains(keyword)){
+	            	displayList.add(entryList.get(i));
+	            }
+	        }
+		}
+		else{
+			doneness = task.getDoneness();
+			for (int i = 0; i < entryList.size(); i++) {
+	            if(entryList.get(i).getDoneness() == doneness){
+	            	displayList.add(entryList.get(i));
+	            }
+	        }
+		}
 	}
 	
 	private void executeDisplay(LinkedList<Entry> list){
