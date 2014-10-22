@@ -9,7 +9,7 @@ import todo_manager.ToDoManager.EmptyInputException;
 public class Logic {
 	Storage storage;
 	
-	private static LinkedList<Entry> entryList = new LinkedList<Entry>();
+	public static LinkedList<Entry> entryList = new LinkedList<Entry>();
 	private static LinkedList<Entry> preventryList;
 	private static LinkedList<Entry> displayList = new LinkedList<Entry>();
 	private static LinkedList<Executable> exeList = new LinkedList<Executable>();
@@ -186,7 +186,7 @@ public class Logic {
 		
 	}
 
-	private void executeSearch(Executable task){
+	public LinkedList<Entry> executeSearch(Executable task){
 		/*
 		String keyword;
 		boolean doneness;
@@ -241,11 +241,33 @@ public class Logic {
 	        }
 		}
 		*/
+		String searchContent = task.getInfo().trim();
+		ValidationCheck validCheck = new ValidationCheck();
+		boolean isDate = validCheck.isValidDate(searchContent);
 		
-		commandSearch mySearch = new commandSearch(entryList);
-		LinkedList<Entry> listForDisplay = mySearch.search(task.getInfo());
-		executeDisplay(listForDisplay);
+		
+		LinkedList<Entry> searchResult = new LinkedList<Entry>();
+		
+		if(isDate){
+			for(Entry entry: entryList){
+				if(entry.getStartingDate() == searchContent ||entry.getEndingDate() == searchContent ){
+					searchResult.add(entry);
+				}
+			}
+		}
+		else{
+			searchContent = searchContent.toLowerCase();
+			for(Entry entry: entryList){
+				String temp = entry.getName().toLowerCase();
+				if(temp.contains(searchContent)){
+					searchResult.add(entry);
+				}
+			}
+		}
+		executeDisplay(searchResult);
+		return searchResult;
 	}
+	
 	
 	
 	private void executeDisplay(LinkedList<Entry> list){
@@ -261,7 +283,7 @@ public class Logic {
 		    count++;
 		}
 		if(list.size() == 0){
-			System.out.println("no entry found!");
+			System.out.println("No search result found!");
 		}
 	}
 	

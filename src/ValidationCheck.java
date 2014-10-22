@@ -13,10 +13,6 @@ public class ValidationCheck {
 		return isValid;
 	}
 	
-	public static boolean isValidDuration(String from, String to) {
-		boolean isValid = validateDuration(from, to);
-		return isValid;
-	}
 	
 	public static boolean isValidTime(String input) {
 		boolean isValid = validateTime(input);
@@ -28,6 +24,7 @@ public class ValidationCheck {
 		boolean isValid = validateOperation(operation);
 		return isValid;
 	}
+	
 	
 
 	private static boolean validateOperation(String operation) {
@@ -80,13 +77,10 @@ public class ValidationCheck {
 		return true;
 	}
 	
-	private static boolean validateDuration(String from, String to) {
-		try {
-			int start = Integer.parseInt(from);
-			int end = Integer.parseInt(to);
-			
-			return ( ((end - start) > 0) && validateTime(from) && validateTime(to) );
-		} catch (NumberFormatException e) {
+	public static boolean isValidStatus(String status) {
+		if (status.compareTo("done") == 0 || status.compareTo("undone") == 0) {
+			return true;
+		} else {
 			return false;
 		}
 	}
