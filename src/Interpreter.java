@@ -188,7 +188,7 @@ public class Interpreter {
 			                           int i) throws IllegalArgumentException {
 		exe.setInfo(recombine(words, 1, i));
 		
-		if (words.length == i + 1){ // nothing after keyword /for
+		if (words.length <= i + 3){ // nothing after keyword /from
 			throw new IllegalArgumentException();
 		} 
 		

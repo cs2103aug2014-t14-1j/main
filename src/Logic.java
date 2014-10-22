@@ -49,22 +49,22 @@ public class Logic {
 		switch (command) {
 		case CMD_ADD: 
 			executeAdd(task);
-			executeDisplay(entryList);
+			//executeDisplay(entryList);
 			break;
 		case CMD_CLEAR: 
 			executeClear(task);
-			executeDisplay(entryList);
+			//executeDisplay(entryList);
 			break;
 		case CMD_DELETE: 
 			executeDelete(task);
-			executeDisplay(entryList);
+			//executeDisplay(entryList);
 			break;
 		case CMD_DISPLAY: 
 			executeDisplay(entryList);
 			break;
 		case CMD_DONE: 
 			executeDone(task);
-			executeDisplay(entryList);
+			//executeDisplay(entryList);
 			break;
 		case CMD_EDIT: 
 			executeEdit(task);
@@ -75,7 +75,7 @@ public class Logic {
 			break;
 		case CMD_UNDO: 
 			executeUndo(task);
-			executeDisplay(entryList);
+			//executeDisplay(entryList);
 			break;
 		case CMD_SORT: 
 			executeSort(task);
