@@ -34,6 +34,8 @@ public class Logic {
 			memoriseActionForUndo(exe);
 		} catch (EmptyInputException e) {
 			UserInterface.showToUser(ToDoManager.MESSAGE_ERROR_EMPTY_INPUT);
+		} catch (IllegalArgumentException e) {
+			UserInterface.showToUser(ToDoManager.MESSAGE_WRONG_INPUT_FORMAT);
 		} catch (Exception e) {
 			UserInterface.showToUser(ToDoManager.MESSAGE_ERROR_GENERIC);
 		}
@@ -94,6 +96,8 @@ public class Logic {
 		logObj.writeToLoggingFile("Trying to add");
 		Entry entry = new Entry();
 		entry.setName(task.getInfo());
+		entry.setStartingDate(task.getStartingDate());
+		entry.setEndingDate(task.getEndingDate());
 		entryList.add(entry);
 		writeToStorage();
 		logObj.writeToLoggingFile("Done adding task");
@@ -117,17 +121,43 @@ public class Logic {
 	}
 	
 	private void executeEdit(Executable task){
-		//edit the key work
+//		//edit the key work
+//		
+//		
+//		String str = task.getInfo();
+//		int num = Integer.parseInt(task.getInfo().substring(0,1)); // cant assume that the number is single digit
+//		
+//		String preStr = entryList.get(num-1).getName();
+//		
+//		task.setPreStr(preStr);
+//		
+//		entryList.get(num-1).setName(str.substring(1));
 		
-		
-		String str = task.getInfo();
-		int num = Integer.parseInt(task.getInfo().substring(0,1)); // cant assume that the number is single digit
-		
-		String preStr = entryList.get(num-1).getName();
-		
-		task.setPreStr(preStr);
-		
-		entryList.get(num-1).setName(str.substring(1));
+		try{
+			int displayIndex = task.getDisplayIndex() - 1;
+			Entry entryToEdit = displayList.get(displayIndex);
+			String oldDetail = "";
+			
+			if (task.getInfo() != null){ //edit name
+				oldDetail += "/name " + entryToEdit.getName();
+				entryToEdit.setName(task.getInfo());
+			} 
+			
+			if (task.getStartingDate() != null){ //edit startingDate
+				oldDetail += "startingDate " + entryToEdit.getStartingDate() + " ";
+				entryToEdit.setStartingDate(task.getStartingDate());
+			}
+			
+			if (task.getEndingDate() != null){//edit endingDate
+				oldDetail += "endingDate " + entryToEdit.getEndingDate() + " ";
+				entryToEdit.setEndingDate(task.getEndingDate());
+			}
+			
+			task.setPreStr(oldDetail); //memorise previous state for undo
+			writeToStorage();
+		} catch(Exception e){
+			throw new IllegalArgumentException(e.getMessage());
+		}
 	}
 	
 	private void memoriseActionForUndo(Executable task){
@@ -274,16 +304,25 @@ public class Logic {
 
 		displayList = list;
 		int count = 1;
+		String entryString;
 		for (Entry e : list) {
-			if(e.getDoneness()==true){
-				UserInterface.showToUser(count+". "+e.getName()+" Done");
-			}else{
-				UserInterface.showToUser(count+". "+e.getName());
+			entryString = count+". "+e.getName();
+			if (e.getStartingDate() != null && !e.getStartingDate().equals("")){
+				entryString += " start: " + e.getStartingDate();
+			}
+			
+			if (e.getEndingDate() != null && !e.getEndingDate().equals("")){
+				entryString += " end: " + e.getEndingDate();
+			}
+			
+			if(e.getDoneness() == true){
+				entryString += " Done";
 			}
 		    count++;
+		    UserInterface.showToUser(entryString);
 		}
 		if(list.size() == 0){
-			System.out.println("No search result found!");
+			System.out.println("no entry found!");
 		}
 	}
 	

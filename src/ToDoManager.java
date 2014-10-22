@@ -10,6 +10,7 @@ public class ToDoManager {
 	static final String MESSAGE_WELCOME = "Welcome to ToDo Manager!";
 	static final String MESSAGE_ERROR_GENERIC = "An error has occurred.";
 	static final String MESSAGE_ERROR_EMPTY_INPUT = "No command was given.";
+	static final String MESSAGE_WRONG_INPUT_FORMAT = "Wrong format of input given"; 
 	
 	Logic logic;
 	UserInterface userInterface;

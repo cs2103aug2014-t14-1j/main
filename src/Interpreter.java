@@ -16,7 +16,7 @@ import todo_manager.ToDoManager.EmptyInputException;
  *  /add /by : info filled, endingDate is /by date
  *  /add /on : info filled, startingDate and endingDate are equal to /on date
  * 
- *  /delete <date> : startingDate and endingDate are equal to given date
+ *  /delete <int displayListIndex> : index given in exe.getdisplayIndex
  *  
  *  /undo : no extra info
  *  /clear : no extra info
