@@ -187,9 +187,12 @@ public class Logic {
 	}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	private void executeSearch(Executable task){
 		/*String keyword;
 =======
+=======
+>>>>>>> origin/master
 	public LinkedList<Entry> executeSearch(Executable task){
 		/*
 		String keyword;
@@ -252,6 +255,9 @@ public class Logic {
 		String searchContent = task.getInfo().trim();
 		ValidationCheck validCheck = new ValidationCheck();
 		boolean isDate = validCheck.isValidDate(searchContent);
+<<<<<<< HEAD
+>>>>>>> origin/master
+=======
 >>>>>>> origin/master
 		
 		
