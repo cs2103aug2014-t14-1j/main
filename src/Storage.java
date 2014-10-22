@@ -13,6 +13,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.io.PrintWriter;
 
 public class Storage {
 	public final int noOfItem = 6;
@@ -101,22 +102,24 @@ public class Storage {
 	public void writeFile(LinkedList<Entry> entryList) {
 		try 
 		{
-		    File file = new File(fileName);
-		    
+			PrintWriter writer1 = new PrintWriter(fileName);
+			writer1.close();
+			
+			File file = new File(fileName);
+			
 		    if(!file.exists()){
 		    	file.createNewFile();
-		    }
-		    
+		    }	    
 		    
 		    String done;
 		    String writeItem;
 		    
-		    BufferedWriter writer = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
-		    for(int i=0; i<storageList.size(); i++){
+		    BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
+		    for(int i=0; i<entryList.size(); i++){
 		    	
 		    	// Store the writing item
 		    	writeItem = "";
-		    	Entry writeRecord = storageList.get(i);
+		    	Entry writeRecord = entryList.get(i);
 		    	
 		    	// Set up the doneness
 		    	if(writeRecord.getDoneness() == true)
