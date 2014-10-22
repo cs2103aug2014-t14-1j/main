@@ -186,21 +186,13 @@ public class Logic {
 		
 	}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-	private void executeSearch(Executable task){
-		/*String keyword;
-=======
-=======
->>>>>>> origin/master
 	public LinkedList<Entry> executeSearch(Executable task){
 		/*
 		String keyword;
->>>>>>> origin/master
 		boolean doneness;
-		displayList.clear();
+		displayList = null;
 		
-		if(task.getInfo() !=  null){
+		if(task.getInfo() != ""){
 			keyword = task.getInfo().toLowerCase();
 			for (int i = 0; i < entryList.size(); i++) {
 	            if(entryList.get(i).getName().toLowerCase().contains(keyword)){
@@ -208,7 +200,7 @@ public class Logic {
 	            }
 	        }
 		}
-		else if(task.getStartingDate() != null){
+		else if(task.getStartingDate() != ""){
 			keyword = task.getStartingDate();
 			for (int i = 0; i < entryList.size(); i++) {
 	            if(entryList.get(i).getStartingDate().contains(keyword)){
@@ -216,7 +208,7 @@ public class Logic {
 	            }
 	        }
 		}
-		else if(task.getEndingDate() != null){
+		else if(task.getEndingDate() != ""){
 			keyword = task.getEndingDate();
 			for (int i = 0; i < entryList.size(); i++) {
 	            if(entryList.get(i).getEndingDate().contains(keyword)){
@@ -224,7 +216,7 @@ public class Logic {
 	            }
 	        }
 		}
-		else if(task.getStartingTime() != null){
+		else if(task.getStartingTime() != ""){
 			keyword = task.getStartingTime();
 			for (int i = 0; i < entryList.size(); i++) {
 	            if(entryList.get(i).getStartingTime().contains(keyword)){
@@ -232,7 +224,7 @@ public class Logic {
 	            }
 	        }
 		}
-		else if(task.getEndingTime() != null){
+		else if(task.getEndingTime() != ""){
 			keyword = task.getEndingTime();
 			for (int i = 0; i < entryList.size(); i++) {
 	            if(entryList.get(i).getEndingTime().contains(keyword)){
@@ -247,18 +239,11 @@ public class Logic {
 	            	displayList.add(entryList.get(i));
 	            }
 	        }
-<<<<<<< HEAD
-		}*/
-=======
 		}
 		*/
 		String searchContent = task.getInfo().trim();
 		ValidationCheck validCheck = new ValidationCheck();
 		boolean isDate = validCheck.isValidDate(searchContent);
-<<<<<<< HEAD
->>>>>>> origin/master
-=======
->>>>>>> origin/master
 		
 		
 		LinkedList<Entry> searchResult = new LinkedList<Entry>();
