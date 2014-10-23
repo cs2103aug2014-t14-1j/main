@@ -9,27 +9,27 @@ import todo_manager.ToDoManager.EmptyInputException;
 public class Logic {
 	Storage storage;
 	
-	private static LinkedList<Entry> entryList = new LinkedList<Entry>();
+	public static LinkedList<Entry> entryList = new LinkedList<Entry>();
 	private static LinkedList<Entry> preventryList;
 	private static LinkedList<Entry> displayList = new LinkedList<Entry>();
 	private static LinkedList<Executable> exeList = new LinkedList<Executable>();
 	
 	private static Logging logObj = Logging.getInstance();
-
-	public LinkedList<Entry> getEntryList() {
-		return entryList;
-	}
+	
 
 	private Logic(){
+		
 	}
 	
 	public static Logic getInstance(){
 		return new Logic();
 	}
 	
+
+	
 	void setup(ToDoManager toDoManager){
 		storage = toDoManager.storage;
-	//	entryList = readFromStorage();
+		entryList = readFromStorage();
 	}
 	
 	//UI module will call this method 
@@ -42,6 +42,8 @@ public class Logic {
 			memoriseActionForUndo(exe);
 		} catch (EmptyInputException e) {
 			UserInterface.showToUser(ToDoManager.MESSAGE_ERROR_EMPTY_INPUT);
+		} catch (IllegalArgumentException e) {
+			UserInterface.showToUser(ToDoManager.MESSAGE_WRONG_INPUT_FORMAT);
 		} catch (Exception e) {
 			UserInterface.showToUser(ToDoManager.MESSAGE_ERROR_GENERIC);
 		}
@@ -55,22 +57,22 @@ public class Logic {
 		switch (command) {
 		case CMD_ADD: 
 			executeAdd(task);
-			executeDisplay(entryList);
+			//executeDisplay(entryList);
 			break;
 		case CMD_CLEAR: 
 			executeClear(task);
-			executeDisplay(entryList);
+			//executeDisplay(entryList);
 			break;
 		case CMD_DELETE: 
 			executeDelete(task);
-			executeDisplay(entryList);
+			//executeDisplay(entryList);
 			break;
 		case CMD_DISPLAY: 
 			executeDisplay(entryList);
 			break;
 		case CMD_DONE: 
 			executeDone(task);
-			executeDisplay(entryList);
+			//executeDisplay(entryList);
 			break;
 		case CMD_EDIT: 
 			executeEdit(task);
@@ -78,11 +80,10 @@ public class Logic {
 			break;
 		case CMD_SEARCH: 
 			executeSearch(task);
-			executeDisplay(displayList);
 			break;
 		case CMD_UNDO: 
 			executeUndo(task);
-			executeDisplay(entryList);
+			//executeDisplay(entryList);
 			break;
 		case CMD_SORT: 
 			executeSort(task);
@@ -96,6 +97,7 @@ public class Logic {
 	private void executeSort(Executable task) {
 		// To sort the task by Date line
 		Collections.sort(entryList);
+		displayList = entryList;
 	}
 
 	private void executeAdd(Executable task){
@@ -103,14 +105,10 @@ public class Logic {
 		logObj.writeToLoggingFile("Trying to add");
 		Entry entry = new Entry();
 		entry.setName(task.getInfo());
-		
-		if(task.getEndingDate()!=null){
-			entry.setEndingDate(task.getEndingDate());
-		}
-		
-		
+		entry.setStartingDate(task.getStartingDate());
+		entry.setEndingDate(task.getEndingDate());
 		entryList.add(entry);
-	//	writeToStorage();
+		writeToStorage();
 		logObj.writeToLoggingFile("Done adding task");
 		
 	}
@@ -132,17 +130,43 @@ public class Logic {
 	}
 	
 	private void executeEdit(Executable task){
-		//edit the key work
+//		//edit the key work
+//		
+//		
+//		String str = task.getInfo();
+//		int num = Integer.parseInt(task.getInfo().substring(0,1)); // cant assume that the number is single digit
+//		
+//		String preStr = entryList.get(num-1).getName();
+//		
+//		task.setPreStr(preStr);
+//		
+//		entryList.get(num-1).setName(str.substring(1));
 		
-		
-		String str = task.getInfo();
-		int num = Integer.parseInt(task.getInfo().substring(0,1)); // cant assume that the number is single digit
-		
-		String preStr = entryList.get(num-1).getName();
-		
-		task.setPreStr(preStr);
-		
-		entryList.get(num-1).setName(str.substring(1));
+		try{
+			int displayIndex = task.getDisplayIndex() - 1;
+			Entry entryToEdit = displayList.get(displayIndex);
+			String oldDetail = "";
+			
+			if (task.getInfo() != null){ //edit name
+				oldDetail += "/name " + entryToEdit.getName();
+				entryToEdit.setName(task.getInfo());
+			} 
+			
+			if (task.getStartingDate() != null){ //edit startingDate
+				oldDetail += "startingDate " + entryToEdit.getStartingDate() + " ";
+				entryToEdit.setStartingDate(task.getStartingDate());
+			}
+			
+			if (task.getEndingDate() != null){//edit endingDate
+				oldDetail += "endingDate " + entryToEdit.getEndingDate() + " ";
+				entryToEdit.setEndingDate(task.getEndingDate());
+			}
+			
+			task.setPreStr(oldDetail); //memorise previous state for undo
+			writeToStorage();
+		} catch(Exception e){
+			throw new IllegalArgumentException(e.getMessage());
+		}
 	}
 	
 	private void memoriseActionForUndo(Executable task){
@@ -201,12 +225,13 @@ public class Logic {
 		
 	}
 
-	private void executeSearch(Executable task){
+	public LinkedList<Entry> executeSearch(Executable task){
+		/*
 		String keyword;
 		boolean doneness;
-		displayList = null;
+		displayList.clear;
 		
-		if(task.getInfo() != ""){
+		if(task.getInfo() != null){
 			keyword = task.getInfo().toLowerCase();
 			for (int i = 0; i < entryList.size(); i++) {
 	            if(entryList.get(i).getName().toLowerCase().contains(keyword)){
@@ -214,7 +239,7 @@ public class Logic {
 	            }
 	        }
 		}
-		else if(task.getStartingDate() != ""){
+		else if(task.getStartingDate() != null){
 			keyword = task.getStartingDate();
 			for (int i = 0; i < entryList.size(); i++) {
 	            if(entryList.get(i).getStartingDate().contains(keyword)){
@@ -222,7 +247,7 @@ public class Logic {
 	            }
 	        }
 		}
-		else if(task.getEndingDate() != ""){
+		else if(task.getEndingDate() != null){
 			keyword = task.getEndingDate();
 			for (int i = 0; i < entryList.size(); i++) {
 	            if(entryList.get(i).getEndingDate().contains(keyword)){
@@ -230,7 +255,7 @@ public class Logic {
 	            }
 	        }
 		}
-		else if(task.getStartingTime() != ""){
+		else if(task.getStartingTime() != null){
 			keyword = task.getStartingTime();
 			for (int i = 0; i < entryList.size(); i++) {
 	            if(entryList.get(i).getStartingTime().contains(keyword)){
@@ -238,7 +263,7 @@ public class Logic {
 	            }
 	        }
 		}
-		else if(task.getEndingTime() != ""){
+		else if(task.getEndingTime() != null){
 			keyword = task.getEndingTime();
 			for (int i = 0; i < entryList.size(); i++) {
 	            if(entryList.get(i).getEndingTime().contains(keyword)){
@@ -254,19 +279,59 @@ public class Logic {
 	            }
 	        }
 		}
+		*/
+		String searchContent = task.getInfo().trim();
+		ValidationCheck validCheck = new ValidationCheck();
+		boolean isDate = validCheck.isValidDate(searchContent);
+		
+		
+		LinkedList<Entry> searchResult = new LinkedList<Entry>();
+		
+		if(isDate){
+			for(Entry entry: entryList){
+				if(entry.getStartingDate() == searchContent ||entry.getEndingDate() == searchContent ){
+					searchResult.add(entry);
+				}
+			}
+		}
+		else{
+			searchContent = searchContent.toLowerCase();
+			for(Entry entry: entryList){
+				String temp = entry.getName().toLowerCase();
+				if(temp.contains(searchContent)){
+					searchResult.add(entry);
+				}
+			}
+		}
+		executeDisplay(searchResult);
+		return searchResult;
 	}
+	
+	
 	
 	private void executeDisplay(LinkedList<Entry> list){
 
 		displayList = list;
 		int count = 1;
+		String entryString;
 		for (Entry e : list) {
-			if(e.getDoneness()==true){
-				UserInterface.showToUser(count+". "+e.getName()+" Done");
-			}else{
-				UserInterface.showToUser(count+". "+e.getName());
+			entryString = count+". "+e.getName();
+			if (e.getStartingDate() != null && !e.getStartingDate().equals("")){
+				entryString += " start: " + e.getStartingDate();
+			}
+			
+			if (e.getEndingDate() != null && !e.getEndingDate().equals("")){
+				entryString += " end: " + e.getEndingDate();
+			}
+			
+			if(e.getDoneness() == true){
+				entryString += " Done";
 			}
 		    count++;
+		    UserInterface.showToUser(entryString);
+		}
+		if(list.size() == 0){
+			System.out.println("no entry found!");
 		}
 	}
 	
@@ -285,7 +350,7 @@ public class Logic {
 		storage.writeFile(entryList);
 	}
 	
-//	private LinkedList<Entry> readFromStorage(){
-//		return storage.readFile();
-//	}
+	private LinkedList<Entry> readFromStorage(){
+		return storage.readFile();
+	}
 }

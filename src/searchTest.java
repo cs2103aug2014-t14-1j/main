@@ -9,7 +9,7 @@ import org.junit.Test;
 public class searchTest {
 	@Test
 	public void test(){	
-		Logic myLogic = new Logic();
+		Logic myLogic = Logic.getInstance();
 		LinkedList<Entry> myEntryList = new LinkedList<Entry>();
 		Entry myEntry = new Entry();
 		Entry myEntry2 = new Entry();

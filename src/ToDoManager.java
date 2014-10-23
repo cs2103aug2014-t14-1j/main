@@ -34,7 +34,6 @@ public class ToDoManager {
 	
 //TODO	
 	public void setup(){
-		
 		 logic = Logic.getInstance();
 		 userInterface = new UserInterface();
 		 storage = new Storage();		
