@@ -16,7 +16,7 @@ import todo_manager.ToDoManager.EmptyInputException;
  *  /add /by : info filled, endingDate is /by date
  *  /add /on : info filled, startingDate and endingDate are equal to /on date
  * 
- *  /delete <date> : startingDate and endingDate are equal to given date
+ *  /delete <int displayListIndex> : index given in exe.getdisplayIndex
  *  
  *  /undo : no extra info
  *  /clear : no extra info
@@ -91,7 +91,7 @@ public class Interpreter {
 				break;
 				
 			case "/search" :
-				exe = processSearch(words);
+				exe = processSearch(s);
 				break;
 				
 			case "/display" :
@@ -188,7 +188,7 @@ public class Interpreter {
 			                           int i) throws IllegalArgumentException {
 		exe.setInfo(recombine(words, 1, i));
 		
-		if (words.length == i + 1){ // nothing after keyword /for
+		if (words.length <= i + 3){ // nothing after keyword /from
 			throw new IllegalArgumentException();
 		} 
 		
@@ -259,7 +259,8 @@ public class Interpreter {
 		return new Executable(CommandType.CMD_UNDO);
 	}
 
-	private static Executable processSearch(String[] words) throws IllegalArgumentException {
+	private static Executable processSearch(String userInput) throws IllegalArgumentException {
+		/*
 		
 		Executable exe = new Executable(CommandType.CMD_SEARCH);
 		
@@ -306,6 +307,19 @@ public class Interpreter {
 			exe.setInfo(extraWords);
 		}
 		
+		return exe;
+		*/
+		
+		
+		Executable exe = new Executable((CommandType.CMD_SEARCH));
+		userInput = userInput.trim();
+		String searchContent = userInput.substring(7).trim();
+		if(searchContent.compareTo("") == 0){
+			throw new IllegalArgumentException();
+		}
+		else{
+			exe.setInfo(searchContent);
+		}
 		return exe;
 	}
 	
