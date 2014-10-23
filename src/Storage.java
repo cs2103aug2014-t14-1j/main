@@ -13,7 +13,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedList;
-import java.io.PrintWriter;
 
 public class Storage {
 	public final int noOfItem = 6;
@@ -102,11 +101,7 @@ public class Storage {
 	public void writeFile(LinkedList<Entry> entryList) {
 		try 
 		{
-			PrintWriter rewriter = new PrintWriter(fileName);
-			rewriter.print("");
-			rewriter.close();
-			
-			File file = new File(fileName);
+		    File file = new File(fileName);
 		    
 		    if(!file.exists()){
 		    	file.createNewFile();
