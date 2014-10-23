@@ -220,9 +220,9 @@ public class Logic {
 		/*
 		String keyword;
 		boolean doneness;
-		displayList = null;
+		displayList.clear;
 		
-		if(task.getInfo() != ""){
+		if(task.getInfo() != null){
 			keyword = task.getInfo().toLowerCase();
 			for (int i = 0; i < entryList.size(); i++) {
 	            if(entryList.get(i).getName().toLowerCase().contains(keyword)){
@@ -230,7 +230,7 @@ public class Logic {
 	            }
 	        }
 		}
-		else if(task.getStartingDate() != ""){
+		else if(task.getStartingDate() != null){
 			keyword = task.getStartingDate();
 			for (int i = 0; i < entryList.size(); i++) {
 	            if(entryList.get(i).getStartingDate().contains(keyword)){
@@ -238,7 +238,7 @@ public class Logic {
 	            }
 	        }
 		}
-		else if(task.getEndingDate() != ""){
+		else if(task.getEndingDate() != null){
 			keyword = task.getEndingDate();
 			for (int i = 0; i < entryList.size(); i++) {
 	            if(entryList.get(i).getEndingDate().contains(keyword)){
@@ -246,7 +246,7 @@ public class Logic {
 	            }
 	        }
 		}
-		else if(task.getStartingTime() != ""){
+		else if(task.getStartingTime() != null){
 			keyword = task.getStartingTime();
 			for (int i = 0; i < entryList.size(); i++) {
 	            if(entryList.get(i).getStartingTime().contains(keyword)){
@@ -254,7 +254,7 @@ public class Logic {
 	            }
 	        }
 		}
-		else if(task.getEndingTime() != ""){
+		else if(task.getEndingTime() != null){
 			keyword = task.getEndingTime();
 			for (int i = 0; i < entryList.size(); i++) {
 	            if(entryList.get(i).getEndingTime().contains(keyword)){
