@@ -11,6 +11,8 @@ package todo_manager;
  *
  */
 
+import java.util.ArrayList;
+
 import todo_manager.ToDoManager.CommandType;
 
 public class Executable {
@@ -23,7 +25,7 @@ public class Executable {
 	private String startingTime = null;
 	private String endingTime = null;
 	private Boolean doneness = false;
-	private Integer displayIndex = null;
+	private ArrayList<Integer> displayIndex = new ArrayList<Integer>();
 	private String preStr;
 	
 
@@ -99,11 +101,11 @@ public class Executable {
 		this.doneness = doneness;
 	}
 	
-	public Integer getDisplayIndex() {
+	public ArrayList<Integer> getDisplayIndex() {
 		return displayIndex;
 	}
 
-	public void setDisplayIndex(Integer displayIndex) {
+	public void setDisplayIndex(ArrayList<Integer> displayIndex) {
 		this.displayIndex = displayIndex;
 	}
 	

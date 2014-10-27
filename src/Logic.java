@@ -1,5 +1,6 @@
 package todo_manager;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 
@@ -114,11 +115,23 @@ public class Logic {
 	}
 
 	private void executeDelete(Executable task){
-		int index = task.getDisplayIndex() - 1;
-		Entry removedEntry = displayList.remove(index);
-		if (! displayList.equals(entryList)){ 
-			//if they are the same then no need to remove again
-			entryList.remove(removedEntry);
+		ArrayList<Integer> index = task.getDisplayIndex();
+		int removeIndex;
+		for(int i = 0 ; i < index.size(); i++){
+			removeIndex = index.get(i) - 1;
+			
+			if(i > 0){
+				for(int j = 0; j < i; j++){
+					if(index.get(j) < index.get(i))
+						removeIndex--;
+				}
+			}
+			
+			Entry removedEntry = displayList.remove(removeIndex);
+			if (! displayList.equals(entryList)){ 
+				//if they are the same then no need to remove again
+				entryList.remove(removedEntry);
+			}
 		}
 		writeToStorage();
 	}
@@ -127,6 +140,7 @@ public class Logic {
 		//TODO
 		preventryList = new LinkedList<Entry>(entryList);
 		entryList.clear();
+		writeToStorage();
 	}
 	
 	private void executeEdit(Executable task){
@@ -143,7 +157,7 @@ public class Logic {
 //		entryList.get(num-1).setName(str.substring(1));
 		
 		try{
-			int displayIndex = task.getDisplayIndex() - 1;
+			int displayIndex = task.getDisplayIndex().get(0) - 1;
 			Entry entryToEdit = displayList.get(displayIndex);
 			String oldDetail = "";
 			

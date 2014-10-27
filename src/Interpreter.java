@@ -1,5 +1,6 @@
 package todo_manager;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -53,6 +54,8 @@ public class Interpreter {
 	
 	//TODO : make one of this in ToDoManager and have all classes call it
 	private static final String DATE_FORMAT = "ddMMyy"; 
+	
+	private static ArrayList<Integer> index = new ArrayList<Integer>();
 	
 	public Interpreter() {
 	}
@@ -211,11 +214,13 @@ public class Interpreter {
 
 	private static Executable processDelete(String[] words) throws IllegalArgumentException {
 		Executable exe = new Executable(CommandType.CMD_DELETE);
+		index = new ArrayList<Integer>();
 		if (doesNotHaveExtraText(words)) { // no identifiers on what to delete
 			throw new IllegalArgumentException();
 		}
-		
-		int index = Integer.parseInt( words[1] );
+		for(int i = 1; i < words.length; i++){
+			index.add(Integer.parseInt( words[i] ));
+		}
 		exe.setDisplayIndex(index);
 		return exe;
 	}
@@ -226,12 +231,15 @@ public class Interpreter {
 	
 	private static Executable processEdit(String[] words) throws IllegalArgumentException {
 		Executable exe = new Executable(CommandType.CMD_EDIT);
+		ArrayList<Integer> index = new ArrayList<Integer>();
 		
 		if (words.length <= 2){ // not enough info to edit
 			throw new IllegalArgumentException();
 		}
 		
-		exe.setDisplayIndex(Integer.parseInt(words[1]));
+		index.add(Integer.parseInt(words[1]));
+		
+		exe.setDisplayIndex(index);
 		
 		if (words[2].equals("/by")) { // edit date to "by" format
 			exe.setEndingDate(words[3]);
