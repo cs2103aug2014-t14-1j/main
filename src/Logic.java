@@ -10,23 +10,29 @@ import todo_manager.ToDoManager.EmptyInputException;
 public class Logic {
 	Storage storage;
 	
+	private static LinkedList<LinkedList<Entry>> preList = new LinkedList<LinkedList<Entry>>(); // preState
+	
+	private static Logic instance = null;
+	
 	public static LinkedList<Entry> entryList = new LinkedList<Entry>();
-	private static LinkedList<Entry> preventryList;
 	private static LinkedList<Entry> displayList = new LinkedList<Entry>();
-	private static LinkedList<Executable> exeList = new LinkedList<Executable>();
 	
 	private static Logging logObj = Logging.getInstance();
-	
 
 	private Logic(){
-		
 	}
 	
 	public static Logic getInstance(){
-		return new Logic();
+		if(instance == null){
+			instance = new Logic();
+		}
+		return instance;
 	}
 	
-	
+	public static LinkedList<Entry> getEntryList() {
+		return entryList;
+	}
+
 	void setupGUI(ToDoManagerGUI toDoManagerGUI){
 		storage = toDoManagerGUI.storage;
 		entryList = readFromStorage();
@@ -42,9 +48,10 @@ public class Logic {
 		
 		Executable exe;
 		try {
+			
 			exe = Interpreter.parseCommand(userInput);
 			execute(exe);
-			memoriseActionForUndo(exe);
+			
 		} catch (EmptyInputException e) {
 			UserInterface.showToUser(ToDoManager.MESSAGE_ERROR_EMPTY_INPUT);
 		} catch (IllegalArgumentException e) {
@@ -63,59 +70,98 @@ public class Logic {
 		
 		switch (command) {
 		case CMD_ADD: 
+			preList.add(new LinkedList<Entry>(entryList));
 			executeAdd(task);
-			//executeDisplay(entryList);
+			executeDisplay(entryList);
 			break;
 		case CMD_CLEAR: 
+			preList.add(new LinkedList<Entry>(entryList));
 			executeClear(task);
-			//executeDisplay(entryList);
+			executeDisplay(entryList);
 			break;
 		case CMD_DELETE: 
+			preList.add(new LinkedList<Entry>(entryList));
 			executeDelete(task);
-			//executeDisplay(entryList);
+			executeDisplay(entryList);
 			break;
 		case CMD_DISPLAY: 
+			preList.add(new LinkedList<Entry>(entryList));
 			executeDisplay(entryList);
 			break;
 		case CMD_DONE: 
+			preList.add(new LinkedList<Entry>(entryList));
 			executeDone(task);
-			//executeDisplay(entryList);
+			executeDisplay(entryList);
 			break;
 		case CMD_EDIT: 
+			preList.add(new LinkedList<Entry>(entryList));
 			executeEdit(task);
 			executeDisplay(entryList);
 			break;
 		case CMD_SEARCH: 
+			preList.add(new LinkedList<Entry>(entryList));
 			executeSearch(task);
 			break;
 		case CMD_UNDO: 
-			executeUndo(task);
-			//executeDisplay(entryList);
+			executeUndo();
+			executeDisplay(entryList);
 			break;
 		case CMD_SORT: 
-			executeSort(task);
-			executeDisplay(displayList);
+			preList.add(new LinkedList<Entry>(entryList));
+			executeSort();
+			executeDisplay(entryList);
+			
+		case CMD_EXIT:
+			preList.clear();
+			System.exit(0);
 		default:
 			break;
 		}
 			
 	}
 	
-	private void executeSort(Executable task) {
+	private void executeUndo() {
+		
+		if(preList.isEmpty()){
+			System.out.println("Nothing to Undo!");
+		}
+		else{
+			entryList = new LinkedList<Entry>(preList.getLast());
+			preList.removeLast();
+		}
+			
+	}
+
+	private void executeSort() {
 		// To sort the task by Date line
 		Collections.sort(entryList);
-		displayList = entryList;
 	}
 
 	private void executeAdd(Executable task){
 
 		logObj.writeToLoggingFile("Trying to add");
+		
 		Entry entry = new Entry();
-		entry.setName(task.getInfo());
-		entry.setStartingDate(task.getStartingDate());
-		entry.setEndingDate(task.getEndingDate());
+		
+		if(task.getInfo()!=null){
+			entry.setName(task.getInfo());
+		}
+		if(task.getStartingDate()!=null){
+			entry.setStartingDate(task.getStartingDate());
+		}
+		if(task.getEndingDate()!= null){
+			entry.setEndingDate(task.getEndingDate());
+		}
+		if(task.getStartingTime()!= null){
+			entry.setStartingTime(task.getStartingTime());
+		}
+		if(task.getEndingTime()!= null){
+			entry.setEndingTime(task.getEndingTime());
+		}
+		
 		entryList.add(entry);
 		writeToStorage();
+		
 		logObj.writeToLoggingFile("Done adding task");
 		
 	}
@@ -143,24 +189,12 @@ public class Logic {
 	}
 	
 	private void executeClear(Executable task){
-		//TODO
-		preventryList = new LinkedList<Entry>(entryList);
+		
 		entryList.clear();
 		writeToStorage();
 	}
 	
 	private void executeEdit(Executable task){
-//		//edit the key work
-//		
-//		
-//		String str = task.getInfo();
-//		int num = Integer.parseInt(task.getInfo().substring(0,1)); // cant assume that the number is single digit
-//		
-//		String preStr = entryList.get(num-1).getName();
-//		
-//		task.setPreStr(preStr);
-//		
-//		entryList.get(num-1).setName(str.substring(1));
 		
 		try{
 			int displayIndex = task.getDisplayIndex().get(0) - 1;
@@ -188,62 +222,7 @@ public class Logic {
 			throw new IllegalArgumentException(e.getMessage());
 		}
 	}
-	
-	private void memoriseActionForUndo(Executable task){
-		//TODO
-		exeList.add(task);
-	}
-	
-	private void executeUndo(Executable task){
-		//Undo last operation
-		//exeList.removeLast();
-		CommandType command = exeList.getLast().getCommand();
-		Executable undotask = exeList.getLast();
-		exeList.removeLast();
-		
-		switch (command) {
-		case CMD_ADD: executeDelete(undotask);
-					 
-					  break;
-		case CMD_CLEAR: entryList = preventryList;
-						
-						break;
-		case CMD_DELETE: executeAdd(undotask);
-						 
-						 break;
-		case CMD_DONE: executeUndone(undotask);
-					   
-					   break;
-		case CMD_EDIT: executeUnEdit(undotask);
-			break;
-		case CMD_SORT: 
-			break;
-		default:
-			System.out.println("cannot be undo");
-			break;
-		}
-	}
-	
-	private void executeUnEdit(Executable undotask) {
-		
-		int num = Integer.parseInt(undotask.getInfo().substring(0,1));
-		
-		entryList.get(num-1).setName(undotask.getPreStr());
-		
-		
-	}
 
-	private void executeUndone(Executable task) {
-		//un done 
-		String str = task.getInfo();
-		for (int i = 0; i < entryList.size(); i++) {
-            if(entryList.get(i).getName().equals(str)){
-            	entryList.get(i).setDoneness(false);
-            	break;
-            }
-        }
-		
-	}
 
 	public LinkedList<Entry> executeSearch(Executable task){
 		/*
@@ -328,8 +307,7 @@ public class Logic {
 		executeDisplay(displayList);
 		return searchResult;
 	}
-	
-	
+
 	
 	private void executeDisplay(LinkedList<Entry> list){
 

@@ -108,7 +108,9 @@ public class Interpreter {
 			case "/sort" :
 				exe = new Executable(CommandType.CMD_SORT);
 				break;
-				
+			case "/exit":
+				exe = new Executable(CommandType.CMD_EXIT);
+				break;
 			default : 
 				throw new IllegalArgumentException();
 		}

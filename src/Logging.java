@@ -6,11 +6,16 @@ import java.io.IOException;
 
 public class Logging {
 
+	private static Logging instance = null;
+	
 	private Logging() {
 	}
 	
 	public static Logging getInstance(){
-		return new Logging();
+		if(instance == null){
+			instance = new Logging();
+		}
+		return instance;
 	}
 	
 	public boolean writeToLoggingFile(String str){
