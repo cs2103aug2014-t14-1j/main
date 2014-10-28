@@ -26,7 +26,11 @@ public class Logic {
 		return new Logic();
 	}
 	
-
+	
+	void setupGUI(ToDoManagerGUI toDoManagerGUI){
+		storage = toDoManagerGUI.storage;
+		entryList = readFromStorage();
+	}
 	
 	void setup(ToDoManager toDoManager){
 		storage = toDoManager.storage;
@@ -34,7 +38,7 @@ public class Logic {
 	}
 	
 	//UI module will call this method 
-	public void actOnUserInput(String userInput){
+	public LinkedList<Entry> actOnUserInput(String userInput){
 		
 		Executable exe;
 		try {
@@ -48,6 +52,8 @@ public class Logic {
 		} catch (Exception e) {
 			UserInterface.showToUser(ToDoManager.MESSAGE_ERROR_GENERIC);
 		}
+		
+		return displayList;
 	}
 	
 	public void execute(Executable task){
@@ -317,7 +323,9 @@ public class Logic {
 				}
 			}
 		}
-		executeDisplay(searchResult);
+		
+		displayList = searchResult;
+		executeDisplay(displayList);
 		return searchResult;
 	}
 	
