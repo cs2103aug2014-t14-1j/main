@@ -13,7 +13,7 @@ import todo_manager.ToDoManager.EmptyInputException;
  * (If variable not mentioned, defaults to default chosen in Executable class (current default is null))
  * 
  *  /add : info filled, 
- *  /add /from /to : info filled, startingDate is /from, endingDate is /to
+ *  /add /start /by : info filled, startingDate is /start <date>, endingDate is /by <date>
  *  /add /by : info filled, endingDate is /by date
  *  /add /on : info filled, startingDate and endingDate are equal to /on date
  * 
@@ -136,7 +136,7 @@ public class Interpreter {
 		//linearly read the words, stop when you find a keyword
 		for (int i = 1; i < words.length; i++) {
 			word = words[i];
-			if (word.equals("/from")) {
+			if (word.equals("/start")) {
 				processAddFrom(exe, words, i);
 				addBasic = false;
 				break;
@@ -201,12 +201,12 @@ public class Interpreter {
 		String word;
 		for (j = i + 1; j < words.length; j++) { //look for keyword /to
 			word = words[j];
-			if (word.equals("/to")){
+			if (word.equals("/by")){
 				break;
 			}
 		}
 		
-		if (words.length == j + 1){ // nothing after /to
+		if (words.length == j + 1){ // nothing after /by
 			throw new IllegalArgumentException();
 		} else{
 			exe.setStartingDate(recombine(words, i + 1, j));
