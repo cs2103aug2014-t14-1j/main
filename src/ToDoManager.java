@@ -4,7 +4,9 @@ public class ToDoManager {
 
 	//commands received from user	
 	enum CommandType {
-		CMD_ADD, CMD_DELETE, CMD_CLEAR, CMD_EDIT, CMD_UNDO, CMD_SEARCH, CMD_DISPLAY, CMD_DONE,CMD_SORT, CMD_EXIT
+		CMD_ADD,    CMD_DELETE,  CMD_CLEAR, CMD_EDIT, CMD_UNDO, 
+		CMD_SEARCH, CMD_DISPLAY, CMD_DONE,  CMD_SORT, CMD_EXIT,
+		CMD_HELP
 	}
 	
 	static final String MESSAGE_WELCOME = "Welcome to ToDo Manager!";

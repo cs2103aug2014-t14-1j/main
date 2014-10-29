@@ -8,6 +8,53 @@ import todo_manager.ToDoManager.CommandType;
 import todo_manager.ToDoManager.EmptyInputException;
 
 public class Logic {
+	
+	/*
+	 * Help-related messages
+	 */
+	private static final String HELP_NO_KEYWORD = 
+			  "Type \"help <command>\" to get help for that particular topic.\n"
+			+ "List of topics : \n"
+			+ "/add      /display\n"
+			+ "/delete   /clear\n"
+			+ "/edit     /undo\n"
+			+ "/mark     /search\n"
+			+ "/sort     /exit\n"
+			+ "date\n";
+	
+	private static final String HELP_INVALID_KEYWORD = "Invalid help topic given.\n";
+	private static final String HELP_ADD = "Format of add command : /add <task name>\n" +
+										   "The following can also be added after the basic add command : \n" +
+										   "/on <date>\n" +
+										   "/by <date>\n" +
+										   "/start <date> /by <date>\n";
+	private static final String HELP_DISPLAY = "The /display command will list all saved tasks on the screen.\n";
+	private static final String HELP_DELETE = "Format of delete command : \n" +
+											  "/delete <index no.> \n" +
+											  "This deletes the entry with that index in the most recently shown list.\n" +
+											  "Multiple indexes seperated by spaces also accepted, eg. : \n" +
+											  "/delete 1 4 5\n";
+	private static final String HELP_CLEAR = "\"/clear\" deletes all saved tasks.\n";
+	private static final String HELP_EDIT = "Format for edit command : \n" +
+											"/edit <index no.> <new task name>\n" + 
+											"/edit <index no.> /on <new date>\n" + 
+											"/edit <index no.> /by <new date>\n" + 
+											"/edit <index no.> /start <new date> /by <new date2>\n" +
+											"Note that <index no.> refers to the numbering in the most recently displayed list.\n";
+	private static final String HELP_UNDO = "The /undo command reverses the most recent change made.\n";
+	private static final String HELP_MARK = "This marks the item as done. Format of mark : \n" +
+											"/mark <keyword>\n" +
+											"/mark <index no.>\n" + 
+											"Note that <index no.> refers to the numbering in the most recently displayed list.\n" +
+											"<index no.> can be multiple numbers separated by spaces, to mark several items at one go.\n";
+	private static final String HELP_SEARCH = "Format for search : \n" +
+											  "/search today\n" +
+											  "/search <done or undone>\n" +
+											  "/search <date>\n" +
+											  "/search <keyword>\n";
+	private static final String HELP_SORT = "The /sort command arranges the tasks chronologically.\n";
+	private static final String HELP_EXIT = "The /exit command shuts down ToDoManager.\n";
+
 	Storage storage;
 	
 	private static LinkedList<LinkedList<Entry>> preList = new LinkedList<LinkedList<Entry>>(); // preState
@@ -110,7 +157,10 @@ public class Logic {
 			preList.add(new LinkedList<Entry>(entryList));
 			executeSort();
 			executeDisplay(entryList);
-			
+			break;
+		case CMD_HELP:
+			executeHelp(task);
+			break;
 		case CMD_EXIT:
 			preList.clear();
 			System.exit(0);
@@ -120,6 +170,55 @@ public class Logic {
 			
 	}
 	
+	private void executeHelp(Executable task) {
+		
+		String topic = task.getInfo();
+		if (topic == null) {
+			UserInterface.showToUser(HELP_NO_KEYWORD);
+			return;
+		}
+		
+		switch (topic) {
+			case "/add":
+				UserInterface.showToUser(HELP_ADD);
+				break;
+			case "/display":
+				UserInterface.showToUser(HELP_DISPLAY);
+				break;
+			case "/delete":
+				UserInterface.showToUser(HELP_DELETE);
+				break;
+			case "/clear":
+				UserInterface.showToUser(HELP_CLEAR);
+				break;
+			case "/edit":
+				UserInterface.showToUser(HELP_EDIT);
+				break;
+			case "/undo":
+				UserInterface.showToUser(HELP_UNDO);
+				break;
+			case "/mark":
+				UserInterface.showToUser(HELP_MARK);
+				break;
+			case "/search":
+				UserInterface.showToUser(HELP_SEARCH);
+				break;
+			case "/sort":
+				UserInterface.showToUser(HELP_SORT);
+				break;
+			case "/exit":
+				UserInterface.showToUser(HELP_EXIT);
+				break;
+			case "date format" :
+				//TODO
+				break;
+			default : 
+				UserInterface.showToUser(HELP_INVALID_KEYWORD);
+				UserInterface.showToUser(HELP_NO_KEYWORD);
+				break;
+		}
+	}
+
 	private void executeUndo() {
 		
 		if(preList.isEmpty()){

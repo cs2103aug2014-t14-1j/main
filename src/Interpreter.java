@@ -23,7 +23,7 @@ import todo_manager.ToDoManager.EmptyInputException;
  *  /clear : no extra info
  *  
  *  /edit <int displaylist index> <new task name> : new name stored under exe info
- *  /edit <int displaylist index> /from <new date> /to <new date2> : dates stored in startingDate and endingDate
+ *  /edit <int displaylist index> /start <new date> /by <new date2> : dates stored in startingDate and endingDate
  *  /edit <int displaylist index> /by <new date> : date stored in endingDate
  *  /edit <int displaylist index> /on <new date> : date stored in startingDate and endingDate 
  *  
@@ -31,17 +31,18 @@ import todo_manager.ToDoManager.EmptyInputException;
  *  
  *  /search today : startingDate = endingDate = today's date
  *  /search <date> : startingDate = endingDate = <date>
- *  /search /from <date> : startingDate = <date>
- *  /search /by <date> : endingDate = <date>
  *  /search <keyword> : info is the string of keyword or keywords as given by the user
  *  /search done : doneness = true
  *  /search undone : doneness = false
  *  Note that Doneness will be set to null if doneness is not being searched for. False or true if it is being searched for.
  *  doneness defaults to false for all other operations, like add or delete.
  *  
- *  /mark <date> : startingDate and endingDate are equal to given date
+ *  /mark <displaylist index> : index(may have multiple) stored in displaylist index array
  *  /mark <keywords> : info is filled with String of all keywords 
  *  
+ *  help : displays list of help topics
+ *  help </command> : displays help message for that command
+ *
  *
  */
 
@@ -54,8 +55,6 @@ public class Interpreter {
 	
 	//TODO : make one of this in ToDoManager and have all classes call it
 	private static final String DATE_FORMAT = "ddMMyy"; 
-	
-	private static ArrayList<Integer> index = new ArrayList<Integer>();
 	
 	public Interpreter() {
 	}
@@ -108,15 +107,33 @@ public class Interpreter {
 			case "/sort" :
 				exe = new Executable(CommandType.CMD_SORT);
 				break;
+				
 			case "/exit":
 				exe = new Executable(CommandType.CMD_EXIT);
 				break;
+				
+			case "help":
+				exe = processHelp(words);
+				break;
+				
 			default : 
 				throw new IllegalArgumentException();
 		}
 		
 		if (DEBUG) {
 			printExe(exe); // for debugging, to view the contents of executable
+		}
+		
+		return exe;
+	}
+
+	private static Executable processHelp(String[] words) {
+		Executable exe = new Executable(CommandType.CMD_HELP);
+		
+		//has keyword
+		if ( ! doesNotHaveExtraText(words)) { 
+			String extraWords = recombine(words, 1, words.length);
+			exe.setInfo(extraWords);
 		}
 		
 		return exe;
@@ -216,7 +233,7 @@ public class Interpreter {
 
 	private static Executable processDelete(String[] words) throws IllegalArgumentException {
 		Executable exe = new Executable(CommandType.CMD_DELETE);
-		index = new ArrayList<Integer>();
+		ArrayList<Integer> index = new ArrayList<Integer>();
 		if (doesNotHaveExtraText(words)) { // no identifiers on what to delete
 			throw new IllegalArgumentException();
 		}
@@ -250,8 +267,8 @@ public class Interpreter {
 			exe.setStartingDate(words[3]);
 			exe.setEndingDate(words[3]);
 			
-		} else if (words[2].equals("/from") && words[4].equals("/to")) { // edit date to "from-to" format
-			if (words.length < 6 || ! words[4].equals("/to")){ //incorrect or insufficient commands from user
+		} else if (words[2].equals("/start") && words[4].equals("/by")) { // edit date to "start, by" format
+			if (words.length < 6 ){ //incorrect or insufficient commands from user
 				throw new IllegalArgumentException();
 			}
 			exe.setStartingDate(words[3]);
@@ -343,15 +360,33 @@ public class Interpreter {
 		if (doesNotHaveExtraText(words)){ // no identifiers
 			throw new IllegalArgumentException();
 		} else {  //has more words
-			String extraWords = recombine(words, 1, words.length);
-			
-			//if extra info is a date
-			if (isDate(extraWords)) {
-				exe.setStartingDate(extraWords); 
-				exe.setEndingDate(extraWords);
-			} else { // else, extra info is keywords
-				exe.setInfo(extraWords);
+			ArrayList<Integer> index = new ArrayList<Integer>();
+			String word;
+			String info = "";
+			for (int i = 1; i < words.length; i++) {
+				word = words[i];
+				if (isNumber(word)){ // its a display index
+					index.add(Integer.parseInt(word));
+				} else { // its a keyword
+					info += word + " ";
+				}
 			}
+			
+			if (! index.isEmpty()){
+				exe.setDisplayIndex(index);
+			}
+			if (info != "") {
+				exe.setInfo(info);
+			}
+//			String extraWords = recombine(words, 1, words.length);
+//			
+//			//if extra info is a date
+//			if (isDate(extraWords)) {
+//				exe.setStartingDate(extraWords); 
+//				exe.setEndingDate(extraWords);
+//			} else { // else, extra info is keywords
+//				exe.setInfo(extraWords);
+//			}
 		}
 		return exe;
 	}
@@ -378,6 +413,15 @@ public class Interpreter {
 	
 	private static boolean isDate(String date) {
 		return ValidationCheck.isValidDate(date);
+	}
+	
+	private static boolean isNumber(String s){
+		try{
+			Integer.parseInt(s);
+		} catch (NumberFormatException e){
+			return false;
+		}
+		return true;
 	}
 	
 	private static void printExe(Executable exe){
