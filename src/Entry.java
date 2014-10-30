@@ -86,11 +86,12 @@ public class Entry implements Comparable<Entry>{
 	}
 	
 	private int changeEndingDate(){
-		int endingDate = Integer.parseInt(this.endingDate);
-		int year = endingDate % 1000;
-		int month = ((int)(endingDate/100)) % 100;
-		int day = endingDate /1000;
-		return year*100 + month*10 + day;
+		
+		int day = Integer.parseInt(this.endingDate.substring(0, 2));
+		int month = Integer.parseInt(this.endingDate.substring(2, 4));
+		int year = Integer.parseInt(this.endingDate.substring(4, 6));
+		
+		return year*100+month*10+day;
 	}
     
 	public int compareTo(Entry compareEntry) {
