@@ -37,8 +37,13 @@ import todo_manager.ToDoManager.EmptyInputException;
  *  Note that Doneness will be set to null if doneness is not being searched for. False or true if it is being searched for.
  *  doneness defaults to false for all other operations, like add or delete.
  *  
+ *  ////MARK DONE//// -> command is CMD_DONE
  *  /mark <displaylist index> : index(may have multiple) stored in displaylist index array
- *  /mark <keywords> : info is filled with String of all keywords 
+ *  /mark <keywords> : info is filled with String of all keywords
+ *  
+ *  ///MARK UNDONE/// -> command is CMD_UNDONE
+ *  to mark undone, simply use the format for mark done as above, but include the 
+ *  word "undone" anywhere after "/mark"
  *  
  *  help : displays list of help topics
  *  help </command> : displays help message for that command
@@ -367,6 +372,8 @@ public class Interpreter {
 				word = words[i];
 				if (isNumber(word)){ // its a display index
 					index.add(Integer.parseInt(word));
+				} else if (word.equals("undone") ) {
+					exe.setCommand(CommandType.CMD_UNDONE);
 				} else { // its a keyword
 					info += word + " ";
 				}
