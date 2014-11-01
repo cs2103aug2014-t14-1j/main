@@ -95,26 +95,27 @@ public class Logic {
 	}
 	
 	//UI module will call this method 
-	public LinkedList<Entry> actOnUserInput(String userInput){
+	public Object actOnUserInput(String userInput){
 		
 		Executable exe;
+		Object displayObj;
 		try {
 			
 			exe = Interpreter.parseCommand(userInput);
-			execute(exe);
+			displayObj = execute(exe);
 			
 		} catch (EmptyInputException e) {
-			UserInterface.showToUser(ToDoManager.MESSAGE_ERROR_EMPTY_INPUT);
+			return ToDoManager.MESSAGE_ERROR_EMPTY_INPUT;
 		} catch (IllegalArgumentException e) {
-			UserInterface.showToUser(ToDoManager.MESSAGE_WRONG_INPUT_FORMAT);
+			 return ToDoManager.MESSAGE_WRONG_INPUT_FORMAT;
 		} catch (Exception e) {
-			UserInterface.showToUser(ToDoManager.MESSAGE_ERROR_GENERIC);
+			return ToDoManager.MESSAGE_ERROR_GENERIC;
 		}
 		
-		return displayList;
+		return displayObj;
 	}
 	
-	public void execute(Executable task){
+	public Object execute(Executable task){
 		
 
 		CommandType command = task.getCommand();
@@ -124,102 +125,104 @@ public class Logic {
 			preList.add(new LinkedList<Entry>(entryList));
 			executeAdd(task);
 			executeDisplay(entryList);
-			break;
+			return entryList;
 		case CMD_CLEAR: 
 			preList.add(new LinkedList<Entry>(entryList));
 			executeClear(task);
 			executeDisplay(entryList);
-			break;
+			return entryList;
 		case CMD_DELETE: 
 			preList.add(new LinkedList<Entry>(entryList));
 			executeDelete(task);
 			executeDisplay(entryList);
-			break;
+			return entryList;
 		case CMD_DISPLAY: 
 			preList.add(new LinkedList<Entry>(entryList));
 			executeDisplay(entryList);
-			break;
+			return entryList;
 		case CMD_DONE: 
 			preList.add(new LinkedList<Entry>(entryList));
 			executeDone(task);
 			executeDisplay(entryList);
-			break;
+			return entryList;
 		case CMD_EDIT: 
 			preList.add(new LinkedList<Entry>(entryList));
 			executeEdit(task);
 			executeDisplay(entryList);
-			break;
+			return entryList;
 		case CMD_SEARCH: 
 			preList.add(new LinkedList<Entry>(entryList));
 			executeSearch(task);
-			break;
+			executeDisplay(displayList);
+			return displayList;
 		case CMD_UNDO: 
 			executeUndo();
 			executeDisplay(entryList);
-			break;
+			return entryList;
 		case CMD_SORT: 
 			preList.add(new LinkedList<Entry>(entryList));
 			executeSort();
 			executeDisplay(entryList);
-			break;
+			return entryList;
 		case CMD_HELP:
-			executeHelp(task);
-			break;
+			String out = executeHelp(task);
+			return out;
 		case CMD_EXIT:
 			preList.clear();
 			System.exit(0);
+			//return "exit";
 		default:
-			break;
+			return ToDoManager.MESSAGE_ERROR_GENERIC;
 		}
 			
 	}
 	
-	private void executeHelp(Executable task) {
+	private String executeHelp(Executable task) {
 		
 		String topic = task.getInfo();
 		if (topic == null) {
 			UserInterface.showToUser(HELP_NO_KEYWORD);
-			return;
+			return HELP_NO_KEYWORD;
 		}
 		
 		switch (topic) {
 			case "/add":
 				UserInterface.showToUser(HELP_ADD);
-				break;
+				return HELP_ADD;
 			case "/display":
 				UserInterface.showToUser(HELP_DISPLAY);
-				break;
+				return HELP_DISPLAY;
 			case "/delete":
 				UserInterface.showToUser(HELP_DELETE);
-				break;
+				return HELP_DELETE;
 			case "/clear":
 				UserInterface.showToUser(HELP_CLEAR);
-				break;
+				return HELP_CLEAR;
 			case "/edit":
 				UserInterface.showToUser(HELP_EDIT);
-				break;
+				return HELP_EDIT;
 			case "/undo":
 				UserInterface.showToUser(HELP_UNDO);
-				break;
+				return HELP_UNDO;
 			case "/mark":
 				UserInterface.showToUser(HELP_MARK);
-				break;
+				return HELP_MARK;
 			case "/search":
 				UserInterface.showToUser(HELP_SEARCH);
-				break;
+				return HELP_SEARCH;
 			case "/sort":
 				UserInterface.showToUser(HELP_SORT);
-				break;
+				return HELP_SORT;
 			case "/exit":
 				UserInterface.showToUser(HELP_EXIT);
-				break;
+				return HELP_EXIT;
 			case "date format" :
 				//TODO
-				break;
+				return "";
 			default : 
 				UserInterface.showToUser(HELP_INVALID_KEYWORD);
 				UserInterface.showToUser(HELP_NO_KEYWORD);
-				break;
+				return HELP_INVALID_KEYWORD+"\n"+HELP_NO_KEYWORD;
 		}
 	}
 

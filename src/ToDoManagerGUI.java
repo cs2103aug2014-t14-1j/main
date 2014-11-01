@@ -260,9 +260,10 @@ public class ToDoManagerGUI {
 
 						String userCommand = readUserInput();
 						displayBox.setText(userCommand);
-						LinkedList<Entry> displayList = new LinkedList<Entry>();
-						displayList = toDoManagerGUI.logic.actOnUserInput(userCommand);
-						displayResults(displayList);
+						Object displayObj;
+						displayObj = toDoManagerGUI.logic.actOnUserInput(userCommand);
+						
+						displayResult(displayObj);
 						inputBox.setText("");
 					}
 				}
@@ -270,13 +271,37 @@ public class ToDoManagerGUI {
 			}
 		});
 	}
+	
+	private void displayResult(Object displayObj) {
+		if(displayObj == null){
+			appendToDisplayBox(ToDoManager.MESSAGE_ERROR_GENERIC);
+			return;
+		} else if (displayObj instanceof String){ // print it if string
+			String displayString = (String) displayObj;
+			displayBox.setText(displayString);
+		}else if (displayObj instanceof LinkedList){ //send to entrylist printer
+			LinkedList<?> displayList = (LinkedList<?>) displayObj;
+		    displayLists(displayList);
+		}
+		
+	}		
+
+		
 
 	// display the display list on displaybox
-	private void displayResults(LinkedList<Entry> displayList){
+	private void displayLists(LinkedList<?> displayList){
 		int count = 1;
 		String entryString;
 		String displayString="";
-		for (Entry e : displayList) {
+		Entry e = new Entry();
+		for (Object o : displayList) {
+			// ensure type safety
+			if (o instanceof Entry){
+			    e = (Entry) o;
+			} else {
+				appendToDisplayBox(ToDoManager.MESSAGE_ERROR_GENERIC);
+			}
+			
 			entryString = count+". "+e.getName();
 			if (e.getStartingDate() != null && !e.getStartingDate().equals("")){
 				entryString += " start: " + e.getStartingDate();
