@@ -24,7 +24,7 @@ public class Executable {
 	private String endingDate = null;
 	private String startingTime = null;
 	private String endingTime = null;
-	private Boolean doneness = false;
+	private Boolean doneness = null;
 	private ArrayList<Integer> displayIndex = new ArrayList<Integer>();
 	private String preStr;
 	

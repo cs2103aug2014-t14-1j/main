@@ -1,7 +1,11 @@
 package todo_manager;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedList;
 
 import todo_manager.ToDoManager.CommandType;
@@ -323,80 +327,64 @@ public class Logic {
 	}
 
 
-	public LinkedList<Entry> executeSearch(Executable task){
-		/*
-		String keyword;
+	public void executeSearch(Executable task){
+		
+		String searchContent, searchContent1;
+		String[] searchKeyword, searchName;
+		int pos;
 		boolean doneness;
-		displayList.clear;
-		
-		if(task.getInfo() != null){
-			keyword = task.getInfo().toLowerCase();
-			for (int i = 0; i < entryList.size(); i++) {
-	            if(entryList.get(i).getName().toLowerCase().contains(keyword)){
-	            	displayList.add(entryList.get(i));
-	            }
-	        }
-		}
-		else if(task.getStartingDate() != null){
-			keyword = task.getStartingDate();
-			for (int i = 0; i < entryList.size(); i++) {
-	            if(entryList.get(i).getStartingDate().contains(keyword)){
-	            	displayList.add(entryList.get(i));
-	            }
-	        }
-		}
-		else if(task.getEndingDate() != null){
-			keyword = task.getEndingDate();
-			for (int i = 0; i < entryList.size(); i++) {
-	            if(entryList.get(i).getEndingDate().contains(keyword)){
-	            	displayList.add(entryList.get(i));
-	            }
-	        }
-		}
-		else if(task.getStartingTime() != null){
-			keyword = task.getStartingTime();
-			for (int i = 0; i < entryList.size(); i++) {
-	            if(entryList.get(i).getStartingTime().contains(keyword)){
-	            	displayList.add(entryList.get(i));
-	            }
-	        }
-		}
-		else if(task.getEndingTime() != null){
-			keyword = task.getEndingTime();
-			for (int i = 0; i < entryList.size(); i++) {
-	            if(entryList.get(i).getEndingTime().contains(keyword)){
-	            	displayList.add(entryList.get(i));
-	            }
-	        }
-		}
-		else{
-			doneness = task.getDoneness();
-			for (int i = 0; i < entryList.size(); i++) {
-	            if(entryList.get(i).getDoneness() == doneness){
-	            	displayList.add(entryList.get(i));
-	            }
-	        }
-		}
-		*/
-		String searchContent = task.getInfo().trim();
-		ValidationCheck validCheck = new ValidationCheck();
-		boolean isDate = validCheck.isValidDate(searchContent);
-		
 		
 		LinkedList<Entry> searchResult = new LinkedList<Entry>();
 		
-		if(isDate){
+		if(task.getInfo() != null){
+			searchKeyword = task.getInfo().trim().toLowerCase().split(" ");
+			System.out.println();
 			for(Entry entry: entryList){
-				if(entry.getStartingDate() == searchContent ||entry.getEndingDate() == searchContent ){
+				pos = 0;
+				searchName = entry.getName().toLowerCase().split(" ");
+				for(int i = 0; i < searchName.length; i++){
+					searchContent = searchName[i];
+					if(searchContent.equals(searchKeyword[pos]))
+						pos++;
+					if(pos == searchKeyword.length){
+						searchResult.add(entry);
+						break;
+					}
+				}
+			}
+		}
+		else if(task.getStartingDate() != null && task.getEndingDate() != null){
+			searchContent = task.getStartingDate();
+			searchContent1 = task.getEndingDate();
+			String startDate, endDate;
+			for(Entry entry: entryList){
+				startDate = entry.getStartingDate();
+				endDate = entry.getEndingDate();
+				if(startDate.equals(searchContent) && endDate.equals(searchContent1)){
 					searchResult.add(entry);
 				}
 			}
 		}
-		else{
-			searchContent = searchContent.toLowerCase();
+		else if(task.getStartingDate() != null){
+			searchContent = task.getStartingDate();
 			for(Entry entry: entryList){
-				String temp = entry.getName().toLowerCase();
-				if(temp.contains(searchContent)){
+				if(entry.getStartingDate().equals(searchContent)){
+					searchResult.add(entry);
+				}
+			}
+		}
+		else if(task.getEndingDate() != null){
+			searchContent = task.getEndingDate();
+			for(Entry entry: entryList){
+				if(entry.getEndingDate().equals(searchContent)){
+					searchResult.add(entry);
+				}
+			}
+		}
+		else if(task.getDoneness() != null){
+			doneness = task.getDoneness();
+			for(Entry entry: entryList){
+				if(entry.getDoneness() == doneness){
 					searchResult.add(entry);
 				}
 			}
@@ -404,7 +392,6 @@ public class Logic {
 		
 		displayList = searchResult;
 		executeDisplay(displayList);
-		return searchResult;
 	}
 
 	
@@ -451,5 +438,17 @@ public class Logic {
 	
 	private LinkedList<Entry> readFromStorage(){
 		return storage.readFile();
+	}
+	
+	private boolean isGreaterDate(String newDateString, String compareDateString) throws ParseException{
+		DateFormat dateFormat = new SimpleDateFormat("ddMMyy");
+		Date newDate = dateFormat.parse(newDateString);
+		Date compareDate = dateFormat.parse(compareDateString);
+		
+		if(newDate.after(compareDate)){
+			return true;
+		}
+		
+		return false;
 	}
 }
