@@ -1,7 +1,11 @@
 package todo_manager;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedList;
 
 import todo_manager.ToDoManager.CommandType;
@@ -91,26 +95,27 @@ public class Logic {
 	}
 	
 	//UI module will call this method 
-	public LinkedList<Entry> actOnUserInput(String userInput){
+	public Object actOnUserInput(String userInput){
 		
 		Executable exe;
+		Object displayObj;
 		try {
 			
 			exe = Interpreter.parseCommand(userInput);
-			execute(exe);
+			displayObj = execute(exe);
 			
 		} catch (EmptyInputException e) {
-			UserInterface.showToUser(ToDoManager.MESSAGE_ERROR_EMPTY_INPUT);
+			return ToDoManager.MESSAGE_ERROR_EMPTY_INPUT;
 		} catch (IllegalArgumentException e) {
-			UserInterface.showToUser(ToDoManager.MESSAGE_WRONG_INPUT_FORMAT);
+			 return ToDoManager.MESSAGE_WRONG_INPUT_FORMAT;
 		} catch (Exception e) {
-			UserInterface.showToUser(ToDoManager.MESSAGE_ERROR_GENERIC);
+			return ToDoManager.MESSAGE_ERROR_GENERIC;
 		}
 		
-		return displayList;
+		return displayObj;
 	}
 	
-	public void execute(Executable task){
+	public Object execute(Executable task){
 		
 
 		CommandType command = task.getCommand();
@@ -120,104 +125,104 @@ public class Logic {
 			preList.add(new LinkedList<Entry>(entryList));
 			executeAdd(task);
 			executeDisplay(entryList);
-			break;
+			return entryList;
 		case CMD_CLEAR: 
 			preList.add(new LinkedList<Entry>(entryList));
 			executeClear(task);
 			executeDisplay(entryList);
-			break;
+			return entryList;
 		case CMD_DELETE: 
 			preList.add(new LinkedList<Entry>(entryList));
 			executeDelete(task);
 			executeDisplay(entryList);
-			break;
+			return entryList;
 		case CMD_DISPLAY: 
 			preList.add(new LinkedList<Entry>(entryList));
 			executeDisplay(entryList);
-			break;
+			return entryList;
 		case CMD_DONE: 
-			
 			preList.add(new LinkedList<Entry>(entryList));
 			executeDone(task);
 			executeDisplay(entryList);
-			break;
-			
+			return entryList;
 		case CMD_EDIT: 
 			preList.add(new LinkedList<Entry>(entryList));
 			executeEdit(task);
 			executeDisplay(entryList);
-			break;
+			return entryList;
 		case CMD_SEARCH: 
 			preList.add(new LinkedList<Entry>(entryList));
 			executeSearch(task);
-			break;
+			executeDisplay(displayList);
+			return displayList;
 		case CMD_UNDO: 
 			executeUndo();
 			executeDisplay(entryList);
-			break;
+			return entryList;
 		case CMD_SORT: 
 			preList.add(new LinkedList<Entry>(entryList));
 			executeSort();
 			executeDisplay(entryList);
-			break;
+			return entryList;
 		case CMD_HELP:
-			executeHelp(task);
-			break;
+			String out = executeHelp(task);
+			return out;
 		case CMD_EXIT:
 			preList.clear();
 			System.exit(0);
+			//return "exit";
 		default:
-			break;
+			return ToDoManager.MESSAGE_ERROR_GENERIC;
 		}
 			
 	}
 	
-	private void executeHelp(Executable task) {
+	private String executeHelp(Executable task) {
 		
 		String topic = task.getInfo();
 		if (topic == null) {
 			UserInterface.showToUser(HELP_NO_KEYWORD);
-			return;
+			return HELP_NO_KEYWORD;
 		}
 		
 		switch (topic) {
 			case "/add":
 				UserInterface.showToUser(HELP_ADD);
-				break;
+				return HELP_ADD;
 			case "/display":
 				UserInterface.showToUser(HELP_DISPLAY);
-				break;
+				return HELP_DISPLAY;
 			case "/delete":
 				UserInterface.showToUser(HELP_DELETE);
-				break;
+				return HELP_DELETE;
 			case "/clear":
 				UserInterface.showToUser(HELP_CLEAR);
-				break;
+				return HELP_CLEAR;
 			case "/edit":
 				UserInterface.showToUser(HELP_EDIT);
-				break;
+				return HELP_EDIT;
 			case "/undo":
 				UserInterface.showToUser(HELP_UNDO);
-				break;
+				return HELP_UNDO;
 			case "/mark":
 				UserInterface.showToUser(HELP_MARK);
-				break;
+				return HELP_MARK;
 			case "/search":
 				UserInterface.showToUser(HELP_SEARCH);
-				break;
+				return HELP_SEARCH;
 			case "/sort":
 				UserInterface.showToUser(HELP_SORT);
-				break;
+				return HELP_SORT;
 			case "/exit":
 				UserInterface.showToUser(HELP_EXIT);
-				break;
+				return HELP_EXIT;
 			case "date format" :
 				//TODO
-				break;
+				return "";
 			default : 
 				UserInterface.showToUser(HELP_INVALID_KEYWORD);
 				UserInterface.showToUser(HELP_NO_KEYWORD);
-				break;
+				return HELP_INVALID_KEYWORD+"\n"+HELP_NO_KEYWORD;
 		}
 	}
 
@@ -236,7 +241,6 @@ public class Logic {
 	private void executeSort() {
 		// To sort the task by Date line
 		Collections.sort(entryList);
-		writeToStorage();
 	}
 
 	private void executeAdd(Executable task){
@@ -253,10 +257,7 @@ public class Logic {
 		}
 		if(task.getEndingDate()!= null){
 			entry.setEndingDate(task.getEndingDate());
-		}else{
-			entry.setEndingDate("999999");
 		}
-		
 		if(task.getStartingTime()!= null){
 			entry.setStartingTime(task.getStartingTime());
 		}
@@ -321,7 +322,7 @@ public class Logic {
 				entryToEdit.setEndingDate(task.getEndingDate());
 			}
 			
-		//	task.setPreStr(oldDetail); //memorise previous state for undo
+			task.setPreStr(oldDetail); //memorise previous state for undo
 			writeToStorage();
 		} catch(Exception e){
 			throw new IllegalArgumentException(e.getMessage());
@@ -329,80 +330,64 @@ public class Logic {
 	}
 
 
-	public LinkedList<Entry> executeSearch(Executable task){
-		/*
-		String keyword;
+	public void executeSearch(Executable task){
+		
+		String searchContent, searchContent1;
+		String[] searchKeyword, searchName;
+		int pos;
 		boolean doneness;
-		displayList.clear;
-		
-		if(task.getInfo() != null){
-			keyword = task.getInfo().toLowerCase();
-			for (int i = 0; i < entryList.size(); i++) {
-	            if(entryList.get(i).getName().toLowerCase().contains(keyword)){
-	            	displayList.add(entryList.get(i));
-	            }
-	        }
-		}
-		else if(task.getStartingDate() != null){
-			keyword = task.getStartingDate();
-			for (int i = 0; i < entryList.size(); i++) {
-	            if(entryList.get(i).getStartingDate().contains(keyword)){
-	            	displayList.add(entryList.get(i));
-	            }
-	        }
-		}
-		else if(task.getEndingDate() != null){
-			keyword = task.getEndingDate();
-			for (int i = 0; i < entryList.size(); i++) {
-	            if(entryList.get(i).getEndingDate().contains(keyword)){
-	            	displayList.add(entryList.get(i));
-	            }
-	        }
-		}
-		else if(task.getStartingTime() != null){
-			keyword = task.getStartingTime();
-			for (int i = 0; i < entryList.size(); i++) {
-	            if(entryList.get(i).getStartingTime().contains(keyword)){
-	            	displayList.add(entryList.get(i));
-	            }
-	        }
-		}
-		else if(task.getEndingTime() != null){
-			keyword = task.getEndingTime();
-			for (int i = 0; i < entryList.size(); i++) {
-	            if(entryList.get(i).getEndingTime().contains(keyword)){
-	            	displayList.add(entryList.get(i));
-	            }
-	        }
-		}
-		else{
-			doneness = task.getDoneness();
-			for (int i = 0; i < entryList.size(); i++) {
-	            if(entryList.get(i).getDoneness() == doneness){
-	            	displayList.add(entryList.get(i));
-	            }
-	        }
-		}
-		*/
-		String searchContent = task.getInfo().trim();
-		ValidationCheck validCheck = new ValidationCheck();
-		boolean isDate = validCheck.isValidDate(searchContent);
-		
 		
 		LinkedList<Entry> searchResult = new LinkedList<Entry>();
 		
-		if(isDate){
+		if(task.getInfo() != null){
+			searchKeyword = task.getInfo().trim().toLowerCase().split(" ");
+			System.out.println();
 			for(Entry entry: entryList){
-				if(entry.getStartingDate() == searchContent ||entry.getEndingDate() == searchContent ){
+				pos = 0;
+				searchName = entry.getName().toLowerCase().split(" ");
+				for(int i = 0; i < searchName.length; i++){
+					searchContent = searchName[i];
+					if(searchContent.equals(searchKeyword[pos]))
+						pos++;
+					if(pos == searchKeyword.length){
+						searchResult.add(entry);
+						break;
+					}
+				}
+			}
+		}
+		else if(task.getStartingDate() != null && task.getEndingDate() != null){
+			searchContent = task.getStartingDate();
+			searchContent1 = task.getEndingDate();
+			String startDate, endDate;
+			for(Entry entry: entryList){
+				startDate = entry.getStartingDate();
+				endDate = entry.getEndingDate();
+				if(startDate.equals(searchContent) && endDate.equals(searchContent1)){
 					searchResult.add(entry);
 				}
 			}
 		}
-		else{
-			searchContent = searchContent.toLowerCase();
+		else if(task.getStartingDate() != null){
+			searchContent = task.getStartingDate();
 			for(Entry entry: entryList){
-				String temp = entry.getName().toLowerCase();
-				if(temp.contains(searchContent)){
+				if(entry.getStartingDate().equals(searchContent)){
+					searchResult.add(entry);
+				}
+			}
+		}
+		else if(task.getEndingDate() != null){
+			searchContent = task.getEndingDate();
+			for(Entry entry: entryList){
+				if(entry.getEndingDate().equals(searchContent)){
+					searchResult.add(entry);
+				}
+			}
+		}
+		else if(task.getDoneness() != null){
+			doneness = task.getDoneness();
+			for(Entry entry: entryList){
+				if(entry.getDoneness() == doneness){
 					searchResult.add(entry);
 				}
 			}
@@ -410,7 +395,6 @@ public class Logic {
 		
 		displayList = searchResult;
 		executeDisplay(displayList);
-		return searchResult;
 	}
 
 	
@@ -425,7 +409,7 @@ public class Logic {
 				entryString += " start: " + e.getStartingDate();
 			}
 			
-			if (e.getEndingDate() != null && !e.getEndingDate().equals("") && !e.getEndingDate().equals("999999")){
+			if (e.getEndingDate() != null && !e.getEndingDate().equals("")){
 				entryString += " end: " + e.getEndingDate();
 			}
 			
@@ -442,12 +426,13 @@ public class Logic {
 	
 	private void executeDone(Executable task){
 		//Done something
-		ArrayList<Integer> index = task.getDisplayIndex();
-		
-		for(int i = 0 ; i < index.size(); i++){
-			entryList.get(index.get(i)-1).setDoneness(true);
-		}
-		writeToStorage();
+		String str = task.getInfo();
+		for (int i = 0; i < entryList.size(); i++) {
+            if(entryList.get(i).getName().equals(str)){
+            	entryList.get(i).setDoneness(true);
+            	break;
+            }
+        }
 	}
 	
 	private void writeToStorage(){
@@ -456,5 +441,17 @@ public class Logic {
 	
 	private LinkedList<Entry> readFromStorage(){
 		return storage.readFile();
+	}
+	
+	private boolean isGreaterDate(String newDateString, String compareDateString) throws ParseException{
+		DateFormat dateFormat = new SimpleDateFormat("ddMMyy");
+		Date newDate = dateFormat.parse(newDateString);
+		Date compareDate = dateFormat.parse(compareDateString);
+		
+		if(newDate.after(compareDate)){
+			return true;
+		}
+		
+		return false;
 	}
 }
