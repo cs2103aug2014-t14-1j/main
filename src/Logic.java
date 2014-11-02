@@ -241,6 +241,7 @@ public class Logic {
 	private void executeSort() {
 		// To sort the task by Date line
 		Collections.sort(entryList);
+		writeToStorage();
 	}
 
 	private void executeAdd(Executable task){
@@ -257,7 +258,10 @@ public class Logic {
 		}
 		if(task.getEndingDate()!= null){
 			entry.setEndingDate(task.getEndingDate());
+		}else{
+			entry.setEndingDate("999999");
 		}
+		
 		if(task.getStartingTime()!= null){
 			entry.setStartingTime(task.getStartingTime());
 		}
@@ -322,7 +326,7 @@ public class Logic {
 				entryToEdit.setEndingDate(task.getEndingDate());
 			}
 			
-			task.setPreStr(oldDetail); //memorise previous state for undo
+	    	task.setPreStr(oldDetail); //memorise previous state for undo
 			writeToStorage();
 		} catch(Exception e){
 			throw new IllegalArgumentException(e.getMessage());
@@ -409,7 +413,7 @@ public class Logic {
 				entryString += " start: " + e.getStartingDate();
 			}
 			
-			if (e.getEndingDate() != null && !e.getEndingDate().equals("")){
+			if (e.getEndingDate() != null && !e.getEndingDate().equals("") && !e.getEndingDate().equals("999999")){
 				entryString += " end: " + e.getEndingDate();
 			}
 			
@@ -426,13 +430,13 @@ public class Logic {
 	
 	private void executeDone(Executable task){
 		//Done something
-		String str = task.getInfo();
-		for (int i = 0; i < entryList.size(); i++) {
-            if(entryList.get(i).getName().equals(str)){
-            	entryList.get(i).setDoneness(true);
-            	break;
-            }
-        }
+		ArrayList<Integer> index = task.getDisplayIndex();
+		
+		for(int i = 0 ; i < index.size(); i++){
+			entryList.get(index.get(i)-1).setDoneness(true);
+		}
+		writeToStorage();
+	
 	}
 	
 	private void writeToStorage(){

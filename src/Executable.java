@@ -26,7 +26,7 @@ public class Executable {
 	private String endingTime = null;
 	private Boolean doneness = null;
 	private ArrayList<Integer> displayIndex = new ArrayList<Integer>();
-//	private String preStr;
+	private String preStr;
 	
 
 	public Executable(CommandType command){
@@ -109,11 +109,11 @@ public class Executable {
 		this.displayIndex = displayIndex;
 	}
 	
-//	public String getPreStr() {
-//		return preStr;
-//	}
+	public String getPreStr() {
+		return preStr;
+	}
 
-//	public void setPreStr(String preStr) {
-//		this.preStr = preStr;
-//	}
+	public void setPreStr(String preStr) {
+		this.preStr = preStr;
+	}
 }
