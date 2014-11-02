@@ -107,6 +107,15 @@ public class Entry implements Comparable<Entry>{
 		//return compareQuantity - this.quantity;
  
 	}	
-    //TODO implement comparator
-    //TODO implement containsWord(String Word)
+    
+	public Entry copy(){
+		Entry exe = new Entry();
+		exe.setName(this.name);
+		exe.setStartingDate(this.startingDate);
+		exe.setEndingDate(this.endingDate);
+		exe.setStartingTime(this.startingTime);
+		exe.setEndingTime(this.endingTime);
+		exe.setDoneness(this.doneness);
+		return exe;
+	}
 }

@@ -126,33 +126,33 @@ public class Logic {
 		
 		case CMD_ADD: 
 		
-			preList.add(new LinkedList<Entry>(entryList));
+			saveEntryListToPreList();
 			executeAdd(task);
 			executeDisplay(entryList);
 			return entryList;
 		
 		case CMD_CLEAR: 
 			
-			preList.add(new LinkedList<Entry>(entryList));
+			saveEntryListToPreList();
 			executeClear(task);
 			executeDisplay(entryList);
 			return entryList;
 		
 		case CMD_DELETE: 
 		
-			preList.add(new LinkedList<Entry>(entryList));
+			saveEntryListToPreList();
 			executeDelete(task);
 			executeDisplay(entryList);
 			return entryList;
 		
 		case CMD_DISPLAY: 
 		
-			preList.add(new LinkedList<Entry>(entryList));
 			executeDisplay(entryList);
 			return entryList;
 		
 		case CMD_DONE: 
-			//preList.add(new LinkedList<Entry>(entryList));
+			
+			saveEntryListToPreList();
 			exeList.add(task);
 			executeDone(task);
 			executeDisplay(entryList);
@@ -160,14 +160,15 @@ public class Logic {
 		
 		case CMD_UNDONE: 
 			
+			saveEntryListToPreList();
 			exeList.add(task);
 			executeUndone(task);
 			executeDisplay(entryList);
 			return entryList;
 			
-			
 		case CMD_EDIT: 
-			//preList.add(new LinkedList<Entry>(entryList));
+			
+			saveEntryListToPreList();
 			exeList.add(task);
 			executeEdit(task);
 			executeDisplay(entryList);
@@ -175,19 +176,18 @@ public class Logic {
 		
 		case CMD_SEARCH: 
 			
-			preList.add(new LinkedList<Entry>(entryList));
 			executeSearch(task);
 			executeDisplay(displayList);
 			return displayList;
 		
 		case CMD_UNDO: 
+			
 			executeUndo();
 			executeDisplay(entryList);
 			return entryList;
 		
 		case CMD_SORT: 
 		
-			preList.add(new LinkedList<Entry>(entryList));
 			executeSort();
 			executeDisplay(entryList);
 			return entryList;
@@ -494,6 +494,14 @@ public class Logic {
 	
 	private LinkedList<Entry> readFromStorage(){
 		return storage.readFile();
+	}
+	
+	private void saveEntryListToPreList(){
+		LinkedList<Entry> newList = new LinkedList<Entry>();
+		for (Entry e : entryList){
+			newList.add(e.copy());
+		}
+		preList.add(newList);
 	}
 	
 	private boolean isGreaterDate(String newDateString, String compareDateString) throws ParseException{
