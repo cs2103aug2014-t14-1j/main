@@ -32,13 +32,20 @@ import todo_manager.ToDoManager.EmptyInputException;
  *  /search today : startingDate = endingDate = today's date
  *  /search <date> : startingDate = endingDate = <date>
  *  /search <keyword> : info is the string of keyword or keywords as given by the user
+ *  /search /start <date> : startingDate = <date>
+ *  /search /by <date> : endingDate = <date>
  *  /search done : doneness = true
  *  /search undone : doneness = false
  *  Note that Doneness will be set to null if doneness is not being searched for. False or true if it is being searched for.
  *  doneness defaults to false for all other operations, like add or delete.
  *  
+ *  ////MARK DONE//// -> command is CMD_DONE
  *  /mark <displaylist index> : index(may have multiple) stored in displaylist index array
- *  /mark <keywords> : info is filled with String of all keywords 
+ *  /mark <keywords> : info is filled with String of all keywords
+ *  
+ *  ///MARK UNDONE/// -> command is CMD_UNDONE
+ *  to mark undone, simply use the format for mark done as above, but include the 
+ *  word "undone" anywhere after "/mark"
  *  
  *  help : displays list of help topics
  *  help </command> : displays help message for that command
@@ -93,7 +100,7 @@ public class Interpreter {
 				break;
 				
 			case "/search" :
-				exe = processSearch(s);
+				exe = processSearch(words);
 				break;
 				
 			case "/display" :
@@ -286,8 +293,8 @@ public class Interpreter {
 		return new Executable(CommandType.CMD_UNDO);
 	}
 
-	private static Executable processSearch(String userInput) throws IllegalArgumentException {
-		/*
+	private static Executable processSearch(String[] words) throws IllegalArgumentException {
+		
 		
 		Executable exe = new Executable(CommandType.CMD_SEARCH);
 		
@@ -308,7 +315,7 @@ public class Interpreter {
 			exe.setStartingDate(words[1]);
 			exe.setEndingDate(words[1]);
 			
-		} else if (words[1].equals("/from")) { //search for entries after a particular date
+		} else if (words[1].equals("/start")) { //search for entries after a particular date
 			if (words.length < 3 || !isDate(words[2])){ 
 				// no date or invalid date
 				throw new IllegalArgumentException();
@@ -335,19 +342,6 @@ public class Interpreter {
 		}
 		
 		return exe;
-		*/
-		
-		
-		Executable exe = new Executable((CommandType.CMD_SEARCH));
-		userInput = userInput.trim();
-		String searchContent = userInput.substring(7).trim();
-		if(searchContent.compareTo("") == 0){
-			throw new IllegalArgumentException();
-		}
-		else{
-			exe.setInfo(searchContent);
-		}
-		return exe;
 	}
 	
 	private static Executable processDisplay(String[] words){
@@ -367,6 +361,8 @@ public class Interpreter {
 				word = words[i];
 				if (isNumber(word)){ // its a display index
 					index.add(Integer.parseInt(word));
+				} else if (word.equals("undone") ) {
+					exe.setCommand(CommandType.CMD_UNDONE);
 				} else { // its a keyword
 					info += word + " ";
 				}
