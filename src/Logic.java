@@ -67,6 +67,7 @@ public class Logic {
 	
 	public static LinkedList<Entry> entryList = new LinkedList<Entry>();
 	private static LinkedList<Entry> displayList = new LinkedList<Entry>();
+	private static LinkedList<Executable> exeList = new LinkedList<Executable>();
 	
 	private static Logging logObj = Logging.getInstance();
 
@@ -104,6 +105,7 @@ public class Logic {
 			exe = Interpreter.parseCommand(userInput);
 			displayObj = execute(exe);
 			
+			
 		} catch (EmptyInputException e) {
 			return ToDoManager.MESSAGE_ERROR_EMPTY_INPUT;
 		} catch (IllegalArgumentException e) {
@@ -121,54 +123,84 @@ public class Logic {
 		CommandType command = task.getCommand();
 		
 		switch (command) {
+		
 		case CMD_ADD: 
+		
 			preList.add(new LinkedList<Entry>(entryList));
 			executeAdd(task);
 			executeDisplay(entryList);
 			return entryList;
+		
 		case CMD_CLEAR: 
+			
 			preList.add(new LinkedList<Entry>(entryList));
 			executeClear(task);
 			executeDisplay(entryList);
 			return entryList;
+		
 		case CMD_DELETE: 
+		
 			preList.add(new LinkedList<Entry>(entryList));
 			executeDelete(task);
 			executeDisplay(entryList);
 			return entryList;
+		
 		case CMD_DISPLAY: 
+		
 			preList.add(new LinkedList<Entry>(entryList));
 			executeDisplay(entryList);
 			return entryList;
+		
 		case CMD_DONE: 
-			preList.add(new LinkedList<Entry>(entryList));
+			//preList.add(new LinkedList<Entry>(entryList));
+			exeList.add(task);
 			executeDone(task);
 			executeDisplay(entryList);
 			return entryList;
+		
+		case CMD_UNDONE: 
+			
+			exeList.add(task);
+			executeUndone(task);
+			executeDisplay(entryList);
+			return entryList;
+			
+			
 		case CMD_EDIT: 
-			preList.add(new LinkedList<Entry>(entryList));
+			//preList.add(new LinkedList<Entry>(entryList));
+			exeList.add(task);
 			executeEdit(task);
 			executeDisplay(entryList);
 			return entryList;
+		
 		case CMD_SEARCH: 
+			
 			preList.add(new LinkedList<Entry>(entryList));
 			executeSearch(task);
 			executeDisplay(displayList);
 			return displayList;
+		
 		case CMD_UNDO: 
 			executeUndo();
 			executeDisplay(entryList);
 			return entryList;
+		
 		case CMD_SORT: 
+		
 			preList.add(new LinkedList<Entry>(entryList));
 			executeSort();
 			executeDisplay(entryList);
 			return entryList;
+		
 		case CMD_HELP:
+			
 			String out = executeHelp(task);
 			return out;
+			
 		case CMD_EXIT:
+			
 			preList.clear();
+			exeList.clear();
 			System.exit(0);
 			//return "exit";
 		default:
@@ -177,6 +209,18 @@ public class Logic {
 			
 	}
 	
+	private void executeUndone(Executable task) {
+		
+	ArrayList<Integer> index = task.getDisplayIndex();
+		
+		for(int i = 0 ; i < index.size(); i++){
+			entryList.get(index.get(i)-1).setDoneness(false);
+		}
+		writeToStorage();
+		
+		
+	}
+
 	private String executeHelp(Executable task) {
 		
 		String topic = task.getInfo();
@@ -228,6 +272,7 @@ public class Logic {
 
 	private void executeUndo() {
 		
+		
 		if(preList.isEmpty()){
 			System.out.println("Nothing to Undo!");
 		}
@@ -236,6 +281,10 @@ public class Logic {
 			preList.removeLast();
 		}
 			
+	}
+
+	private void executeUnedit() {
+		
 	}
 
 	private void executeSort() {

@@ -9,7 +9,9 @@ public class Entry implements Comparable<Entry>{
     private String endingTime;
     private Boolean doneness;
     
-    public Entry(String info){
+   
+
+	public Entry(String info){
         name = info;
         startingDate = null;
         endingDate = null;
