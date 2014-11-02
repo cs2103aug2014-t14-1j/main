@@ -12,10 +12,17 @@ import todo_manager.ToDoManager.EmptyInputException;
  * Summary of the internal state of the Executable object that is returned
  * (If variable not mentioned, defaults to default chosen in Executable class (current default is null))
  * 
+ *  NO TIME GIVEN
  *  /add : info filled, 
  *  /add /start /by : info filled, startingDate is /start <date>, endingDate is /by <date>
  *  /add /by : info filled, endingDate is /by date
  *  /add /on : info filled, startingDate and endingDate are equal to /on date
+ *  
+ *  WITH TIME GIVEN 
+ *  /add <info> /start <date> <optional_Startingtime> /by  <date> <optional_Endingtime>
+ *  /add <info> /by <date> <optional_Endingtime> : endingTime filled, startingTime null;
+ *  /add <info> /on <date> <optional_time> : startingTime = endingTime = <optional_time>
+ *  /add <info> /on <date> <optional_Startingtime> <optional_Endingtime>
  * 
  *  /delete <int displayListIndex> : index given in exe.getdisplayIndex
  *  
@@ -56,6 +63,7 @@ import todo_manager.ToDoManager.EmptyInputException;
 
 public class Interpreter {
 	
+	//change this to true to view contents of exe returned, for debugging
 	private static final boolean DEBUG = false;
 	
 	private static final String EMPTY_STRING = "";
@@ -128,7 +136,8 @@ public class Interpreter {
 		}
 		
 		if (DEBUG) {
-			printExe(exe); // for debugging, to view the contents of executable
+			// for debugging, to view the contents of executable
+			printExe(exe); 
 		}
 		
 		return exe;
@@ -188,53 +197,141 @@ public class Interpreter {
 
 	private static void processAddBy(Executable exe, String[] words, 
 			                         int i) throws IllegalArgumentException {
+		
+		// i is where /by was found
 		exe.setInfo(recombine(words, 1, i));
 		
+		//date
 		if (words.length == i + 1){ // nothing after keyword
+			throw new IllegalArgumentException();
+		} else if (! isDate(words[i+1] ) ){ // wrong date format
 			throw new IllegalArgumentException();
 		} 
 		
-		String date = recombine(words, i+1, words.length);
-		//TODO valid check on date
+		String date = words[i+1];
 		exe.setEndingDate(date);
+		
+		//time
+		if (words.length == i + 3) { //time given
+			if (! isTime(words[i+2]) ) { // wrong time format
+				throw new IllegalArgumentException();
+			}
+			
+			String time = words[i+2];
+			exe.setEndingTime(time);
+		}
+		
 	}
 
 	private static void processAddOn(Executable exe, String[] words,
 			                         int i) throws IllegalArgumentException {
 		exe.setInfo(recombine(words, 1, i));
 		
-		if (words.length == i + 1){ // nothing after keyword
+		//date
+		if (words.length <= i + 1){ // nothing after keyword
+			throw new IllegalArgumentException();
+		} else if (! isDate(words[i+1]) ){ // wrong date format
 			throw new IllegalArgumentException();
 		} 
 		
-		String date = recombine(words, i+1, words.length);
-		//TODO valid check on date
+		String date = words[i+1];
 		exe.setStartingDate(date); 
 		exe.setEndingDate(date);
+		
+		//time
+		if (words.length <= i+2){
+			// return if no time argument given
+			return;
+		}
+		
+		//first time argument
+		String time;
+		if (! isTime(words[i+2]) ) { // wrong time format
+			throw new IllegalArgumentException();
+		} else {
+			time = words[i+2];
+			exe.setStartingTime(time);
+		}
+		
+		if (words.length <= i+3 ) {
+			// 1 time given, event occurs at a point in time
+			exe.setEndingTime(time);
+			return;
+		}
+		
+		// second time argument
+		if (! isTime(words[i+3]) ) { // wrong time format
+			throw new IllegalArgumentException();
+		} else {
+			time = words[i+3];
+			exe.setEndingTime(time);
+		}
 	}
 
 	private static void processAddFrom(Executable exe, String[] words, 
 			                           int i) throws IllegalArgumentException {
 		exe.setInfo(recombine(words, 1, i));
 		
-		if (words.length <= i + 3){ // nothing after keyword /from
-			throw new IllegalArgumentException();
-		} 
+		int pointer = i + 1;
+		int end = words.length;
+		String time, date;
 		
-		int j;
-		String word;
-		for (j = i + 1; j < words.length; j++) { //look for keyword /to
-			word = words[j];
-			if (word.equals("/by")){
-				break;
+		//start date
+		if (pointer == end) {
+			throw new IllegalArgumentException();
+		} else {  
+			date = words[pointer];
+			if ( isDate(date) ){ // right date format
+				exe.setStartingDate(date);
+				pointer++;
+			} else {
+				throw new IllegalArgumentException();
 			}
 		}
 		
-		if (words.length == j + 1){ // nothing after /by
+		// start time
+		if (pointer == end) {
 			throw new IllegalArgumentException();
-		} else{
-			exe.setStartingDate(recombine(words, i + 1, j));
-			exe.setEndingDate(recombine(words, j + 1, words.length));
+		} else if (! words[pointer].equals("/by") ) {
+			time = words[pointer];
+			if ( isTime(time) ){ // right date format
+				exe.setStartingTime(time);
+				pointer++;
+			} else {
+				throw new IllegalArgumentException();
+			}
+		}
+		
+		//  /by
+		if (pointer == end || !words[pointer].equals("/by")) {
+			throw new IllegalArgumentException();
+		} else {
+			pointer++;
+		}
+		
+		//end date
+		if (pointer == end) {
+			throw new IllegalArgumentException();
+		} else {  
+			date = words[pointer];
+			if ( isDate(date) ){ // right date format
+				exe.setEndingDate(date);
+				pointer++;
+			} else {
+				throw new IllegalArgumentException();
+			}
+		}
+		
+		// end time
+		if (pointer == end) {
+			return;
+		} else {
+			time = words[pointer];
+			if ( isTime(time) ){ // right date format
+				exe.setEndingTime(time);
+			} else {
+				throw new IllegalArgumentException();
+			}
 		}
 	}
 
@@ -411,6 +508,10 @@ public class Interpreter {
 		return ValidationCheck.isValidDate(date);
 	}
 	
+	private static boolean isTime(String time) {
+		return ValidationCheck.isValidTime(time);
+	}
+	
 	private static boolean isNumber(String s){
 		try{
 			Integer.parseInt(s);
@@ -420,14 +521,17 @@ public class Interpreter {
 		return true;
 	}
 	
+	//helper method for debugging
 	private static void printExe(Executable exe){
-		String out = "---Executable Begin---\n" + "Command : ";
-		out += exe.getCommand() + "\n" + "Name : ";
-		out += exe.getInfo() + "\n" + "StartingDate : ";
-		out += exe.getStartingDate() + "\n" + "EndingDate : ";
-		out += exe.getEndingDate() + "\n" + "Doneness : ";
-		out += exe.getDoneness() + "\n" + "displayIndex : ";
-		out += exe.getDisplayIndex() + "\n";
+		String out = "---Executable Begin---\n";
+		out += "Command : "      + exe.getCommand() + "\n";
+		out += "Name : "         + exe.getInfo() + "\n" ;
+		out += "StartingDate : " + exe.getStartingDate() + "\n";
+		out += "EndingDate : "   + exe.getEndingDate() + "\n";
+		out += "StartingTime : " + exe.getStartingTime() + "\n";
+		out += "EndingTime : "   + exe.getEndingTime() + "\n";
+		out += "Doneness : "     + exe.getDoneness() + "\n" ;
+		out += "displayIndex : " + exe.getDisplayIndex() + "\n";
 		out += "---Executable End---\n\n";
 		
 		System.out.println(out);
