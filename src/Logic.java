@@ -358,24 +358,27 @@ public class Logic {
 		try{
 			int displayIndex = task.getDisplayIndex().get(0) - 1;
 			Entry entryToEdit = displayList.get(displayIndex);
-			String oldDetail = "";
 			
 			if (task.getInfo() != null){ //edit name
-				oldDetail += "/name " + entryToEdit.getName();
 				entryToEdit.setName(task.getInfo());
 			} 
 			
 			if (task.getStartingDate() != null){ //edit startingDate
-				oldDetail += "startingDate " + entryToEdit.getStartingDate() + " ";
 				entryToEdit.setStartingDate(task.getStartingDate());
 			}
 			
 			if (task.getEndingDate() != null){//edit endingDate
-				oldDetail += "endingDate " + entryToEdit.getEndingDate() + " ";
 				entryToEdit.setEndingDate(task.getEndingDate());
 			}
 			
-	    	task.setPreStr(oldDetail); //memorise previous state for undo
+			if (task.getStartingTime() != null){ //edit startingTime
+				entryToEdit.setStartingTime(task.getStartingTime());
+			}
+			
+			if (task.getEndingTime() != null){//edit endingTime
+				entryToEdit.setEndingTime(task.getEndingTime());
+			}
+
 			writeToStorage();
 		} catch(Exception e){
 			throw new IllegalArgumentException(e.getMessage());
