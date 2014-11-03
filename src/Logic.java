@@ -24,14 +24,17 @@ public class Logic {
 			+ "/edit     /undo\n"
 			+ "/mark     /search\n"
 			+ "/sort     /exit\n"
-			+ "date\n";
+			+ " date      time\n";
 	
 	private static final String HELP_INVALID_KEYWORD = "Invalid help topic given.\n";
 	private static final String HELP_ADD = "Format of add command : /add <task name>\n" +
 										   "The following can also be added after the basic add command : \n" +
-										   "/on <date>\n" +
-										   "/by <date>\n" +
-										   "/start <date> /by <date>\n";
+										   "/on <date> <start time> <end time>\n" +
+										   "/on <date> <single time>\n" +
+										   "/by <date> <end time>\n" +
+										   "/start <date> <start time> /by <date> <end time>\n" +
+										   "Note that each <time> is optional but each <date> is required.\n";
+								
 	private static final String HELP_DISPLAY = "The /display command will list all saved tasks on the screen.\n";
 	private static final String HELP_DELETE = "Format of delete command : \n" +
 											  "/delete <index no.> \n" +
@@ -45,7 +48,8 @@ public class Logic {
 											"/edit <index no.> /by <new date>\n" + 
 											"/edit <index no.> /start <new date> /by <new date2>\n" +
 											"Note that <index no.> refers to the numbering in the most recently displayed list.\n";
-	private static final String HELP_UNDO = "The /undo command reverses the most recent change made.\n";
+	private static final String HELP_UNDO = "The /undo command reverses the most recent change made.\n" +
+											"This extends to all actions taken since the app was started.\n";
 	private static final String HELP_MARK = "This marks the item as done. Format of mark : \n" +
 											"/mark <keyword>\n" +
 											"/mark <index no.>\n" + 
@@ -58,6 +62,8 @@ public class Logic {
 											  "/search <keyword>\n";
 	private static final String HELP_SORT = "The /sort command arranges the tasks chronologically.\n";
 	private static final String HELP_EXIT = "The /exit command shuts down ToDoManager.\n";
+	private static final String HELP_DATE = "Format for date is ddMMyy, eg. 210315 for 21st March 2015.\n";
+	private static final String HELP_TIME= "Format for time is hhmm, eg. 1435 for 2.35pm.\n";
 
 	Storage storage;
 	
@@ -260,9 +266,12 @@ public class Logic {
 			case "/exit":
 				UserInterface.showToUser(HELP_EXIT);
 				return HELP_EXIT;
-			case "date format" :
-				//TODO
-				return "";
+			case "date" :
+				UserInterface.showToUser(HELP_DATE);
+				return HELP_DATE;
+			case "time" :
+				UserInterface.showToUser(HELP_TIME);
+				return HELP_TIME;
 			default : 
 				UserInterface.showToUser(HELP_INVALID_KEYWORD);
 				UserInterface.showToUser(HELP_NO_KEYWORD);
