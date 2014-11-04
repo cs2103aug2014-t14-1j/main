@@ -38,10 +38,12 @@ import todo_manager.ToDoManager.EmptyInputException;
  *  
  *  /search today : startingDate = endingDate = today's date
  *  /search tomorrow(or tmr) : startingDate = endingDate = trm's date
+ *  /search <month> : on that month
  *  /search <date> : startingDate = endingDate = <date>
  *  /search <keyword> : info is the string of keyword or keywords as given by the user
- *  /search /start <date> : startingDate = <date>
- *  /search /by <date> : endingDate = <date>
+ *  /search /start <date> : startingDate after <date> (sorted)
+ *  /search /by <date> : endingDate after <date> (sorted)
+ *  /search /start <date> /by <date> : startingDate and endingDate between those period
  *  /search done : doneness = true
  *  /search undone : doneness = false
  *  Note that Doneness will be set to null if doneness is not being searched for. False or true if it is being searched for.
@@ -522,6 +524,11 @@ public class Interpreter {
 			exe.setStartingDate(words[1]);
 			exe.setEndingDate(words[1]);
 			
+		} else if (monthValue(words[1]) != null){
+			
+			exe.setStartingDate(monthValue(words[1]));
+			exe.setEndingDate(monthValue(words[1]));
+
 		} else if (words[1].equals("/start") && words.length == 3) { //search for entries after a particular date
 			System.out.println(" hihihi");
 			if (words.length < 3 || !isDate(words[2])){ 
