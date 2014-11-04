@@ -37,6 +37,7 @@ import todo_manager.ToDoManager.EmptyInputException;
  *  /display : command set to display, no other info will be given
  *  
  *  /search today : startingDate = endingDate = today's date
+ *  /search tomorrow(or tmr) : startingDate = endingDate = trm's date
  *  /search <date> : startingDate = endingDate = <date>
  *  /search <keyword> : info is the string of keyword or keywords as given by the user
  *  /search /start <date> : startingDate = <date>
@@ -509,17 +510,34 @@ public class Interpreter {
 			Date date = new Date();
 			exe.setStartingDate(dateFormat.format(date));
 			exe.setEndingDate(dateFormat.format(date));
-			
+		
+		} else if (words.length == 2 && (words[1].equals("tomorrow") || words[1].equals("tmr"))){   //search tomorrow
+					DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+					Date today = new Date();
+					Date tommorow = new Date(today.getTime() + (1000 * 60 * 60 * 24));
+					exe.setStartingDate(dateFormat.format(tommorow));
+					exe.setEndingDate(dateFormat.format(tommorow));
+					
 		} else if (isDate(words[1])) { //search for one date
 			exe.setStartingDate(words[1]);
 			exe.setEndingDate(words[1]);
 			
-		} else if (words[1].equals("/start")) { //search for entries after a particular date
+		} else if (words[1].equals("/start") && words.length == 3) { //search for entries after a particular date
+			System.out.println(" hihihi");
 			if (words.length < 3 || !isDate(words[2])){ 
 				// no date or invalid date
 				throw new IllegalArgumentException();
 			}
 			exe.setStartingDate(words[2]);
+			
+		} else if (words[1].equals("/start") && words[3].equals("/by")) { //search for entries after a particular date
+			if (words.length != 5 || !isDate(words[2]) || !isDate(words[4])){ 
+				// no date or invalid date
+				throw new IllegalArgumentException();
+			}
+			exe.setStartingDate(words[2]);
+			exe.setEndingDate(words[4]);
+			
 		} else if (words[1].equals("/by")) { //search for entries before a particular date
 			if (words.length < 3 || !isDate(words[2])){ 
 				// no date or invalid date
@@ -638,5 +656,52 @@ public class Interpreter {
 		
 		System.out.println(out);
 	}
+	
+	//return null value of if the input is not a month
+		private static String monthValue(String word){
+			
+			word.toLowerCase();
+			
+			switch (word) {
+			case "january" :
+				return "000100";
+				
+			case "february" :
+				return "000200";
+				
+			case "march" :
+				return "000300";
+				
+			case "april" :
+				return "000400";
+				
+			case "may" :
+				return "000500";
+				
+			case "june" :
+				return "000600";
+				
+			case "july" :
+				return "000700";
+				
+			case "august" :
+				return "000800";
+				
+			case "september" :
+				return "000900";
+				
+			case "october":
+				return "001000";
+				
+			case "november":
+				return "001100";
+				
+			case "december":
+				return "001200";
+				
+			default : 
+				return null;
+			}
+		}
 
 }

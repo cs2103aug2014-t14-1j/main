@@ -123,7 +123,7 @@ public class Logic {
 		return displayObj;
 	}
 	
-	public Object execute(Executable task){
+	public Object execute(Executable task) throws ParseException{
 		
 
 		CommandType command = task.getCommand();
@@ -386,9 +386,9 @@ public class Logic {
 	}
 
 
-	public void executeSearch(Executable task){
+public void executeSearch(Executable task) throws ParseException{
 		
-		String searchContent, searchContent1;
+		String searchContent, searchContent1, startDate, endDate;
 		String[] searchKeyword, searchName;
 		int pos;
 		boolean doneness;
@@ -415,30 +415,33 @@ public class Logic {
 		else if(task.getStartingDate() != null && task.getEndingDate() != null){
 			searchContent = task.getStartingDate();
 			searchContent1 = task.getEndingDate();
-			String startDate, endDate;
-			for(Entry entry: entryList){
-				startDate = entry.getStartingDate();
-				endDate = entry.getEndingDate();
-				if(startDate.equals(searchContent) && endDate.equals(searchContent1)){
-					searchResult.add(entry);
+				for(Entry entry: entryList){
+					startDate = entry.getStartingDate();
+					endDate = entry.getEndingDate();
+					if(isGreater(startDate, searchContent) && isSmaller(endDate, searchContent1)){
+						searchResult.add(entry);
+					}
 				}
-			}
 		}
 		else if(task.getStartingDate() != null){
 			searchContent = task.getStartingDate();
 			for(Entry entry: entryList){
-				if(entry.getStartingDate().equals(searchContent)){
+				startDate = entry.getStartingDate();
+				if(isGreater(startDate, searchContent)){
 					searchResult.add(entry);
 				}
 			}
+			Collections.sort(searchResult);
 		}
 		else if(task.getEndingDate() != null){
 			searchContent = task.getEndingDate();
 			for(Entry entry: entryList){
-				if(entry.getEndingDate().equals(searchContent)){
+				endDate = entry.getEndingDate();
+				if(isGreater(endDate, searchContent)){
 					searchResult.add(entry);
 				}
 			}
+			Collections.sort(searchResult);
 		}
 		else if(task.getDoneness() != null){
 			doneness = task.getDoneness();
@@ -450,7 +453,6 @@ public class Logic {
 		}
 		
 		displayList = searchResult;
-		executeDisplay(displayList);
 	}
 
 	
@@ -506,16 +508,50 @@ public class Logic {
 		}
 		preList.add(newList);
 	}
+
 	
-	private boolean isGreaterDate(String newDateString, String compareDateString) throws ParseException{
+	private boolean isGreater(String newDateString, String compareDateString) throws ParseException{
 		DateFormat dateFormat = new SimpleDateFormat("ddMMyy");
 		Date newDate = dateFormat.parse(newDateString);
 		Date compareDate = dateFormat.parse(compareDateString);
 		
-		if(newDate.after(compareDate)){
+		if(!newDate.before(compareDate)){
 			return true;
 		}
 		
 		return false;
+	}
+	
+	private boolean isSmaller(String newDateString, String compareDateString) throws ParseException{
+		DateFormat dateFormat = new SimpleDateFormat("ddMMyy");
+		Date newDate = dateFormat.parse(newDateString);
+		Date compareDate = dateFormat.parse(compareDateString);
+		
+		if(!newDate.after(compareDate)){
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean isMonthValue(String date){
+		int amountOfZero = 0;
+		for(int i = 0; i < date.length(); i++){
+			if(date.charAt(i) == '0'){
+				amountOfZero++;
+			}
+		}
+		if(amountOfZero >= 4){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	
+	private int getMonth(String date){
+		int dateInt = Integer.parseInt(date);
+		int month = (dateInt/100) % 100;
+		return month;
 	}
 }
