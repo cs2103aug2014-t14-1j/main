@@ -195,8 +195,7 @@ public class Interpreter {
 		exe.setInfo(recombine(words, 1, words.length));
 	}
 
-	private static void processAddBy(Executable exe, String[] words, 
-			                         int i) throws IllegalArgumentException {
+	private static void processAddBy(Executable exe, String[] words, int i) {
 		
 		// i is where /by was found
 		exe.setInfo(recombine(words, 1, i));
@@ -223,8 +222,7 @@ public class Interpreter {
 		
 	}
 
-	private static void processAddOn(Executable exe, String[] words,
-			                         int i) throws IllegalArgumentException {
+	private static void processAddOn(Executable exe, String[] words, int i) {
 		exe.setInfo(recombine(words, 1, i));
 		
 		//date
@@ -268,8 +266,7 @@ public class Interpreter {
 		}
 	}
 
-	private static void processAddFrom(Executable exe, String[] words, 
-			                           int i) throws IllegalArgumentException {
+	private static void processAddFrom(Executable exe, String[] words, int i) {
 		exe.setInfo(recombine(words, 1, i));
 		
 		int pointer = i + 1;
@@ -365,18 +362,13 @@ public class Interpreter {
 		exe.setDisplayIndex(index);
 		
 		if (words[2].equals("/by")) { // edit date to "by" format
-			exe.setEndingDate(words[3]);
+			processEditBy(words, exe, 2);
 			
 		} else if (words[2].equals("/on")) { // edit date to "on" format
-			exe.setStartingDate(words[3]);
-			exe.setEndingDate(words[3]);
+			processEditOn(words, exe, 2);
 			
-		} else if (words[2].equals("/start") && words[4].equals("/by")) { // edit date to "start, by" format
-			if (words.length < 6 ){ //incorrect or insufficient commands from user
-				throw new IllegalArgumentException();
-			}
-			exe.setStartingDate(words[3]);
-			exe.setEndingDate(words[5]);
+		} else if (words[2].equals("/start")) { // edit date to "start, by" format
+			processEditStart(words, exe, 2);
 			
 		} else { // edit entry name
 			String keywords = recombine(words, 2, words.length);
@@ -384,6 +376,116 @@ public class Interpreter {
 		}
 		
 		return exe;
+	}
+
+	private static void processEditStart(String[] words, Executable exe, int i) {
+		// i is where /start is found
+		int pointer = i + 1;
+		int end = words.length;
+		Boolean date = null;
+		
+		if (pointer == end) { // check for insufficient length
+			throw new IllegalArgumentException();
+		} else if ( isDate(words[pointer]) ) { // change date
+			exe.setStartingDate(words[pointer]);
+			date = true;
+		} else if (isTime(words[pointer])) { //change time
+			exe.setStartingTime(words[pointer]);
+			date = false;
+		} else { // unrecognised format
+			throw new IllegalArgumentException();
+		}
+		
+		pointer++;
+		
+		if (pointer == end) { // check for insufficient length
+			return;
+		} if ( isDate(words[pointer]) && date == false) { //check that werent given two dates
+			exe.setStartingDate(words[pointer]);
+		} else if (isTime(words[pointer]) && date == true) { //check that werent given two times
+			exe.setStartingTime(words[pointer]);
+		} else { // unrecognised format
+			throw new IllegalArgumentException();
+		}
+
+		pointer++;
+		
+		if (pointer == end) {
+			return;
+		} else if (words[pointer] == "/by") {
+			processEditBy(words, exe, pointer);
+		}
+		
+	}
+
+	private static void processEditOn(String[] words, Executable exe, int i) {
+		// i is where /on is located in words
+		
+		int pointer = i + 1;
+		int end = words.length;
+		Boolean date = null;
+		
+		if (pointer == end) { // check for insufficient length
+			throw new IllegalArgumentException();
+		} else if ( isDate(words[pointer]) ) { // change date
+			exe.setStartingDate(words[pointer]);
+			exe.setEndingDate(words[pointer]);
+			date = true;
+		} else if (isTime(words[pointer])) { //change time
+			exe.setStartingTime(words[pointer]);
+			exe.setEndingTime(words[pointer]);
+			date = false;
+		} else { // unrecognised format
+			throw new IllegalArgumentException();
+		}
+		
+		pointer++;
+		
+		if (pointer == end) { // check for insufficient length
+			return;
+		} if ( isDate(words[pointer]) && date == false) { //check that werent given two dates
+			exe.setStartingDate(words[pointer]);
+			exe.setEndingDate(words[pointer]);
+		} else if (isTime(words[pointer]) && date == true) { //check that werent given two times
+			exe.setStartingTime(words[pointer]);
+			exe.setEndingTime(words[pointer]);
+		} else { // unrecognised format
+			throw new IllegalArgumentException();
+		}
+		return;
+	}
+
+	private static void processEditBy(String[] words, Executable exe, int i) {
+		// i is where /by is located in words
+		
+		int pointer = i + 1;
+		int end = words.length;
+		Boolean date = null;
+		
+		if (pointer == end) { // check for insufficient length
+			throw new IllegalArgumentException();
+		} else if ( isDate(words[pointer]) ) { // change date
+			exe.setEndingDate(words[pointer]);
+			date = true;
+		} else if (isTime(words[pointer])) { //change time
+			exe.setEndingTime(words[pointer]);
+			date = false;
+		} else { // unrecognised format
+			throw new IllegalArgumentException();
+		}
+		
+		pointer++;
+		
+		if (pointer == end) { // check for insufficient length
+			return;
+		} if ( isDate(words[pointer]) && date == false) { //check that werent given two dates
+			exe.setEndingDate(words[pointer]);
+		} else if (isTime(words[pointer]) && date == true) { //check that werent given two times
+			exe.setEndingTime(words[pointer]);
+		} else { // unrecognised format
+			throw new IllegalArgumentException();
+		}
+		return;
 	}
 
 	private static Executable processUndo(String[] words) {
