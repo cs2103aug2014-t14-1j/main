@@ -3,6 +3,7 @@ package todo_manager;
 import java.util.ArrayList;
 import java.util.Date;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import todo_manager.ToDoManager.CommandType;
@@ -198,7 +199,7 @@ public class Interpreter {
 		exe.setInfo(recombine(words, 1, words.length));
 	}
 
-	private static void processAddBy(Executable exe, String[] words, int i) {
+	private static void processAddBy(Executable exe, String[] words, int i) throws ParseException {
 		
 		// i is where /by was found
 		exe.setInfo(recombine(words, 1, i));
@@ -208,7 +209,9 @@ public class Interpreter {
 			throw new IllegalArgumentException();
 		} else if (! isDate(words[i+1] ) ){ // wrong date format
 			throw new IllegalArgumentException();
-		} 
+		} else if (! isGreaterToday(words[i+1])){
+			throw new IllegalArgumentException();
+		}
 		
 		String date = words[i+1];
 		exe.setEndingDate(date);
@@ -225,7 +228,7 @@ public class Interpreter {
 		
 	}
 
-	private static void processAddOn(Executable exe, String[] words, int i) {
+	private static void processAddOn(Executable exe, String[] words, int i) throws ParseException {
 		exe.setInfo(recombine(words, 1, i));
 		
 		//date
@@ -233,7 +236,9 @@ public class Interpreter {
 			throw new IllegalArgumentException();
 		} else if (! isDate(words[i+1]) ){ // wrong date format
 			throw new IllegalArgumentException();
-		} 
+		} else if (! isGreaterToday(words[i+1])){
+			throw new IllegalArgumentException();
+		}
 		
 		String date = words[i+1];
 		exe.setStartingDate(date); 
@@ -269,7 +274,7 @@ public class Interpreter {
 		}
 	}
 
-	private static void processAddFrom(Executable exe, String[] words, int i) {
+	private static void processAddFrom(Executable exe, String[] words, int i) throws ParseException {
 		exe.setInfo(recombine(words, 1, i));
 		
 		int pointer = i + 1;
@@ -281,7 +286,7 @@ public class Interpreter {
 			throw new IllegalArgumentException();
 		} else {  
 			date = words[pointer];
-			if ( isDate(date) ){ // right date format
+			if ( isDate(date) && isGreaterToday(date) ){ // right date format
 				exe.setStartingDate(date);
 				pointer++;
 			} else {
@@ -314,7 +319,7 @@ public class Interpreter {
 			throw new IllegalArgumentException();
 		} else {  
 			date = words[pointer];
-			if ( isDate(date) ){ // right date format
+			if ( isDate(date) && isGreaterToday(date) ){ // right date format
 				exe.setEndingDate(date);
 				pointer++;
 			} else {
@@ -506,26 +511,27 @@ public class Interpreter {
 		
 		if (doesNotHaveExtraText(words)) { // no search keywords
 			throw new IllegalArgumentException(); //TODO refine exception to be more informative
-			
-		} else if (words[1].equals("today")){   //search today
+		
+			//search today
+		} else if (words.length == 2 && words[1].equals("today")){  
 			DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
 			Date date = new Date();
 			exe.setStartingDate(dateFormat.format(date));
 			exe.setEndingDate(dateFormat.format(date));
 		
-		} else if (words.length == 2 && (words[1].equals("tomorrow") || words[1].equals("tmr"))){   //search tomorrow
-					DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
-					Date today = new Date();
-					Date tommorow = new Date(today.getTime() + (1000 * 60 * 60 * 24));
-					exe.setStartingDate(dateFormat.format(tommorow));
-					exe.setEndingDate(dateFormat.format(tommorow));
+			//search tomorrow
+		} else if (words.length == 2 && (words[1].equals("tomorrow") || words[1].equals("tmr"))){   
+			DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+			Date today = new Date();
+			Date tommorow = new Date(today.getTime() + (1000 * 60 * 60 * 24));
+			exe.setStartingDate(dateFormat.format(tommorow));
+			exe.setEndingDate(dateFormat.format(tommorow));
 					
 		} else if (isDate(words[1])) { //search for one date
 			exe.setStartingDate(words[1]);
 			exe.setEndingDate(words[1]);
 			
 		} else if (monthValue(words[1]) != null){
-			
 			exe.setStartingDate(monthValue(words[1]));
 			exe.setEndingDate(monthValue(words[1]));
 
@@ -646,6 +652,10 @@ public class Interpreter {
 			return false;
 		}
 		return true;
+	}
+	
+	private static boolean isGreaterToday(String s) throws ParseException{
+		return ValidationCheck.isGreater(s);
 	}
 	
 	//helper method for debugging

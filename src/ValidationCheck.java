@@ -6,8 +6,12 @@ package todo_manager;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class ValidationCheck {
+	private static final String DATE_FORMAT = null;
+
+
 	public static boolean isValidDate(String input) {
 		boolean isValid = validateDate(input);
 		return isValid;
@@ -84,4 +88,20 @@ public class ValidationCheck {
 			return false;
 		}
 	}
+
+
+	public static boolean isGreater(String date) throws ParseException{
+		DateFormat dateFormat = new SimpleDateFormat("ddMMyy");
+		Date newDate = dateFormat.parse(date);
+		Date today = new Date();
+		// minus the date by 1 day
+		Date correctDate = new Date(today.getTime() - (1000 * 60 * 60 * 24));
+		
+		if(!newDate.before(correctDate)){
+			return true;
+		}
+		
+		return false;
+	}
+	
 }
