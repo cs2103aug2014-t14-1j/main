@@ -332,8 +332,8 @@ public class ToDoManagerGUI {
 			if (e.getStartingDate() != null && !e.getStartingDate().equals("")) {
 				entryString += " start: " + e.getStartingDate();
 			}
-
-			if (e.getEndingDate() != null && !e.getEndingDate().equals("")) {
+			
+			if (e.getEndingDate() != null && !e.getEndingDate().equals("") && !e.getEndingDate().equals("999999")){
 				entryString += " end: " + e.getEndingDate();
 			}
 
