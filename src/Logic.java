@@ -435,7 +435,7 @@ public void executeSearch(Executable task) throws ParseException{
 				for(Entry entry: entryList){
 					startDate = entry.getStartingDate();
 					endDate = entry.getEndingDate();
-					if(getMonth(endDate)== month){
+					if(getMonth(startDate) == month && getMonth(endDate)== month){
 						searchResult.add(entry);
 					}
 				}
@@ -461,10 +461,21 @@ public void executeSearch(Executable task) throws ParseException{
 		}
 		else if(task.getEndingDate() != null){
 			searchContent = task.getEndingDate();
-			for(Entry entry: entryList){
-				endDate = entry.getEndingDate();
-				if(isGreater(endDate, searchContent)){
-					searchResult.add(entry);
+			if(isMonthValue(searchContent)){
+				int month = getMonth(searchContent);
+				for(Entry entry: entryList){
+					endDate = entry.getEndingDate();
+					if(getMonth(endDate)== month){
+						searchResult.add(entry);
+					}
+				}
+			}
+			else{
+				for(Entry entry: entryList){
+					endDate = entry.getEndingDate();
+					if(isGreater(endDate, searchContent)){
+						searchResult.add(entry);
+					}
 				}
 			}
 		}

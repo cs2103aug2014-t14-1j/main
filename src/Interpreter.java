@@ -75,6 +75,9 @@ public class Interpreter {
 	//TODO : make one of this in ToDoManager and have all classes call it
 	private static final String DATE_FORMAT = "ddMMyy"; 
 	
+	static DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+	private static final Date today = new Date();
+	
 	public Interpreter() {
 	}
 
@@ -512,37 +515,42 @@ public class Interpreter {
 		if (doesNotHaveExtraText(words)) { // no search keywords
 			throw new IllegalArgumentException(); //TODO refine exception to be more informative
 		
-			//search today
+			//search Today
 		} else if (words.length == 2 && words[1].equals("today")){  
-			DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
-			Date date = new Date();
-			exe.setStartingDate(dateFormat.format(date));
-			exe.setEndingDate(dateFormat.format(date));
+			exe.setStartingDate(dateFormat.format(today));
+			exe.setEndingDate(dateFormat.format(today));
 		
-			//search tomorrow
+			//search Tomorrow
 		} else if (words.length == 2 && (words[1].equals("tomorrow") || words[1].equals("tmr"))){   
 			DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
 			Date today = new Date();
 			Date tommorow = new Date(today.getTime() + (1000 * 60 * 60 * 24));
 			exe.setStartingDate(dateFormat.format(tommorow));
 			exe.setEndingDate(dateFormat.format(tommorow));
-					
-		} else if (isDate(words[1])) { //search for one date
+			
+		} else if (words.length == 3 && (words[1].equals("this") || words[1].equals("next")) 
+				&& (words[2].equals("week") || words[2].equals("month"))){ 
+			exe.setStartingDate(getStartDate(words[1], words[2]));
+			exe.setEndingDate(getEndDate(words[1], words[2]));
+			
+			//search for one date		
+		} else if (isDate(words[1])) { 
 			exe.setStartingDate(words[1]);
 			exe.setEndingDate(words[1]);
 			
+			//search by month name
 		} else if (monthValue(words[1]) != null){
-			exe.setStartingDate(monthValue(words[1]));
 			exe.setEndingDate(monthValue(words[1]));
-
+			
+			//search by starting date
 		} else if (words[1].equals("/start") && words.length == 3) { //search for entries after a particular date
-			System.out.println(" hihihi");
 			if (words.length < 3 || !isDate(words[2])){ 
 				// no date or invalid date
 				throw new IllegalArgumentException();
 			}
 			exe.setStartingDate(words[2]);
 			
+			//search by starting and ending date
 		} else if (words[1].equals("/start") && words[3].equals("/by")) { //search for entries after a particular date
 			if (words.length != 5 || !isDate(words[2]) || !isDate(words[4])){ 
 				// no date or invalid date
@@ -551,6 +559,7 @@ public class Interpreter {
 			exe.setStartingDate(words[2]);
 			exe.setEndingDate(words[4]);
 			
+			//search by ending date
 		} else if (words[1].equals("/by")) { //search for entries before a particular date
 			if (words.length < 3 || !isDate(words[2])){ 
 				// no date or invalid date
@@ -558,8 +567,8 @@ public class Interpreter {
 			}
 			exe.setEndingDate(words[2]);
 			
-		} else if (words[1].equals("done")) { 
 			//search for entries that are marked done
+		} else if (words[1].equals("done")) { 
 			exe.setDoneness(true);
 			
 		} else if (words[1].equals("undone")) { 
@@ -674,51 +683,115 @@ public class Interpreter {
 		System.out.println(out);
 	}
 	
-	//return null value of if the input is not a month
-		private static String monthValue(String word){
-			
-			word.toLowerCase();
-			
-			switch (word) {
-			case "january" :
-				return "000100";
-				
-			case "february" :
-				return "000200";
-				
-			case "march" :
-				return "000300";
-				
-			case "april" :
-				return "000400";
-				
-			case "may" :
-				return "000500";
-				
-			case "june" :
-				return "000600";
-				
-			case "july" :
-				return "000700";
-				
-			case "august" :
-				return "000800";
-				
-			case "september" :
-				return "000900";
-				
-			case "october":
-				return "001000";
-				
-			case "november":
-				return "001100";
-				
-			case "december":
-				return "001200";
-				
-			default : 
-				return null;
-			}
+	
+	private static int getMonth(String date){
+		int dateInt = Integer.parseInt(date);
+		int month = (dateInt/100) % 100;
+		return month;
+	}
+	
+	private static String getStartDate(String status, String period){
+		int thisMonth = getMonth(dateFormat.format(today));
+		if	((status.equals("next") && period.equals("week"))){
+			// count for the 7 days after today
+			Date nextWeek = new Date(today.getTime() + 7 * (1000 * 60 * 60 * 24));
+			return dateFormat.format(nextWeek);
 		}
+		else if(status.equals("this") && period.equals("week")){
+			return dateFormat.format(today);
+		}
+		else if(status.equals("this") && period.equals("month")){
+			return monthValue(Integer.toString(thisMonth));
+		}
+		else{
+			int nextNextMonth = thisMonth + 1;
+			return monthValue(Integer.toString(nextNextMonth));
+		}
+	}
+	
+	private static String getEndDate(String status, String period){
+		int thisMonth = getMonth(dateFormat.format(today));
+		
+		if	((status.equals("next") && period.equals("week"))){
+			// count for the 14 days after today
+			Date nextNextWeek = new Date(today.getTime() + 14 * (1000 * 60 * 60 * 24));
+			return dateFormat.format(nextNextWeek);
+		}
+		else if(status.equals("this") && period.equals("week")){
+			// count for the 7 days after today
+			Date nextWeek = new Date(today.getTime() + 7 * (1000 * 60 * 60 * 24));
+			return dateFormat.format(nextWeek);
+		}
+		else if(status.equals("this") && period.equals("month")){
+			return monthValue(Integer.toString(thisMonth));
+		}
+		else{
+			int nextNextMonth = thisMonth + 1;
+			return monthValue(Integer.toString(nextNextMonth));
+		}
+	}
+	
+	
+	//return null value of if the input is not a month
+	private static String monthValue(String word){
+				
+		String keyword = word.toLowerCase();
+		
+		switch (keyword) {
+		case "1":
+		case "january" :
+			return "000100";
+		
+		case "2":
+		case "february" :
+			return "000200";
+		
+		case "3":
+		case "march" :
+			return "000300";
+		
+		case "4":
+		case "april" :
+			return "000400";
+		
+		case "5":
+		case "may" :
+			return "000500";
+		
+		case "6":
+		case "june" :
+			return "000600";
+			
+		case "7":
+		case "july" :
+			return "000700";
+		
+		case "8":
+		case "august" :
+			return "000800";
+			
+		case "9":
+	    case "september" :
+			return "000900";
+			
+	    case "10":
+		case "october":
+			return "001000";
+			
+		case "11":
+		case "november":
+			return "001100";
+			
+		case "12":
+		case "december":
+			return "001200";
+			
+			
+		default : 
+			return null;
+		}
+	}
+	
+	
 
 }
