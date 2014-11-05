@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 
 import todo_manager.ToDoManager.CommandType;
 import todo_manager.ToDoManager.EmptyInputException;
-
+//@author A0098735M
 /**
  * Summary of the internal state of the Executable object that is returned
  * (If variable not mentioned, defaults to default chosen in Executable class (current default is null))
@@ -82,7 +82,8 @@ public class Interpreter {
 	
 	public Interpreter() {
 	}
-
+	
+	//@author A0098735M
 	public static Executable parseCommand(String s) throws Exception{
 		
 		s = s.trim();
@@ -151,7 +152,8 @@ public class Interpreter {
 		
 		return exe;
 	}
-
+	
+	//@author A0098735M
 	private static Executable processHelp(String[] words) {
 		Executable exe = new Executable(CommandType.CMD_HELP);
 		
@@ -163,7 +165,8 @@ public class Interpreter {
 		
 		return exe;
 	}
-
+	
+	//@author A0098735M
 	private static Executable processAdd(String[] words) throws Exception {
 		
 		Executable exe = new Executable(CommandType.CMD_ADD);
@@ -199,11 +202,13 @@ public class Interpreter {
 		
 		return exe;
 	}
-
+	
+	//@author A0098735M
 	private static void processAddBasic(Executable exe, String[] words) {
 		exe.setInfo(recombine(words, 1, words.length));
 	}
-
+	
+	//@author A0098735M
 	private static void processAddBy(Executable exe, String[] words, int i) throws ParseException {
 		
 		// i is where /by was found
@@ -232,7 +237,8 @@ public class Interpreter {
 		}
 		
 	}
-
+	
+	//@author A0098735M
 	private static void processAddOn(Executable exe, String[] words, int i) throws ParseException {
 		exe.setInfo(recombine(words, 1, i));
 		
@@ -278,7 +284,8 @@ public class Interpreter {
 			exe.setEndingTime(time);
 		}
 	}
-
+	
+	//@author A0098735M
 	private static void processAddFrom(Executable exe, String[] words, int i) throws ParseException {
 		exe.setInfo(recombine(words, 1, i));
 		
@@ -344,7 +351,8 @@ public class Interpreter {
 			}
 		}
 	}
-
+	
+	//@author A0098735M
 	private static Executable processDelete(String[] words) throws IllegalArgumentException {
 		Executable exe = new Executable(CommandType.CMD_DELETE);
 		ArrayList<Integer> index = new ArrayList<Integer>();
@@ -357,11 +365,13 @@ public class Interpreter {
 		exe.setDisplayIndex(index);
 		return exe;
 	}
-
+	
+	//@author A0098735M
 	private static Executable processClear(String[] words) {
 		return new Executable(CommandType.CMD_CLEAR);
 	}
 	
+	//@author A0098735M
 	private static Executable processEdit(String[] words) throws IllegalArgumentException {
 		Executable exe = new Executable(CommandType.CMD_EDIT);
 		ArrayList<Integer> index = new ArrayList<Integer>();
@@ -390,7 +400,8 @@ public class Interpreter {
 		
 		return exe;
 	}
-
+	
+	//@author A0098735M
 	private static void processEditStart(String[] words, Executable exe, int i) {
 		// i is where /start is found
 		int pointer = i + 1;
@@ -430,7 +441,8 @@ public class Interpreter {
 		}
 		
 	}
-
+	
+	//@author A0098735M
 	private static void processEditOn(String[] words, Executable exe, int i) {
 		// i is where /on is located in words
 		
@@ -468,6 +480,7 @@ public class Interpreter {
 		return;
 	}
 
+	//@author A0098735M
 	private static void processEditBy(String[] words, Executable exe, int i) {
 		// i is where /by is located in words
 		
@@ -501,6 +514,7 @@ public class Interpreter {
 		return;
 	}
 
+	//@author A0098735M
 	private static Executable processUndo(String[] words) {
 		return new Executable(CommandType.CMD_UNDO);
 	}
@@ -584,12 +598,14 @@ public class Interpreter {
 		
 		return exe;
 	}
-	
+
+	//@author A0098735M	
 	private static Executable processDisplay(String[] words){
 		Executable exe = new Executable(CommandType.CMD_DISPLAY);
 		return exe;
 	}
 
+	//@author A0098735M
 	private static Executable processMark(String[] words) throws IllegalArgumentException {
 		Executable exe = new Executable(CommandType.CMD_DONE);
 		if (doesNotHaveExtraText(words)){ // no identifiers
@@ -615,19 +631,11 @@ public class Interpreter {
 			if (info != "") {
 				exe.setInfo(info);
 			}
-//			String extraWords = recombine(words, 1, words.length);
-//			
-//			//if extra info is a date
-//			if (isDate(extraWords)) {
-//				exe.setStartingDate(extraWords); 
-//				exe.setEndingDate(extraWords);
-//			} else { // else, extra info is keywords
-//				exe.setInfo(extraWords);
-//			}
 		}
 		return exe;
 	}
-	
+
+	//@author A0098735M	
 	private static boolean doesNotHaveExtraText(String[] words){
 		return (words.length <= 1);
 	}
@@ -640,6 +648,7 @@ public class Interpreter {
 	 * @param int endIndex		index to end at, EXCLUSIVE
 	 * @return String sentence
 	 */
+	//@author A0098735M
 	private static String recombine(String[] words, int startIndex, int endIndex){
 		String line = "";
 		for (int i = startIndex; i < endIndex; i++) {
@@ -647,11 +656,13 @@ public class Interpreter {
 		}
 		return line.trim();
 	}
-	
+
+	//@author A0098735M
 	private static boolean isDate(String date) {
 		return ValidationCheck.isValidDate(date);
 	}
-	
+
+	//@author A0098735M	
 	private static boolean isTime(String time) {
 		return ValidationCheck.isValidTime(time);
 	}
@@ -671,6 +682,7 @@ public class Interpreter {
 	}
 	
 	//helper method for debugging
+	//@author A0098735M
 	private static void printExe(Executable exe){
 		String out = "---Executable Begin---\n";
 		out += "Command : "      + exe.getCommand() + "\n";
@@ -796,7 +808,4 @@ public class Interpreter {
 			return null;
 		}
 	}
-	
-	
-
 }

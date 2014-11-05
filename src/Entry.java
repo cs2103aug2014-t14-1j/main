@@ -117,6 +117,7 @@ public class Entry implements Comparable<Entry>{
  
 	}	
     
+	//@author A0098735M
 	public Entry copy(){
 		Entry exe = new Entry();
 		exe.setName(this.name);

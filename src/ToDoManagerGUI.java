@@ -453,7 +453,7 @@ public class ToDoManagerGUI {
 			displayBox.setText(displayString);
 		}
 	}
-
+	
 	private static String prettyTime(String uglyTime) {
 		if (uglyTime == null || uglyTime.equals("0")){
 			return "";
@@ -469,7 +469,8 @@ public class ToDoManagerGUI {
 		}
 		return niceTime;
 	}
-
+	
+	//@author A0098735M
 	private static String prettyDate(String uglyDate) {
 		if (uglyDate == null || uglyDate.equals("999999")){
 			return "";

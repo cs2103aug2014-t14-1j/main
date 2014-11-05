@@ -1,7 +1,8 @@
 package todo_manager;
 
 public class ToDoManager {
-
+	
+	//@author A0098735M
 	//commands received from user	
 	enum CommandType {
 		CMD_ADD,    CMD_DELETE,  CMD_CLEAR, CMD_EDIT, CMD_UNDO, 
@@ -46,6 +47,7 @@ public class ToDoManager {
 //			storage.setup(); //initializing of reader / writer
    }
 	
+	//@author generated
 	public static class InvalidDateException extends Exception {
 
 		/**
@@ -70,6 +72,7 @@ public class ToDoManager {
 		}
 	}
 	
+	//@author generated
 	public static class EmptyInputException extends Exception {
 
 		/**

@@ -8,7 +8,8 @@ package todo_manager;
  */
 
 import java.util.Scanner;
-
+//@author A0098735M-unused
+//We switched to a GUI
 public class UserInterface {
 
 	static Scanner scannerInstance;

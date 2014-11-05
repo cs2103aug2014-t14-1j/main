@@ -17,6 +17,7 @@ public class Logic {
 	 * Help-related messages
 	 * HELP_NO_KEYWORD looks really out of alignment here, but looks fine on the GUI.
 	 */
+	//@author A0098735M
 	public static final String HELP_NO_KEYWORD = 
 			  "Type \"help <command>\" to get help for that particular topic.\n"
 			+ "List of topics : \n"
@@ -235,7 +236,8 @@ public class Logic {
 		
 		
 	}
-
+	
+	//@author A0098735M
 	private String executeHelp(Executable task) {
 		
 		String topic = task.getInfo();
@@ -369,6 +371,7 @@ public class Logic {
 		writeToStorage();
 	}
 	
+	//@author A0098735M
 	private void executeEdit(Executable task){
 		
 		try{
@@ -538,6 +541,7 @@ public class Logic {
 		return storage.readFile();
 	}
 	
+	//@author A0098735M
 	private void saveEntryListToPreList(){
 		LinkedList<Entry> newList = new LinkedList<Entry>();
 		for (Entry e : entryList){
