@@ -277,8 +277,7 @@ public class ToDoManagerGUI {
 	// display welcome meesge
 	private void displayWelcomeMessage() {
 		displayBox.setText(MESSAGE_WELCOME + "\nToday's Date: "
-				+ getTodayDate() + "\n" + MESSAGE_SPLIT_LINE + "\n"
-				+ HOTKEYS);
+				+ getTodayDate() + "\n" + MESSAGE_SPLIT_LINE + "\n" + HOTKEYS);
 	}
 
 	// get system date
@@ -404,16 +403,30 @@ public class ToDoManagerGUI {
 
 			entryString = count + ". " + e.getName();
 			if (e.getStartingDate() != null && !e.getStartingDate().equals("")) {
-				entryString += " start: " + e.getStartingDate();
+				entryString += "\n" + "start: "
+						+ prettyDate(e.getStartingDate());
 			}
 
-			if (e.getEndingDate() != null && !e.getEndingDate().equals("")) {
-				entryString += " end: " + e.getEndingDate();
+			if (e.getEndingDate() != null && !e.getEndingDate().equals("") && !e.getEndingDate().equals("999999")) {
+				entryString += " end: " + prettyDate(e.getEndingDate());
 			}
 
 			if (e.getDoneness() == true) {
 				entryString += " Done";
 			}
+
+			if (e.getEndingTime() != null && !e.getEndingTime().equals("")
+					&& !e.getEndingTime().equals("0")
+					&& !e.getStartingTime().equals(e.getEndingTime())) {
+				entryString += "\n" + "from: " + prettyTime(e.getStartingTime())
+						+ " ~ " + prettyTime(e.getEndingTime());
+			}
+
+			else if (e.getStartingTime() != null
+					&& !e.getStartingTime().equals("")) {
+				entryString += " at: " + prettyTime(e.getStartingTime());
+			}
+
 			count++;
 			entryString += "\n";
 			displayString += entryString;
@@ -424,19 +437,28 @@ public class ToDoManagerGUI {
 			displayBox.setText(displayString);
 		}
 	}
-	
+
+	private static String prettyTime(String uglyTime) {
+		uglyTime = uglyTime.trim();
+		String prettyTime = "";
+		if (!uglyTime.equals("")) {
+			prettyTime = uglyTime.substring(0, 2) + ":" + uglyTime.substring(2);
+		}
+		return prettyTime;
+	}
+
 	private static String prettyDate(String uglyDate) {
 		String myFormat;
-		
-		int thisYear = Calendar.getInstance().get(Calendar.YEAR) %100;
-		int givenYear = (Integer.parseInt(uglyDate)) %100;
+
+		int thisYear = Calendar.getInstance().get(Calendar.YEAR) % 100;
+		int givenYear = (Integer.parseInt(uglyDate)) % 100;
 
 		if (thisYear == givenYear) {
 			myFormat = "dd MMM EEE";
 		} else {
 			myFormat = "dd MMM yyyy";
 		}
-		
+
 		Date uglyDateObj;
 		try {
 			uglyDateObj = new SimpleDateFormat("ddMMyy").parse(uglyDate);
