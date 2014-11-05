@@ -13,12 +13,12 @@ import java.util.LinkedList;
 
 import org.junit.Test;
 
-
+//@author A0128435E
 public class StorageTest {
 	
 	public final String insertTitle[] = {"Name:","|Starting Date:","|Ending Date:","|Starting Time:","|Ending Time:", "|Doneness:"};
 	public final int noOfItem = 6;
-	@Test
+	//@author A0128435E
 	public void test() {
 		String fileName = "ToDoManager.txt";
 		LinkedList<Entry> testList = new LinkedList<Entry>();
@@ -75,10 +75,7 @@ public class StorageTest {
 		{
 			
 			String readLine;
-			
-			File file = new File(fileName);
-			Entry testRecord = new Entry();
-			String writeItem = "";		
+	
 			int pos;
 			int start[] = {0,0,0,0,0,0};
 			int end[] = {0,0,0,0,0,0};

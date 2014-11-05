@@ -339,7 +339,8 @@ public class Logic {
 		logObj.writeToLoggingFile("Done adding task");
 		
 	}
-
+	
+	//@author A0128435E
 	private void executeDelete(Executable task){
 		ArrayList<Integer> index = task.getDisplayIndex();
 		int removeIndex;
@@ -400,8 +401,8 @@ public class Logic {
 		}
 	}
 
-
-public void executeSearch(Executable task) throws ParseException{
+	//@author A0128435E
+	public void executeSearch(Executable task) throws ParseException{
 		
 		String searchContent, searchContent1, startDate, endDate;
 		String[] searchKeyword, searchName;
@@ -545,7 +546,7 @@ public void executeSearch(Executable task) throws ParseException{
 		preList.add(newList);
 	}
 
-	
+	//@author A0128435E
 	private boolean isGreater(String newDateString, String compareDateString) throws ParseException{
 		DateFormat dateFormat = new SimpleDateFormat("ddMMyy");
 		Date newDate = dateFormat.parse(newDateString);
@@ -558,6 +559,7 @@ public void executeSearch(Executable task) throws ParseException{
 		return false;
 	}
 	
+	//@author A0128435E
 	private boolean isSmaller(String newDateString, String compareDateString) throws ParseException{
 		DateFormat dateFormat = new SimpleDateFormat("ddMMyy");
 		Date newDate = dateFormat.parse(newDateString);
@@ -570,6 +572,7 @@ public void executeSearch(Executable task) throws ParseException{
 		return false;
 	}
 	
+	//@author A0128435E
 	private boolean isMonthValue(String date){
 		int amountOfZero = 0;
 		for(int i = 0; i < date.length(); i++){
@@ -585,6 +588,7 @@ public void executeSearch(Executable task) throws ParseException{
 		}
 	}
 	
+	//@author A0128435E
 	private int getMonth(String date){
 		int dateInt = Integer.parseInt(date);
 		int month = (dateInt/100) % 100;
