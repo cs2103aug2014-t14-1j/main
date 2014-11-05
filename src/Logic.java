@@ -17,7 +17,7 @@ public class Logic {
 	 * Help-related messages
 	 * HELP_NO_KEYWORD looks really out of alignment here, but looks fine on the GUI.
 	 */
-	private static final String HELP_NO_KEYWORD = 
+	public static final String HELP_NO_KEYWORD = 
 			  "Type \"help <command>\" to get help for that particular topic.\n"
 			+ "List of topics : \n"
 			+ "  /add         /display\n"

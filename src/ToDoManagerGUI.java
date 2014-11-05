@@ -49,14 +49,13 @@ public class ToDoManagerGUI {
 	private static UserInterface userInterface;
 	public static Storage storage;
 	private static ToDoManagerGUI toDoManagerGUI;
-	private static final String HELP_NO_KEYWORD = "Type \"help <command>\" to get help for that particular topic.\n"
-			+ "List of topics : \n"
-			+ "  /add         /display\n"
-			+ "  /delete     /clear\n"
-			+ "  /edit         /undo\n"
-			+ "  /mark       /search\n"
-			+ "  /sort         /exit\n"
-			+ "   date        time\n";
+
+	private static final String HOTKEYS = "Hotkeys:\n"
+			+ "esc: Exit ToDo Manager\n" + "F1: Display Help Messages\n"
+			+ "F2: Clear Screen\n" + "F3: Display Hotkeys\n" + "F4: Undo\n"
+			+ "F5: Display\n" + "Page_Up: Scroll Up\n"
+			+ "Page_Down: Scroll Down\n" + "Home: Scroll Up To the Top\n"
+			+ "End: Scroll Down To the Bottom\n";
 
 	private final static String MESSAGE_SPLIT_LINE = "------------------------------------------";
 	private final static String MESSAGE_WELCOME = "Welcome to ToDo Manager!";
@@ -277,8 +276,7 @@ public class ToDoManagerGUI {
 	private void displayWelcomeMessage() {
 		displayBox.setText(MESSAGE_WELCOME + "\nToday's Date: "
 				+ getTodayDate() + "\n" + MESSAGE_SPLIT_LINE + "\n"
-				+ "Hotkeys:" + "\n" + "1. press F1 to display help message"
-				+ "\n" + "2. Press F2 to clear screen" + "\n" + "3. Press F3 to show all the hotkeys");
+				+ HOTKEYS);
 	}
 
 	// get system date
@@ -297,7 +295,7 @@ public class ToDoManagerGUI {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					if (!inputBox.getText().trim().equals("")) {
 						clearDisplayBox();
-
+						feedbackBox.setText("");
 						String userCommand = readUserInput();
 						Object displayObj;
 						displayObj = toDoManagerGUI.logic
@@ -309,7 +307,7 @@ public class ToDoManagerGUI {
 				}
 
 				else if (e.getKeyCode() == KeyEvent.VK_F1) {
-					displayBox.setText(HELP_NO_KEYWORD);
+					displayBox.setText(Logic.HELP_NO_KEYWORD);
 				} else if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 					System.exit(0);
 				} else if (e.getKeyCode() == KeyEvent.VK_PAGE_UP
@@ -325,8 +323,18 @@ public class ToDoManagerGUI {
 				} else if (e.getKeyCode() == KeyEvent.VK_END) {
 					scrollPane.getVerticalScrollBar().setValue(
 							scrollPane.getVerticalScrollBar().getMaximum());
-				} else if(e.getKeyCode() == KeyEvent.VK_F2){
+				} else if (e.getKeyCode() == KeyEvent.VK_F2) {
 					displayBox.setText("");
+				} else if (e.getKeyCode() == KeyEvent.VK_F3) {
+					displayBox.setText(HOTKEYS);
+				} else if (e.getKeyCode() == KeyEvent.VK_F4) {
+					Object action;
+					action = toDoManagerGUI.logic.actOnUserInput("/undo");
+					displayResult(action);
+				} else if (e.getKeyCode() == KeyEvent.VK_F5) {
+					Object action;
+					action = toDoManagerGUI.logic.actOnUserInput("/display");
+					displayResult(action);
 				}
 
 			}
@@ -396,8 +404,8 @@ public class ToDoManagerGUI {
 			if (e.getStartingDate() != null && !e.getStartingDate().equals("")) {
 				entryString += " start: " + e.getStartingDate();
 			}
-			
-			if (e.getEndingDate() != null && !e.getEndingDate().equals("") && !e.getEndingDate().equals("999999")){
+
+			if (e.getEndingDate() != null && !e.getEndingDate().equals("")) {
 				entryString += " end: " + e.getEndingDate();
 			}
 
