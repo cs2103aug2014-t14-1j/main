@@ -446,6 +446,17 @@ public class ToDoManagerGUI {
 		String prettyDate = new SimpleDateFormat(myFormat).format(uglyDateObj);
 		return prettyDate;
 	}
+	
+	private static String prettyTime(String uglyTime) {
+		Date uglyTimeObj;
+		try {
+			uglyTimeObj = new SimpleDateFormat("HHmm").parse(uglyTime);
+		} catch (ParseException e) {
+			return "ERROR";
+		}
+		String prettyDate = new SimpleDateFormat("h:mm a").format(uglyTimeObj);
+		return prettyDate;
+	}
 
 	// setup a prompt message
 	class HintTextField extends JTextField implements FocusListener {
