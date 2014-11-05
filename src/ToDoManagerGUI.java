@@ -26,8 +26,10 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
 
 import javax.swing.BoxLayout;
@@ -421,6 +423,28 @@ public class ToDoManagerGUI {
 		} else {
 			displayBox.setText(displayString);
 		}
+	}
+	
+	private static String prettyDate(String uglyDate) {
+		String myFormat;
+		
+		int thisYear = Calendar.getInstance().get(Calendar.YEAR) %100;
+		int givenYear = (Integer.parseInt(uglyDate)) %100;
+
+		if (thisYear == givenYear) {
+			myFormat = "dd MMM EEE";
+		} else {
+			myFormat = "dd MMM yyyy";
+		}
+		
+		Date uglyDateObj;
+		try {
+			uglyDateObj = new SimpleDateFormat("ddMMyy").parse(uglyDate);
+		} catch (ParseException e) {
+			return "ERROR";
+		}
+		String prettyDate = new SimpleDateFormat(myFormat).format(uglyDateObj);
+		return prettyDate;
 	}
 
 	// setup a prompt message
