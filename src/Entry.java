@@ -44,6 +44,9 @@ public class Entry implements Comparable<Entry>{
 	}
 
 	public void setName(String name) {
+		if (name.length() > 55 ){
+			throw new IllegalArgumentException();
+		}
 		this.name = name;
 	}
 

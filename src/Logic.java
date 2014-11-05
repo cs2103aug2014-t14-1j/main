@@ -308,7 +308,7 @@ public class Logic {
 		writeToStorage();
 	}
 
-	private void executeAdd(Executable task) {
+	private void executeAdd(Executable task) throws ParseException {
 
 		logObj.writeToLoggingFile("Trying to add");
 		
@@ -333,6 +333,13 @@ public class Logic {
 			entry.setEndingTime(task.getEndingTime());
 		}else{
 			entry.setEndingTime("0");
+		}
+		
+		if (entry.getEndingDate() != null && entry.getStartingDate() != null) {
+			if (isGreater(entry.getEndingDate(), entry.getStartingDate())){
+				//start date greater than end date
+				throw new IllegalArgumentException();
+			}
 		}
 		
 		entryList.add(entry);
