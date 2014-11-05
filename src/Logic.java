@@ -329,6 +329,8 @@ public class Logic {
 		}
 		if(task.getEndingTime()!= null){
 			entry.setEndingTime(task.getEndingTime());
+		}else{
+			entry.setEndingTime("0");
 		}
 		
 		entryList.add(entry);

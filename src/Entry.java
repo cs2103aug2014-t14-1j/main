@@ -87,24 +87,31 @@ public class Entry implements Comparable<Entry>{
 		this.doneness = doneness;
 	}
 	
-	private int changeEndingDate(){
+	private long changeEndingDate(){
 		
-		int day = Integer.parseInt(this.endingDate.substring(0, 2));
-		int month = Integer.parseInt(this.endingDate.substring(2, 4));
-		int year = Integer.parseInt(this.endingDate.substring(4, 6));
+		long day = Integer.parseInt(this.endingDate.substring(0, 2));
+		long month = Integer.parseInt(this.endingDate.substring(2, 4));
+		long year = Integer.parseInt(this.endingDate.substring(4, 6));
+	
+		long time = Integer.parseInt(this.endingTime);
 		
-		int time = Integer.parseInt(this.endingTime);
+		long result= ((year*100000000) + (month*1000000) + (day*10000) + time);
 		
-		return year*100+month*10+day+time;
+		return result;
 	}
     
 	public int compareTo(Entry compareEntry) {
 		 
-		int compareDate = ((Entry) compareEntry).changeEndingDate(); 
+		long compareDate = ((Entry) compareEntry).changeEndingDate(); 
  
 		//ascending order
-		return this.changeEndingDate() - compareDate;
- 
+		if(this.changeEndingDate() - compareDate > 0){
+			return 1;
+		}else if(this.changeEndingDate() - compareDate == 0){
+			return 0;
+		}else{
+			return -1;
+		}
 		//descending order
 		//return compareQuantity - this.quantity;
  
