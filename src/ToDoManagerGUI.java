@@ -402,29 +402,45 @@ public class ToDoManagerGUI {
 			}
 
 			entryString = count + ". " + e.getName();
-			if (e.getStartingDate() != null && !e.getStartingDate().equals("")) {
-				entryString += "\n" + "start: "
-						+ prettyDate(e.getStartingDate());
-			}
-
-			if (e.getEndingDate() != null && !e.getEndingDate().equals("") && !e.getEndingDate().equals("999999")) {
-				entryString += " end: " + prettyDate(e.getEndingDate());
-			}
-
+			
 			if (e.getDoneness() == true) {
-				entryString += " Done";
+				entryString += "    (Done)";
 			}
-
-			if (e.getEndingTime() != null && !e.getEndingTime().equals("")
-					&& !e.getEndingTime().equals("0")
-					&& !e.getStartingTime().equals(e.getEndingTime())) {
-				entryString += "\n" + "from: " + prettyTime(e.getStartingTime())
-						+ " ~ " + prettyTime(e.getEndingTime());
-			}
-
-			else if (e.getStartingTime() != null
-					&& !e.getStartingTime().equals("")) {
-				entryString += " at: " + prettyTime(e.getStartingTime());
+			
+			if (e.getStartingDate() != null && e.getEndingDate() != null &&
+					e.getStartingDate().equals(e.getEndingDate())){// 1-day event
+				entryString += "\n" + "     on : " + prettyDate(e.getStartingDate());
+				if (e.getEndingTime() != null && e.getStartingTime() != null && 
+						e.getEndingTime().equals(e.getStartingTime())){ // single-time event
+					entryString += "     at : " + prettyTime(e.getEndingTime());
+				} else { // 1-day event, range of time
+					boolean first = true;
+					
+					if (e.getStartingTime() != null && !e.getStartingTime().equals("")) {
+						first = false;
+						entryString += "\n";
+						entryString += "     from " + prettyTime(e.getStartingTime());
+					}
+					if (e.getEndingTime() != null && !e.getEndingTime().equals("0")) {
+						if (first) {
+							entryString += "\n";
+						}
+						entryString += "     til " + prettyTime(e.getEndingTime());
+					}
+				}
+			} else {
+				if (e.getStartingDate() != null && !e.getStartingDate().equals("") ) {
+					entryString += "\n" + "     start : " + prettyDate(e.getStartingDate());
+					if (e.getStartingTime() != null && !e.getStartingTime().equals("") ) {
+						entryString += "     " + prettyTime(e.getStartingTime());
+					}
+				}
+				if (e.getEndingDate() != null && !e.getEndingDate().equals("999999")){
+					entryString += "\n" + "     end : " + prettyDate(e.getEndingDate());
+					if (e.getEndingTime() != null && !e.getEndingTime().equals("0")) {
+						entryString += "     " + prettyTime(e.getEndingTime());
+					}
+				}
 			}
 
 			count++;
@@ -439,15 +455,25 @@ public class ToDoManagerGUI {
 	}
 
 	private static String prettyTime(String uglyTime) {
-		uglyTime = uglyTime.trim();
-		String prettyTime = "";
-		if (!uglyTime.equals("")) {
-			prettyTime = uglyTime.substring(0, 2) + ":" + uglyTime.substring(2);
+		if (uglyTime == null || uglyTime.equals("0")){
+			return "";
 		}
-		return prettyTime;
+		uglyTime = uglyTime.trim();
+		String niceTime = "";
+		if (!uglyTime.equals("")) {
+			int hour = Integer.parseInt(uglyTime.substring(0, 2));
+			if (hour >= 13) {
+				hour -= 12;
+			}
+			niceTime = hour + ":" + uglyTime.substring(2);
+		}
+		return niceTime;
 	}
 
 	private static String prettyDate(String uglyDate) {
+		if (uglyDate == null || uglyDate.equals("999999")){
+			return "";
+		}
 		String myFormat;
 
 		int thisYear = Calendar.getInstance().get(Calendar.YEAR) % 100;
@@ -465,19 +491,8 @@ public class ToDoManagerGUI {
 		} catch (ParseException e) {
 			return "ERROR";
 		}
-		String prettyDate = new SimpleDateFormat(myFormat).format(uglyDateObj);
-		return prettyDate;
-	}
-	
-	private static String prettyTime(String uglyTime) {
-		Date uglyTimeObj;
-		try {
-			uglyTimeObj = new SimpleDateFormat("HHmm").parse(uglyTime);
-		} catch (ParseException e) {
-			return "ERROR";
-		}
-		String prettyDate = new SimpleDateFormat("h:mm a").format(uglyTimeObj);
-		return prettyDate;
+		String niceDate = new SimpleDateFormat(myFormat).format(uglyDateObj);
+		return niceDate;
 	}
 
 	// setup a prompt message
