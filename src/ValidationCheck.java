@@ -104,4 +104,16 @@ public class ValidationCheck {
 		return false;
 	}
 	
+	public static boolean isSmaller(String date, String compareDate) throws ParseException{
+		DateFormat dateFormat = new SimpleDateFormat("ddMMyy");
+		Date newDate = dateFormat.parse(date);
+		Date comparedDate = dateFormat.parse(compareDate);
+		
+		if(!newDate.after(comparedDate)){
+			return true;
+		}
+		
+		return false;
+	}
+	
 }

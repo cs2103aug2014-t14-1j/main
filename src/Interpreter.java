@@ -282,12 +282,14 @@ public class Interpreter {
 		String time, date;
 		
 		//start date
+		String startingDate;
 		if (pointer == end) {
 			throw new IllegalArgumentException();
 		} else {  
 			date = words[pointer];
 			if ( isDate(date) && isGreaterToday(date) ){ // right date format
 				exe.setStartingDate(date);
+				startingDate = date;
 				pointer++;
 			} else {
 				throw new IllegalArgumentException();
@@ -319,7 +321,7 @@ public class Interpreter {
 			throw new IllegalArgumentException();
 		} else {  
 			date = words[pointer];
-			if ( isDate(date) && isGreaterToday(date) ){ // right date format
+			if ( isDate(date) && isGreaterToday(date) && isSmaller(date, startingDate)){ // right date format
 				exe.setEndingDate(date);
 				pointer++;
 			} else {
@@ -652,6 +654,10 @@ public class Interpreter {
 			return false;
 		}
 		return true;
+	}
+	
+	private static boolean isSmaller(String s, String s1) throws ParseException{
+		return ValidationCheck.isSmaller(s, s1);
 	}
 	
 	private static boolean isGreaterToday(String s) throws ParseException{
