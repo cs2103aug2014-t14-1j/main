@@ -39,6 +39,8 @@ import todo_manager.ToDoManager.EmptyInputException;
  *  
  *  /search today : startingDate = endingDate = today's date
  *  /search tomorrow(or tmr) : startingDate = endingDate = trm's date
+ *  /search this <week> (or <month>) : search the record of this week or month
+ *  /search next <week> (or <month>) : search the record of next week or month
  *  /search <month> : on that month
  *  /search <date> : startingDate = endingDate = <date>
  *  /search <keyword> : info is the string of keyword or keywords as given by the user
@@ -502,7 +504,8 @@ public class Interpreter {
 	private static Executable processUndo(String[] words) {
 		return new Executable(CommandType.CMD_UNDO);
 	}
-
+	
+	//@author A0128435E
 	private static Executable processSearch(String[] words) throws IllegalArgumentException {
 		
 		
@@ -522,8 +525,6 @@ public class Interpreter {
 		
 			//search Tomorrow
 		} else if (words.length == 2 && (words[1].equals("tomorrow") || words[1].equals("tmr"))){   
-			DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
-			Date today = new Date();
 			Date tommorow = new Date(today.getTime() + (1000 * 60 * 60 * 24));
 			exe.setStartingDate(dateFormat.format(tommorow));
 			exe.setEndingDate(dateFormat.format(tommorow));
@@ -543,7 +544,8 @@ public class Interpreter {
 			exe.setEndingDate(monthValue(words[1]));
 			
 			//search by starting date
-		} else if (words[1].equals("/start") && words.length == 3) { //search for entries after a particular date
+		} else if (words[1].equals("/start") && words.length == 3) { 
+			//search for entries after a particular date
 			if (words.length < 3 || !isDate(words[2])){ 
 				// no date or invalid date
 				throw new IllegalArgumentException();
@@ -663,6 +665,7 @@ public class Interpreter {
 		return true;
 	}
 	
+	//@author A0128435E
 	private static boolean isGreaterToday(String s) throws ParseException{
 		return ValidationCheck.isGreater(s);
 	}
@@ -683,13 +686,14 @@ public class Interpreter {
 		System.out.println(out);
 	}
 	
-	
+	//@author A0128435E
 	private static int getMonth(String date){
 		int dateInt = Integer.parseInt(date);
 		int month = (dateInt/100) % 100;
 		return month;
 	}
 	
+	//@author A0128435E
 	private static String getStartDate(String status, String period){
 		int thisMonth = getMonth(dateFormat.format(today));
 		if	((status.equals("next") && period.equals("week"))){
@@ -709,6 +713,7 @@ public class Interpreter {
 		}
 	}
 	
+	//@author A0128435E
 	private static String getEndDate(String status, String period){
 		int thisMonth = getMonth(dateFormat.format(today));
 		
@@ -731,7 +736,7 @@ public class Interpreter {
 		}
 	}
 	
-	
+	//@author A0128435E
 	//return null value of if the input is not a month
 	private static String monthValue(String word){
 				

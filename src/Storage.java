@@ -1,6 +1,4 @@
-/*
-@author: Cheuk Ting
- */
+//@author A0128435E
 
 
 package todo_manager;
@@ -14,7 +12,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.io.PrintWriter;
-
+//@author A0128435E
 public class Storage {
 	public final int noOfItem = 6;
 	public final String insertTitle[] = {"Name:","|Starting Date:","|Ending Date:","|Starting Time:","|Ending Time:", "|Doneness:"};
