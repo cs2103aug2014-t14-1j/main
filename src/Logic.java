@@ -435,7 +435,7 @@ public void executeSearch(Executable task) throws ParseException{
 				for(Entry entry: entryList){
 					startDate = entry.getStartingDate();
 					endDate = entry.getEndingDate();
-					if(getMonth(startDate) == month && getMonth(endDate)== month){
+					if(getMonth(endDate)== month){
 						searchResult.add(entry);
 					}
 				}
