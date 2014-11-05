@@ -93,7 +93,9 @@ public class Entry implements Comparable<Entry>{
 		int month = Integer.parseInt(this.endingDate.substring(2, 4));
 		int year = Integer.parseInt(this.endingDate.substring(4, 6));
 		
-		return year*100+month*10+day;
+		int time = Integer.parseInt(this.endingTime);
+		
+		return year*100+month*10+day+time;
 	}
     
 	public int compareTo(Entry compareEntry) {
