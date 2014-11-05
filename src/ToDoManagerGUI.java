@@ -42,11 +42,21 @@ import javax.swing.border.AbstractBorder;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.StyleContext;
 
+import todo_manager.ToDoManager.CommandType;
+
 public class ToDoManagerGUI {
 	private static Logic logic;
 	private static UserInterface userInterface;
 	public static Storage storage;
 	private static ToDoManagerGUI toDoManagerGUI;
+	private static final String HELP_NO_KEYWORD = "Type \"help <command>\" to get help for that particular topic.\n"
+			+ "List of topics : \n"
+			+ "  /add         /display\n"
+			+ "  /delete     /clear\n"
+			+ "  /edit         /undo\n"
+			+ "  /mark       /search\n"
+			+ "  /sort         /exit\n"
+			+ "   date        time\n";
 
 	private final static String MESSAGE_SPLIT_LINE = "------------------------------------------";
 	private final static String MESSAGE_WELCOME = "Welcome to ToDo Manager!";
@@ -59,8 +69,8 @@ public class ToDoManagerGUI {
 	private JTextField topTitle;
 	private JTextField feedbackBox;
 	private static JTextPane displayBox;
-	private static JTextPane topMenuBox;
-//	private static JTextPane feedbackBox;
+
+	// private static JTextPane feedbackBox;
 
 	public static void main(String[] args) {
 		toDoManagerGUI = new ToDoManagerGUI();
@@ -79,7 +89,6 @@ public class ToDoManagerGUI {
 		logic = Logic.getInstance();
 		userInterface = new UserInterface();
 		storage = new Storage();
-
 		UserInterface.setup();
 		logic.setupGUI(this); // creation and filling out of linked lists
 	}
@@ -114,7 +123,7 @@ public class ToDoManagerGUI {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setTitle("ToDoManager");
 		frame.setResizable(false);
-//		frame.setUndecorated(true);
+		// frame.setUndecorated(true);
 	}
 
 	// set up top title
@@ -128,10 +137,10 @@ public class ToDoManagerGUI {
 		topTitle.setFont(new Font("Aller", Font.BOLD, 20));
 		topTitle.setText("ToDo Manager");
 	}
-	
+
 	// add a text input box
 	private void setupTextInputBox() {
-		inputBox = new HintTextField("cmd:");
+		inputBox = new HintTextField("/cmd:");
 
 		inputBoxPanel = new JPanel();
 		inputBoxPanel.add(inputBox);
@@ -148,9 +157,9 @@ public class ToDoManagerGUI {
 		inputBox.setHorizontalAlignment(SwingConstants.LEFT);
 		inputBox.setPreferredSize(new Dimension(315, 20));
 	}
-	
+
 	// set up feedback display box
-	private void setupFeedbackBox(){
+	private void setupFeedbackBox() {
 		feedbackBox = new JTextField();
 		feedbackBox.setBackground(Color.BLACK);
 		feedbackBox.setForeground(new Color(0xF0E68C));
@@ -158,8 +167,8 @@ public class ToDoManagerGUI {
 		feedbackBox.setBorder(null);
 		feedbackBox.setHorizontalAlignment(SwingConstants.CENTER);
 		feedbackBox.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-		feedbackBox.setPreferredSize(new Dimension(315,30));
-		
+		feedbackBox.setPreferredSize(new Dimension(315, 30));
+
 		feedbackBox.setText("Command Feedback:");
 	}
 
@@ -224,6 +233,7 @@ public class ToDoManagerGUI {
 		displayBox.setText(message);
 	}
 
+	// GUI frame Listener
 	private void guiFrameListener() {
 		frame.addFocusListener(new FocusAdapter() {
 			@Override
@@ -266,9 +276,12 @@ public class ToDoManagerGUI {
 	// display welcome meesge
 	private void displayWelcomeMessage() {
 		displayBox.setText(MESSAGE_WELCOME + "\nToday's Date: "
-				+ getTodayDate() + "\n" + MESSAGE_SPLIT_LINE);
+				+ getTodayDate() + "\n" + MESSAGE_SPLIT_LINE + "\n"
+				+ "Hotkeys:" + "\n" + "1. press F1 to display help message"
+				+ "\n" + "2. Press F2 to clear screen" + "\n" + "3. Press F3 to show all the hotkeys");
 	}
 
+	// get system date
 	private String getTodayDate() {
 		SimpleDateFormat dateFormatter = new SimpleDateFormat("dd-MMM-yyyy");
 		Calendar date = Calendar.getInstance();
@@ -295,21 +308,72 @@ public class ToDoManagerGUI {
 					}
 				}
 
+				else if (e.getKeyCode() == KeyEvent.VK_F1) {
+					displayBox.setText(HELP_NO_KEYWORD);
+				} else if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+					System.exit(0);
+				} else if (e.getKeyCode() == KeyEvent.VK_PAGE_UP
+						|| e.getKeyCode() == KeyEvent.VK_UP) {
+					scrollPane.getVerticalScrollBar().setValue(
+							scrollPane.getVerticalScrollBar().getValue() - 25);
+				} else if (e.getKeyCode() == KeyEvent.VK_PAGE_DOWN
+						|| e.getKeyCode() == KeyEvent.VK_DOWN) {
+					scrollPane.getVerticalScrollBar().setValue(
+							scrollPane.getVerticalScrollBar().getValue() + 25);
+				} else if (e.getKeyCode() == KeyEvent.VK_HOME) {
+					scrollPane.getVerticalScrollBar().setValue(0);
+				} else if (e.getKeyCode() == KeyEvent.VK_END) {
+					scrollPane.getVerticalScrollBar().setValue(
+							scrollPane.getVerticalScrollBar().getMaximum());
+				} else if(e.getKeyCode() == KeyEvent.VK_F2){
+					displayBox.setText("");
+				}
+
 			}
 		});
 	}
 
+	// display tasks and feedback to displaybox and feedbackbox
 	private void displayResult(Object displayObj) {
 		if (displayObj == null) {
 			feedbackBox.setText(ToDoManager.MESSAGE_ERROR_GENERIC);
 			return;
 		} else if (displayObj instanceof String) { // print it if string
 			String displayString = (String) displayObj;
-			displayBox.setText(displayString);
+			if (displayString.split(" ")[0].equals("HELP:")) {
+				displayBox.setText(displayString);
+			} else {
+				feedbackBox.setText(displayString);
+			}
+
 		} else if (displayObj instanceof LinkedList) { // send to entrylist
 														// printer
 			LinkedList<?> displayList = (LinkedList<?>) displayObj;
 			displayLists(displayList);
+		} else if (displayObj instanceof Result) {
+			CommandType command = ((Result) displayObj).getCommandType();
+			switch (command) {
+			case CMD_ADD:
+				feedbackBox.setText(((Result) displayObj).getFeedback());
+				break;
+			case CMD_CLEAR:
+				feedbackBox.setText(((Result) displayObj).getFeedback());
+				break;
+			case CMD_DELETE:
+				feedbackBox.setText(((Result) displayObj).getFeedback());
+				displayLists(((Result) displayObj).getDisplayList());
+				break;
+			case CMD_DISPLAY:
+				feedbackBox.setText(((Result) displayObj).getFeedback());
+				displayLists(((Result) displayObj).getDisplayList());
+				break;
+			case CMD_DONE:
+				feedbackBox.setText(((Result) displayObj).getFeedback());
+				break;
+			case CMD_UNDONE:
+				feedbackBox.setText(((Result) displayObj).getFeedback());
+				break;
+			}
 		}
 
 	}
@@ -386,37 +450,25 @@ public class ToDoManagerGUI {
 		}
 	}
 
-	
 	/*
-	// rounded JTextField
-	public class RoundJTextField extends JTextField {
-		private Shape shape;
-
-		public RoundJTextField(int size) {
-			super(size);
-			setOpaque(false); // As suggested by @AVD in comment.
-		}
-
-		protected void paintComponent(Graphics g) {
-			g.setColor(getBackground());
-			g.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 15, 15);
-			super.paintComponent(g);
-		}
-
-		protected void paintBorder(Graphics g) {
-			g.setColor(getForeground());
-			g.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 15, 15);
-		}
-
-		public boolean contains(int x, int y) {
-			if (shape == null || !shape.getBounds().equals(getBounds())) {
-				shape = new RoundRectangle2D.Float(0, 0, getWidth() - 1,
-						getHeight() - 1, 15, 15);
-			}
-			return shape.contains(x, y);
-		}
-	}
-	*/
+	 * // rounded JTextField public class RoundJTextField extends JTextField {
+	 * private Shape shape;
+	 * 
+	 * public RoundJTextField(int size) { super(size); setOpaque(false); // As
+	 * suggested by @AVD in comment. }
+	 * 
+	 * protected void paintComponent(Graphics g) { g.setColor(getBackground());
+	 * g.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 15, 15);
+	 * super.paintComponent(g); }
+	 * 
+	 * protected void paintBorder(Graphics g) { g.setColor(getForeground());
+	 * g.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 15, 15); }
+	 * 
+	 * public boolean contains(int x, int y) { if (shape == null ||
+	 * !shape.getBounds().equals(getBounds())) { shape = new
+	 * RoundRectangle2D.Float(0, 0, getWidth() - 1, getHeight() - 1, 15, 15); }
+	 * return shape.contains(x, y); } }
+	 */
 
 	class RoundedCornerBorder extends AbstractBorder {
 		@Override
@@ -426,7 +478,7 @@ public class ToDoManagerGUI {
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 					RenderingHints.VALUE_ANTIALIAS_ON);
 			int r = height - 1;
-			RoundRectangle2D round = new RoundRectangle2D.Float(x+25, y,
+			RoundRectangle2D round = new RoundRectangle2D.Float(x + 25, y,
 					width - 50, height - 1, r, r);
 			Container parent = c.getParent();
 			if (parent != null) {

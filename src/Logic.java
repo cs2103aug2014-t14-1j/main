@@ -76,6 +76,7 @@ public class Logic {
 	private static LinkedList<Entry> displayList = new LinkedList<Entry>();
 	
 	private static Logging logObj = Logging.getInstance();
+	private Result result = new Result();
 
 	private Logic(){
 	}
@@ -135,73 +136,86 @@ public class Logic {
 			saveEntryListToPreList();
 			executeAdd(task);
 			executeDisplay(entryList);
-			return entryList;
+			result.setCommandType(CommandType.CMD_ADD);
+			result.setFeedback("A new task added successfully");
+			result.setSuccess(true);
+			return result;
 		
 		case CMD_CLEAR: 
 			
 			saveEntryListToPreList();
 			executeClear(task);
 			executeDisplay(entryList);
-			return entryList;
+			result.setCommandType(CommandType.CMD_CLEAR);
+			result.setFeedback("All tasks cleared");
+			result.setSuccess(true);
+			return result;
 		
 		case CMD_DELETE: 
-		
 			saveEntryListToPreList();
 			executeDelete(task);
 			executeDisplay(entryList);
-			return entryList;
+			result.setCommandType(CommandType.CMD_DELETE);
+			result.setFeedback("Task deleted");
+			result.setSuccess(true);
+			result.setDisplayList(entryList);
+			return result;
 		
 		case CMD_DISPLAY: 
-		
 			executeDisplay(entryList);
-			return entryList;
+			result.setCommandType(CommandType.CMD_DISPLAY);
+			result.setFeedback("Display tasks");
+			result.setSuccess(true);
+			result.setDisplayList(entryList);
+			return result;
 		
 		case CMD_DONE: 
-			
 			saveEntryListToPreList();
 			executeDone(task);
 			executeDisplay(entryList);
-			return entryList;
+			result.setCommandType(CommandType.CMD_DONE);
+			result.setFeedback("Task marked done");
+			result.setSuccess(true);
+			return result;
 		
 		case CMD_UNDONE: 
-			
 			saveEntryListToPreList();
 			executeUndone(task);
 			executeDisplay(entryList);
-			return entryList;
+			result.setCommandType(CommandType.CMD_UNDO);
+			result.setFeedback("Task marked undone");
+			result.setSuccess(true);
+			return result;
+			
+		case CMD_HELP:
+			String out = executeHelp(task);
+			return "HELP: "+out;
 			
 		case CMD_EDIT: 
-			
 			saveEntryListToPreList();
 			executeEdit(task);
 			executeDisplay(entryList);
+			result.setCommandType(CommandType.CMD_EDIT);
+			result.setSuccess(true);
 			return entryList;
 		
 		case CMD_SEARCH: 
-			
 			executeSearch(task);
 			executeDisplay(displayList);
+			result.setSuccess(true);
 			return displayList;
 		
 		case CMD_UNDO: 
-			
 			Object result =  executeUndo();
 			executeDisplay(entryList);
-			return result;
+			return displayList;
 		
 		case CMD_SORT: 
-		
 			executeSort();
 			executeDisplay(entryList);
 			return entryList;
-		
-		case CMD_HELP:
-			
-			String out = executeHelp(task);
-			return out;
 			
 		case CMD_EXIT:
-			
 			preList.clear();
 			System.exit(0);
 			//return "exit";
@@ -212,7 +226,6 @@ public class Logic {
 	}
 	
 	private void executeUndone(Executable task) {
-		
 	ArrayList<Integer> index = task.getDisplayIndex();
 		
 		for(int i = 0 ; i < index.size(); i++){
