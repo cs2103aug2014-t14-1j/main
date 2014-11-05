@@ -458,7 +458,6 @@ public void executeSearch(Executable task) throws ParseException{
 					searchResult.add(entry);
 				}
 			}
-			Collections.sort(searchResult);
 		}
 		else if(task.getEndingDate() != null){
 			searchContent = task.getEndingDate();
@@ -468,7 +467,6 @@ public void executeSearch(Executable task) throws ParseException{
 					searchResult.add(entry);
 				}
 			}
-			Collections.sort(searchResult);
 		}
 		else if(task.getDoneness() != null){
 			doneness = task.getDoneness();
