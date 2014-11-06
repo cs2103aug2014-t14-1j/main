@@ -744,8 +744,10 @@ public class Interpreter {
 			return monthValue(Integer.toString(thisMonth));
 		}
 		else{
-			int nextNextMonth = thisMonth + 1;
-			return monthValue(Integer.toString(nextNextMonth));
+			int nextMonth = thisMonth + 1;
+			if(nextMonth > 12)
+				nextMonth -= 12;
+			return monthValue(Integer.toString(nextMonth));
 		}
 	}
 	
