@@ -90,6 +90,7 @@ public class Entry implements Comparable<Entry>{
 		this.doneness = doneness;
 	}
 	
+	//@author A0098924M
 	private long changeEndingDate(){
 		
 		long day = Integer.parseInt(this.endingDate.substring(0, 2));
@@ -103,6 +104,7 @@ public class Entry implements Comparable<Entry>{
 		return result;
 	}
     
+	//@author A0098924M
 	public int compareTo(Entry compareEntry) {
 		 
 		long compareDate = ((Entry) compareEntry).changeEndingDate(); 

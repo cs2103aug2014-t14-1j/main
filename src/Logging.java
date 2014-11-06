@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+//@author A0098924M
 public class Logging {
 
 	private static Logging instance = null;

@@ -79,16 +79,17 @@ public class Logic {
 	private static Logging logObj = Logging.getInstance();
 	private Result result = new Result();
 
+	//@author A0098924M
 	private Logic(){
 	}
-	
+	//@author A0098924M
 	public static Logic getInstance(){
 		if(instance == null){
 			instance = new Logic();
 		}
 		return instance;
 	}
-	
+	//@author A0098924M
 	public static LinkedList<Entry> getEntryList() {
 		return entryList;
 	}
@@ -102,7 +103,7 @@ public class Logic {
 		storage = toDoManager.storage;
 		entryList = readFromStorage();
 	}
-	
+	//@author A0098924M
 	//UI module will call this method 
 	public Object actOnUserInput(String userInput){
 		
@@ -124,7 +125,7 @@ public class Logic {
 		
 		return displayObj;
 	}
-	
+	//@author A0098924M
 	public Object execute(Executable task) throws ParseException{
 		
 
@@ -225,7 +226,7 @@ public class Logic {
 		}
 			
 	}
-	
+	//@author A0098924M
 	private void executeUndone(Executable task) {
 	ArrayList<Integer> index = task.getDisplayIndex();
 		
@@ -290,6 +291,7 @@ public class Logic {
 		}
 	}
 
+	//@author A0098924M
 	private Object executeUndo() {
 		
 		if (preList.isEmpty()) {
@@ -302,12 +304,14 @@ public class Logic {
 		}	
 	}
 
+	//@author A0098924M
 	private void executeSort() {
 		// To sort the task by Date line
 		Collections.sort(entryList);
 		writeToStorage();
 	}
 
+	//@author A0098924M
 	private void executeAdd(Executable task) throws ParseException {
 
 		logObj.writeToLoggingFile("Trying to add");
@@ -372,6 +376,7 @@ public class Logic {
 		writeToStorage();
 	}
 	
+	//@author A0098924M
 	private void executeClear(Executable task){
 		
 		entryList.clear();
@@ -529,7 +534,7 @@ public class Logic {
 			System.out.println("no entry found!");
 		}
 	}
-	
+	//@author A0098924M
 	private void executeDone(Executable task){
 		//Done something
 		ArrayList<Integer> index = task.getDisplayIndex();
