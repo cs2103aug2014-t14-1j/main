@@ -340,8 +340,9 @@ public class Logic {
 		}
 		
 		if (entry.getEndingDate() != null && entry.getStartingDate() != null) {
-			if (isGreater(entry.getEndingDate(), entry.getStartingDate())){
+			if (! isGreater(entry.getEndingDate(), entry.getStartingDate())){
 				//start date greater than end date
+				System.out.println("broken");
 				throw new IllegalArgumentException();
 			}
 		}
