@@ -412,7 +412,7 @@ public class Logic {
 	}
 
 	//@author A0128435E
-	public void executeSearch(Executable task) throws ParseException{
+	public LinkedList<Entry> executeSearch(Executable task) throws ParseException{
 		
 		String searchContent, searchContent1, startDate, endDate;
 		String[] searchKeyword, searchName;
@@ -500,6 +500,7 @@ public class Logic {
 		}
 		
 		displayList = searchResult;
+		return displayList;
 	}
 
 	
