@@ -10,12 +10,20 @@ format for display:
 this will be the only format supported for display. Everything else will be pushed to search
 
 format for search:
-/search today
-/search <date>
-/search /from <date>
-/search /by <date>
-/search <doneness>
-/search <keyword>
+/search today : startingDate = endingDate = today's date
+/search tomorrow(or tmr) : startingDate = endingDate = trm's date
+/search this <week> (or <month>) : search the record of this week or month
+/search next <week> (or <month>) : search the record of next week or month
+/search <month> : on that month
+/search <date> : startingDate = endingDate = <date>
+/search <keyword> : info is the string of keyword or keywords as given by the user
+/search /start <date> : startingDate after <date> (sorted)
+/search /by <date> : endingDate after <date> (sorted)
+/search /start <date> /by <date> : startingDate and endingDate between those period
+/search done : doneness = true
+/search undone : doneness = false
+Note that Doneness will be set to null if doneness is not being searched for. False or true if it is being searched for.
+doneness defaults to false for all other operations, like add or delete.
 each of these can be an issue by itself, not necessarily for one person to implement it on his/her own
 exe.getDoneness() will be set to null if doneness is not being searched for. False or true if it is being searched for.
 Note that doneness defaults to false for all other operations.
