@@ -483,7 +483,7 @@ public class ToDoManagerGUI {
 		if (thisYear == givenYear) {
 			myFormat = "dd MMM EEE";
 		} else {
-			myFormat = "dd MMM yyyy";
+			myFormat = "dd MMM EEE yyyy";
 		}
 
 		Date uglyDateObj;
