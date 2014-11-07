@@ -50,7 +50,8 @@ public class Logic {
 											" /edit <index no.> /on <new date>\n" + 
 											" /edit <index no.> /by <new date>\n" + 
 											" /edit <index no.> /start <new date> /by <new date2>\n" +
-											" Note that <index no.> refers to the numbering in the most recently displayed list.\n";
+											" Note that <index no.> refers to the numbering in the most recently displayed list.\n" +
+											" Time can replace or be added after dates (separated with a space), to edit the time of an event.";
 	private static final String HELP_UNDO = " The /undo command reverses the most recent change made.\n" +
 											" This extends to all actions taken since the app was started.\n";
 	private static final String HELP_MARK = " This marks the item as done. Format of mark : \n" +
@@ -60,6 +61,8 @@ public class Logic {
 											" <index no.> can be multiple numbers separated by spaces, to mark several items at one go.\n";
 	private static final String HELP_SEARCH = " Format for search : \n" +
 											  " /search today\n" +
+											  " /search tmr or tomorrow\n" +
+											  " /search <month name> \n" +
 											  " /search <done or undone>\n" +
 											  " /search <date>\n" +
 											  " /search <keyword>\n";
