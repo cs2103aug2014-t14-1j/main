@@ -52,7 +52,7 @@ public class ToDoManagerGUI {
 	public static Storage storage;
 	private static ToDoManagerGUI toDoManagerGUI;
 
-	private static final String HOTKEYS = "Hotkeys:\n"
+	static final String HOTKEYS = "Hotkeys:\n"
 			+ "esc: Exit ToDo Manager\n" + "F1: Display Help Messages\n"
 			+ "F2: Clear Screen\n" + "F3: Display Hotkeys\n" + "F4: Undo\n"
 			+ "F5: Display\n" + "Page_Up: Scroll Up\n"
@@ -349,7 +349,7 @@ public class ToDoManagerGUI {
 			return;
 		} else if (displayObj instanceof String) { // print it if string
 			String displayString = (String) displayObj;
-			if (displayString.split(" ")[0].equals("HELP:")) {
+			if (displayString.split(" ")[0].equals("Help")) {
 				displayBox.setText(displayString);
 			} else {
 				feedbackBox.setText(displayString);
@@ -362,26 +362,39 @@ public class ToDoManagerGUI {
 		} else if (displayObj instanceof Result) {
 			CommandType command = ((Result) displayObj).getCommandType();
 			switch (command) {
-			case CMD_ADD:
-				feedbackBox.setText(((Result) displayObj).getFeedback());
-				break;
-			case CMD_CLEAR:
-				feedbackBox.setText(((Result) displayObj).getFeedback());
-				break;
-			case CMD_DELETE:
-				feedbackBox.setText(((Result) displayObj).getFeedback());
-				displayLists(((Result) displayObj).getDisplayList());
-				break;
-			case CMD_DISPLAY:
-				feedbackBox.setText(((Result) displayObj).getFeedback());
-				displayLists(((Result) displayObj).getDisplayList());
-				break;
-			case CMD_DONE:
-				feedbackBox.setText(((Result) displayObj).getFeedback());
-				break;
-			case CMD_UNDONE:
-				feedbackBox.setText(((Result) displayObj).getFeedback());
-				break;
+				case CMD_ADD:
+					feedbackBox.setText(((Result) displayObj).getFeedback());
+					displayLists(((Result) displayObj).getDisplayList());
+					break;
+				case CMD_CLEAR:
+					feedbackBox.setText(((Result) displayObj).getFeedback());
+					break;
+				case CMD_DELETE:
+					feedbackBox.setText(((Result) displayObj).getFeedback());
+					displayLists(((Result) displayObj).getDisplayList());
+					break;
+				case CMD_DISPLAY:
+					feedbackBox.setText(((Result) displayObj).getFeedback());
+					displayLists(((Result) displayObj).getDisplayList());
+					break;
+				case CMD_DONE:
+					feedbackBox.setText(((Result) displayObj).getFeedback());
+					displayLists(((Result) displayObj).getDisplayList());
+					break;
+				case CMD_UNDONE:
+					feedbackBox.setText(((Result) displayObj).getFeedback());
+					displayLists(((Result) displayObj).getDisplayList());
+					break;
+				case CMD_EDIT:
+					feedbackBox.setText(((Result) displayObj).getFeedback());
+					displayLists(((Result) displayObj).getDisplayList());
+					break;
+				case CMD_UNDO:
+					feedbackBox.setText(((Result) displayObj).getFeedback());
+					displayLists(((Result) displayObj).getDisplayList());
+					break;
+				default:
+					break;
 			}
 		}
 

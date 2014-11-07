@@ -26,10 +26,11 @@ public class Logic {
 			+ "  /edit         /undo\n"
 			+ "  /mark       /search\n"
 			+ "  /sort         /exit\n"
-			+ "   date        time\n";
+			+ "   date        time\n\n" 
+			+ "  Press F3 for the list of HOTKEYS.";
 	
 	private static final String HELP_INVALID_KEYWORD = " Invalid help topic given.\n";
-	private static final String HELP_ADD = " Format of add command : /add <task name>\n" +
+	private static final String HELP_ADD = " Format of add command : /add <task name>\n\n" +
 										   " The following can also be added after the basic add command : \n" +
 										   " /on <date> <start time> <end time>\n" +
 										   " /on <date> <single time>\n" +
@@ -77,7 +78,7 @@ public class Logic {
 	private static LinkedList<Entry> displayList = new LinkedList<Entry>();
 	
 	private static Logging logObj = Logging.getInstance();
-	private Result result = new Result();
+	private Result result;
 
 	//@author A0098924M
 	private Logic(){
@@ -128,101 +129,111 @@ public class Logic {
 	//@author A0098924M
 	public Object execute(Executable task) throws ParseException{
 		
-
+		result = new Result();
 		CommandType command = task.getCommand();
 		
 		switch (command) {
 		
-		case CMD_ADD: 
-		
-			saveEntryListToPreList();
-			executeAdd(task);
-			executeDisplay(entryList);
-			result.setCommandType(CommandType.CMD_ADD);
-			result.setFeedback("A new task added successfully");
-			result.setSuccess(true);
-			return result;
-		
-		case CMD_CLEAR: 
+			case CMD_ADD: 
 			
-			saveEntryListToPreList();
-			executeClear(task);
-			executeDisplay(entryList);
-			result.setCommandType(CommandType.CMD_CLEAR);
-			result.setFeedback("All tasks cleared");
-			result.setSuccess(true);
-			return result;
-		
-		case CMD_DELETE: 
-			saveEntryListToPreList();
-			executeDelete(task);
-			executeDisplay(entryList);
-			result.setCommandType(CommandType.CMD_DELETE);
-			result.setFeedback("Task deleted");
-			result.setSuccess(true);
-			result.setDisplayList(entryList);
-			return result;
-		
-		case CMD_DISPLAY: 
-			executeDisplay(entryList);
-			result.setCommandType(CommandType.CMD_DISPLAY);
-			result.setFeedback("Display tasks");
-			result.setSuccess(true);
-			result.setDisplayList(entryList);
-			return result;
-		
-		case CMD_DONE: 
-			saveEntryListToPreList();
-			executeDone(task);
-			executeDisplay(entryList);
-			result.setCommandType(CommandType.CMD_DONE);
-			result.setFeedback("Task marked done");
-			result.setSuccess(true);
-			return result;
-		
-		case CMD_UNDONE: 
-			saveEntryListToPreList();
-			executeUndone(task);
-			executeDisplay(entryList);
-			result.setCommandType(CommandType.CMD_UNDO);
-			result.setFeedback("Task marked undone");
-			result.setSuccess(true);
-			return result;
+				saveEntryListToPreList();
+				executeAdd(task);
+				executeDisplay(entryList);
+				result.setCommandType(CommandType.CMD_ADD);
+				result.setFeedback("A new task added successfully");
+				result.setSuccess(true);
+				result.setDisplayList(entryList);
+				return result;
 			
-		case CMD_HELP:
-			String out = executeHelp(task);
-			return "HELP: "+out;
+			case CMD_CLEAR: 
+				
+				saveEntryListToPreList();
+				executeClear(task);
+				executeDisplay(entryList);
+				result.setCommandType(CommandType.CMD_CLEAR);
+				result.setFeedback("All tasks cleared");
+				result.setSuccess(true);
+				return result;
 			
-		case CMD_EDIT: 
-			saveEntryListToPreList();
-			executeEdit(task);
-			executeDisplay(entryList);
-			result.setCommandType(CommandType.CMD_EDIT);
-			result.setSuccess(true);
-			return entryList;
-		
-		case CMD_SEARCH: 
-			executeSearch(task);
-			executeDisplay(displayList);
-			result.setSuccess(true);
-			return displayList;
-		
-		case CMD_UNDO: 
-			Object result =  executeUndo();
-			executeDisplay(entryList);
-			return displayList;
-		
-		case CMD_SORT: 
-			executeSort();
-			executeDisplay(entryList);
-			return entryList;
+			case CMD_DELETE: 
+				
+				saveEntryListToPreList();
+				executeDelete(task);
+				executeDisplay(entryList);
+				result.setCommandType(CommandType.CMD_DELETE);
+				result.setFeedback("Task deleted");
+				result.setSuccess(true);
+				result.setDisplayList(entryList);
+				return result;
 			
-		case CMD_EXIT:
-			preList.clear();
-			System.exit(0);
-			//return "exit";
-		default:
-			return ToDoManager.MESSAGE_ERROR_GENERIC;
+			case CMD_DISPLAY: 
+				executeDisplay(entryList);
+				result.setCommandType(CommandType.CMD_DISPLAY);
+				result.setFeedback("Display tasks");
+				result.setSuccess(true);
+				result.setDisplayList(entryList);
+				return result;
+			
+			case CMD_DONE: 
+				saveEntryListToPreList();
+				executeDone(task);
+				executeDisplay(entryList);
+				result.setCommandType(CommandType.CMD_DONE);
+				result.setFeedback("Task marked done");
+				result.setSuccess(true);
+				result.setDisplayList(entryList);
+				return result;
+			
+			case CMD_UNDONE: 
+				saveEntryListToPreList();
+				executeUndone(task);
+				executeDisplay(entryList);
+				result.setCommandType(CommandType.CMD_UNDO);
+				result.setFeedback("Task marked undone");
+				result.setSuccess(true);
+				result.setDisplayList(entryList);
+				return result;
+				
+			case CMD_HELP:
+				String out = executeHelp(task);
+				return "Help : \n" + out;
+				
+			case CMD_EDIT: 
+				saveEntryListToPreList();
+				executeEdit(task);
+				executeDisplay(entryList);
+				result.setCommandType(CommandType.CMD_EDIT);
+				result.setSuccess(true);
+				result.setFeedback("Task editted successfully.");
+				result.setDisplayList(entryList);
+				return result;
+			
+			case CMD_SEARCH: 
+				executeSearch(task);
+				executeDisplay(displayList);
+				result.setSuccess(true);
+				return displayList;
+			
+			case CMD_UNDO: 
+				result.setCommandType(CommandType.CMD_UNDO);
+				Object outcome =  executeUndo();
+				if (outcome instanceof String){
+					result.setFeedback((String) outcome);
+				}
+				result.setDisplayList(entryList);
+				return result;
+			
+			case CMD_SORT: 
+				executeSort();
+				executeDisplay(entryList);
+				return entryList;
+				
+			case CMD_EXIT:
+				preList.clear();
+				System.exit(0);
+				//return "exit";
+			default:
+				return ToDoManager.MESSAGE_ERROR_GENERIC;
 		}
 			
 	}
@@ -531,7 +542,7 @@ public class Logic {
 		    count++;
 		    UserInterface.showToUser(entryString);
 		}
-		if(list.size() == 0){
+		if (list.size() == 0){
 			System.out.println("no entry found!");
 		}
 	}

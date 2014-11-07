@@ -136,8 +136,9 @@ public class Interpreter {
 			case "/exit":
 				exe = new Executable(CommandType.CMD_EXIT);
 				break;
-				
-			case "help":
+			
+			case "help": // intentional fallthrough to catch both cases
+			case "/help":
 				exe = processHelp(words);
 				break;
 				
