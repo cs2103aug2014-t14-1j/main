@@ -435,25 +435,18 @@ public class Logic {
 	public LinkedList<Entry> executeSearch(Executable task) throws ParseException{
 		
 		String searchContent, searchContent1, startDate, endDate;
-		String[] searchKeyword, searchName;
-		int pos;
 		boolean doneness;
 		
 		LinkedList<Entry> searchResult = new LinkedList<Entry>();
 		
 		if(task.getInfo() != null){
-			searchKeyword = task.getInfo().trim().toLowerCase().split(" ");
-			System.out.println();
-			for(Entry entry: entryList){
-				pos = 0;
-				searchName = entry.getName().toLowerCase().split(" ");
-				for(int i = 0; i < searchName.length; i++){
-					searchContent = searchName[i];
-					if(searchContent.equals(searchKeyword[pos]))
-						pos++;
-					if(pos == searchKeyword.length){
-						searchResult.add(entry);
-						break;
+			ArrayList<Integer> match = noOfMatchWord(task.getInfo());
+			int maxMatch = Collections.max(match);
+			for(int i = maxMatch; i > 0; i--){
+				for(int j = 0; j < match.size(); j++){
+					if(match.get(j)==i){
+						searchResult.add(entryList.get(j));
+						System.out.println("record insert");
 					}
 				}
 			}
@@ -577,7 +570,31 @@ public class Logic {
 		}
 		preList.add(newList);
 	}
-
+	
+	//@author A0128435E
+	private ArrayList<Integer> noOfMatchWord(String keyword){
+		ArrayList<Integer> noOfMatch = new ArrayList<Integer>();
+		String[] searchKeyword = keyword.trim().toLowerCase().split(" ");
+		String[] recordName;
+		int matchNo = 0;
+		for(Entry entry: entryList){
+			recordName = entry.getName().toLowerCase().split(" ");
+			matchNo = 0;
+			for(int i = 0; i < recordName.length; i++){
+				for(int j = 0; j < searchKeyword.length; j++){
+					if(searchKeyword[j].length() < 2){
+						continue;
+					}
+					if(recordName[i].contains(searchKeyword[j])){
+						matchNo++;
+					}
+				}
+			}
+			noOfMatch.add(matchNo);
+		}
+		return noOfMatch;
+	}
+	
 	//@author A0128435E
 	private boolean isGreater(String newDateString, String compareDateString) throws ParseException{
 		DateFormat dateFormat = new SimpleDateFormat("ddMMyy");
