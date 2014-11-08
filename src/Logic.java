@@ -200,7 +200,7 @@ public class Logic {
 				executeDisplay(entryList);
 				result.setCommandType(CommandType.CMD_EDIT);
 				result.setSuccess(true);
-				result.setFeedback("Task editted successfully.");
+				result.setFeedback("Task edited successfully.");
 				result.setDisplayList(entryList);
 				return result;
 			
@@ -635,7 +635,7 @@ public class Logic {
 	private String printError(Exception e){
 		
 		if (e.getMessage() != null){
-			e.getMessage();
+			return e.getMessage();
 		}
 		
 		if (e instanceof IllegalArgumentException) {
