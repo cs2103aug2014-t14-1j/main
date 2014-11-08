@@ -118,19 +118,15 @@ public class Logic {
 			exe = Interpreter.parseCommand(userInput);
 			displayObj = execute(exe);
 			
-			
-		} catch (EmptyInputException e) {
-			return ToDoManager.MESSAGE_ERROR_EMPTY_INPUT;
-		} catch (IllegalArgumentException e) {
-			 return ToDoManager.MESSAGE_WRONG_INPUT_FORMAT;
 		} catch (Exception e) {
-			return ToDoManager.MESSAGE_ERROR_GENERIC;
+			return printError(e);
 		}
 		
 		return displayObj;
 	}
+	
 	//@author A0098924M
-	public Object execute(Executable task) throws ParseException{
+	public Object execute(Executable task) throws Exception{
 		
 		result = new Result();
 		CommandType command = task.getCommand();
@@ -138,7 +134,6 @@ public class Logic {
 		switch (command) {
 		
 			case CMD_ADD: 
-			
 				saveEntryListToPreList();
 				executeAdd(task);
 				executeDisplay(entryList);
@@ -149,7 +144,6 @@ public class Logic {
 				return result;
 			
 			case CMD_CLEAR: 
-				
 				saveEntryListToPreList();
 				executeClear(task);
 				executeDisplay(entryList);
@@ -159,7 +153,6 @@ public class Logic {
 				return result;
 			
 			case CMD_DELETE: 
-				
 				saveEntryListToPreList();
 				executeDelete(task);
 				executeDisplay(entryList);
@@ -356,8 +349,7 @@ public class Logic {
 		if (entry.getEndingDate() != null && entry.getStartingDate() != null) {
 			if (! isGreater(entry.getEndingDate(), entry.getStartingDate())){
 				//start date greater than end date
-				System.out.println("broken");
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException("Start date greater than end date.");
 			}
 		}
 		
@@ -399,36 +391,32 @@ public class Logic {
 	}
 	
 	//@author A0098735M
-	private void executeEdit(Executable task){
+	private void executeEdit(Executable task) throws Exception{
 		
-		try{
-			int displayIndex = task.getDisplayIndex().get(0) - 1;
-			Entry entryToEdit = displayList.get(displayIndex);
-			
-			if (task.getInfo() != null){ //edit name
-				entryToEdit.setName(task.getInfo());
-			} 
-			
-			if (task.getStartingDate() != null){ //edit startingDate
-				entryToEdit.setStartingDate(task.getStartingDate());
-			}
-			
-			if (task.getEndingDate() != null){//edit endingDate
-				entryToEdit.setEndingDate(task.getEndingDate());
-			}
-			
-			if (task.getStartingTime() != null){ //edit startingTime
-				entryToEdit.setStartingTime(task.getStartingTime());
-			}
-			
-			if (task.getEndingTime() != null){//edit endingTime
-				entryToEdit.setEndingTime(task.getEndingTime());
-			}
-
-			writeToStorage();
-		} catch(Exception e){
-			throw new IllegalArgumentException(e.getMessage());
+		int displayIndex = task.getDisplayIndex().get(0) - 1;
+		Entry entryToEdit = displayList.get(displayIndex);
+		
+		if (task.getInfo() != null){ //edit name
+			entryToEdit.setName(task.getInfo());
+		} 
+		
+		if (task.getStartingDate() != null){ //edit startingDate
+			entryToEdit.setStartingDate(task.getStartingDate());
 		}
+		
+		if (task.getEndingDate() != null){//edit endingDate
+			entryToEdit.setEndingDate(task.getEndingDate());
+		}
+		
+		if (task.getStartingTime() != null){ //edit startingTime
+			entryToEdit.setStartingTime(task.getStartingTime());
+		}
+		
+		if (task.getEndingTime() != null){//edit endingTime
+			entryToEdit.setEndingTime(task.getEndingTime());
+		}
+
+		writeToStorage();	
 	}
 
 	//@author A0128435E
@@ -644,5 +632,19 @@ public class Logic {
 		return month;
 	}
 	
+	private String printError(Exception e){
+		
+		if (e.getMessage() != null){
+			e.getMessage();
+		}
+		
+		if (e instanceof IllegalArgumentException) {
+			return "Incorrect argument given.";
+		} else if (e instanceof EmptyInputException){
+			return ToDoManager.MESSAGE_ERROR_EMPTY_INPUT;
+		} else {
+			return ToDoManager.MESSAGE_ERROR_GENERIC;
+		}
+	}
 	
-}
+} 

@@ -52,12 +52,17 @@ public class ToDoManagerGUI {
 	public static Storage storage;
 	private static ToDoManagerGUI toDoManagerGUI;
 
-	static final String HOTKEYS = "Hotkeys:\n"
-			+ "esc: Exit ToDo Manager\n" + "F1: Display Help Messages\n"
-			+ "F2: Clear Screen\n" + "F3: Display Hotkeys\n" + "F4: Undo\n"
-			+ "F5: Display\n" + "Page_Up: Scroll Up\n"
-			+ "Page_Down: Scroll Down\n" + "Home: Scroll Up To the Top\n"
-			+ "End: Scroll Down To the Bottom\n";
+	static final String HOTKEYS = "Hotkeys:\n" + 
+								  "esc: Exit ToDo Manager\n" + 
+								  "F1: Display Help Messages\n" + 
+								  "F2: Clear Screen\n" + 
+								  "F3: Display Hotkeys\n" + 
+								  "F4: Undo\n" + 
+								  "F5: Display\n" + 
+								  "Page_Up: Scroll Up\n" + 
+								  "Page_Down: Scroll Down\n" + 
+								  "Home: Scroll Up To the Top\n" + 
+								  "End: Scroll Down To the Bottom\n";
 
 	private final static String MESSAGE_SPLIT_LINE = "------------------------------------------";
 	private final static String MESSAGE_WELCOME = "Welcome to ToDo Manager!";

@@ -80,6 +80,7 @@ public class Interpreter {
 	static DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
 	private static final Date today = new Date();
 	
+	
 	public Interpreter() {
 	}
 	
@@ -143,7 +144,7 @@ public class Interpreter {
 				break;
 				
 			default : 
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException("Unrecognized command given.");
 		}
 		
 		if (DEBUG) {
@@ -176,7 +177,7 @@ public class Interpreter {
 		boolean addBasic = true;
 		
 		if (doesNotHaveExtraText(words)){
-			throw new EmptyInputException();
+			throw new EmptyInputException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
 		}
 		
 		//linearly read the words, stop when you find a keyword
@@ -214,14 +215,14 @@ public class Interpreter {
 		
 		// i is where /by was found
 		exe.setInfo(recombine(words, 1, i));
-		
+ 
 		//date
 		if (words.length == i + 1){ // nothing after keyword
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
 		} else if (! isDate(words[i+1] ) ){ // wrong date format
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_WRONG_DATE_FORMAT);
 		} else if (! isGreaterToday(words[i+1])){
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_PAST_DATE);
 		}
 		
 		String date = words[i+1];
@@ -230,7 +231,7 @@ public class Interpreter {
 		//time
 		if (words.length == i + 3) { //time given
 			if (! isTime(words[i+2]) ) { // wrong time format
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException(ToDoManager.MESSAGE_WRONG_DATE_FORMAT);
 			}
 			
 			String time = words[i+2];
@@ -245,11 +246,11 @@ public class Interpreter {
 		
 		//date
 		if (words.length <= i + 1){ // nothing after keyword
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
 		} else if (! isDate(words[i+1]) ){ // wrong date format
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_WRONG_DATE_FORMAT);
 		} else if (! isGreaterToday(words[i+1])){
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_PAST_DATE);
 		}
 		
 		String date = words[i+1];
@@ -265,7 +266,7 @@ public class Interpreter {
 		//first time argument
 		String time;
 		if (! isTime(words[i+2]) ) { // wrong time format
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_WRONG_TIME_FORMAT);
 		} else {
 			time = words[i+2];
 			exe.setStartingTime(time);
@@ -279,7 +280,7 @@ public class Interpreter {
 		
 		// second time argument
 		if (! isTime(words[i+3]) ) { // wrong time format
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_WRONG_TIME_FORMAT);
 		} else {
 			time = words[i+3];
 			exe.setEndingTime(time);
@@ -296,27 +297,29 @@ public class Interpreter {
 		
 		//start date
 		if (pointer == end) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
 		} else {  
 			date = words[pointer];
-			if ( isDate(date) && isGreaterToday(date) ){ // right date format
+			if (! isDate(date)) {//wrong date format
+				throw new IllegalArgumentException(ToDoManager.MESSAGE_WRONG_DATE_FORMAT);
+			} else if (! isGreaterToday(date)) { // date is in the past
+				throw new IllegalArgumentException(ToDoManager.MESSAGE_PAST_DATE);
+			} else {
 				exe.setStartingDate(date);
 				pointer++;
-			} else {
-				throw new IllegalArgumentException();
 			}
 		}
 		
 		// start time
 		if (pointer == end) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
 		} else if (! words[pointer].equals("/by") ) {
 			time = words[pointer];
 			if ( isTime(time) ){ // right date format
 				exe.setStartingTime(time);
 				pointer++;
-			} else {
-				throw new IllegalArgumentException();
+			} else { // wrong fomat of time given
+				throw new IllegalArgumentException(ToDoManager.MESSAGE_WRONG_TIME_FORMAT);
 			}
 		}
 		
@@ -329,14 +332,16 @@ public class Interpreter {
 		
 		//end date
 		if (pointer == end) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
 		} else {  
 			date = words[pointer];
-			if ( isDate(date) && isGreaterToday(date) ){ // right date format
+			if (! isDate(date)) {//wrong date format
+				throw new IllegalArgumentException(ToDoManager.MESSAGE_WRONG_DATE_FORMAT);
+			} else if (! isGreaterToday(date)) { // date is in the past
+				throw new IllegalArgumentException(ToDoManager.MESSAGE_PAST_DATE);
+			} else {
 				exe.setEndingDate(date);
 				pointer++;
-			} else {
-				throw new IllegalArgumentException();
 			}
 		}
 		
@@ -348,7 +353,7 @@ public class Interpreter {
 			if ( isTime(time) ){ // right date format
 				exe.setEndingTime(time);
 			} else {
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException(ToDoManager.MESSAGE_WRONG_TIME_FORMAT);
 			}
 		}
 	}
@@ -358,11 +363,17 @@ public class Interpreter {
 		Executable exe = new Executable(CommandType.CMD_DELETE);
 		ArrayList<Integer> index = new ArrayList<Integer>();
 		if (doesNotHaveExtraText(words)) { // no identifiers on what to delete
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
 		}
-		for(int i = 1; i < words.length; i++){
-			index.add(Integer.parseInt( words[i] ));
+		
+		try {
+			for(int i = 1; i < words.length; i++){
+				index.add(Integer.parseInt( words[i] ));
+			}
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Number required for delete.");
 		}
+		
 		exe.setDisplayIndex(index);
 		return exe;
 	}
@@ -378,10 +389,14 @@ public class Interpreter {
 		ArrayList<Integer> index = new ArrayList<Integer>();
 		
 		if (words.length <= 2){ // not enough info to edit
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
 		}
 		
-		index.add(Integer.parseInt(words[1]));
+		try {
+			index.add(Integer.parseInt(words[1]));
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Number required for edit.");
+		}
 		
 		exe.setDisplayIndex(index);
 		
@@ -410,7 +425,7 @@ public class Interpreter {
 		Boolean date = null;
 		
 		if (pointer == end) { // check for insufficient length
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
 		} else if ( isDate(words[pointer]) ) { // change date
 			exe.setStartingDate(words[pointer]);
 			date = true;
@@ -452,7 +467,7 @@ public class Interpreter {
 		Boolean date = null;
 		
 		if (pointer == end) { // check for insufficient length
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
 		} else if ( isDate(words[pointer]) ) { // change date
 			exe.setStartingDate(words[pointer]);
 			exe.setEndingDate(words[pointer]);
@@ -467,7 +482,7 @@ public class Interpreter {
 		
 		pointer++;
 		
-		if (pointer == end) { // check for insufficient length
+		if (pointer == end) { // check for end
 			return;
 		} if ( isDate(words[pointer]) && date == false) { //check that werent given two dates
 			exe.setStartingDate(words[pointer]);
@@ -490,7 +505,7 @@ public class Interpreter {
 		Boolean date = null;
 		
 		if (pointer == end) { // check for insufficient length
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
 		} else if ( isDate(words[pointer]) ) { // change date
 			exe.setEndingDate(words[pointer]);
 			date = true;
@@ -503,7 +518,7 @@ public class Interpreter {
 		
 		pointer++;
 		
-		if (pointer == end) { // check for insufficient length
+		if (pointer == end) { // check for end
 			return;
 		} if ( isDate(words[pointer]) && date == false) { //check that werent given two dates
 			exe.setEndingDate(words[pointer]);
@@ -531,9 +546,9 @@ public class Interpreter {
 		exe.setDoneness(null);
 		
 		if (doesNotHaveExtraText(words)) { // no search keywords
-			throw new IllegalArgumentException(); //TODO refine exception to be more informative
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
 		
-			//search Today
+		//search Today
 		} else if (words.length == 2 && words[1].equals("today")){  
 			exe.setStartingDate(dateFormat.format(today));
 			exe.setEndingDate(dateFormat.format(today));
@@ -610,28 +625,29 @@ public class Interpreter {
 	private static Executable processMark(String[] words) throws IllegalArgumentException {
 		Executable exe = new Executable(CommandType.CMD_DONE);
 		if (doesNotHaveExtraText(words)){ // no identifiers
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
 		} else {  //has more words
 			ArrayList<Integer> index = new ArrayList<Integer>();
 			String word;
-			String info = "";
+			//String info = "";
 			for (int i = 1; i < words.length; i++) {
 				word = words[i];
 				if (isNumber(word)){ // its a display index
 					index.add(Integer.parseInt(word));
 				} else if (word.equals("undone") ) {
 					exe.setCommand(CommandType.CMD_UNDONE);
-				} else { // its a keyword
-					info += word + " ";
+				} else { 
+					//info += word + " ";
+					throw new IllegalArgumentException("Number required for mark.");
 				}
 			}
 			
 			if (! index.isEmpty()){
 				exe.setDisplayIndex(index);
 			}
-			if (info != "") {
-				exe.setInfo(info);
-			}
+//			if (info != "") {
+//				exe.setInfo(info);
+//			}
 		}
 		return exe;
 	}

@@ -13,7 +13,11 @@ public class ToDoManager {
 	static final String MESSAGE_WELCOME = "Welcome to ToDo Manager!";
 	static final String MESSAGE_ERROR_GENERIC = "An error has occurred.";
 	static final String MESSAGE_ERROR_EMPTY_INPUT = "No command was given.";
-	static final String MESSAGE_WRONG_INPUT_FORMAT = "Wrong format of input given"; 
+	static final String MESSAGE_WRONG_INPUT_FORMAT = "Wrong input format given"; 
+	static final String MESSAGE_INSUFFICIENT_ARGUMENT = "Insufficient arguments given."; 
+	static final String MESSAGE_WRONG_DATE_FORMAT = "Wrong date format given."; 
+	static final String MESSAGE_WRONG_TIME_FORMAT = "Wrong time format given."; 
+	static final String MESSAGE_PAST_DATE = "Date given is in the past.";
 	
 	Logic logic;
 	UserInterface userInterface;
