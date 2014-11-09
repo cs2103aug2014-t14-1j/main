@@ -284,6 +284,7 @@ public class Interpreter {
 		} else {
 			time = words[i+3];
 			exe.setEndingTime(time);
+			checkStartEndTime(exe.getStartingTime(), exe.getEndingTime());
 		}
 	}
 	
@@ -352,6 +353,7 @@ public class Interpreter {
 			time = words[pointer];
 			if ( isTime(time) ){ // right date format
 				exe.setEndingTime(time);
+				checkStartEndTime(exe.getStartingTime(), exe.getEndingTime());
 			} else {
 				throw new IllegalArgumentException(ToDoManager.MESSAGE_WRONG_TIME_FORMAT);
 			}
@@ -519,6 +521,7 @@ public class Interpreter {
 		pointer++;
 		
 		if (pointer == end) { // check for end
+			checkStartEndTime(exe.getStartingTime(), exe.getEndingTime());
 			return;
 		} if ( isDate(words[pointer]) && date == false) { //check that werent given two dates
 			exe.setEndingDate(words[pointer]);
@@ -527,6 +530,7 @@ public class Interpreter {
 		} else { // unrecognised format
 			throw new IllegalArgumentException();
 		}
+		checkStartEndTime(exe.getStartingTime(), exe.getEndingTime());
 		return;
 	}
 
@@ -774,57 +778,60 @@ public class Interpreter {
 		String keyword = word.toLowerCase();
 		
 		switch (keyword) {
-		case "1":
-		case "january" :
-			return "000100";
-		
-		case "2":
-		case "february" :
-			return "000200";
-		
-		case "3":
-		case "march" :
-			return "000300";
-		
-		case "4":
-		case "april" :
-			return "000400";
-		
-		case "5":
-		case "may" :
-			return "000500";
-		
-		case "6":
-		case "june" :
-			return "000600";
+			case "1":
+			case "january" :
+				return "000100";
 			
-		case "7":
-		case "july" :
-			return "000700";
-		
-		case "8":
-		case "august" :
-			return "000800";
+			case "2":
+			case "february" :
+				return "000200";
 			
-		case "9":
-	    case "september" :
-			return "000900";
+			case "3":
+			case "march" :
+				return "000300";
 			
-	    case "10":
-		case "october":
-			return "001000";
+			case "4":
+			case "april" :
+				return "000400";
 			
-		case "11":
-		case "november":
-			return "001100";
+			case "5":
+			case "may" :
+				return "000500";
 			
-		case "12":
-		case "december":
-			return "001200";
+			case "6":
+			case "june" :
+				return "000600";
+				
+			case "7":
+			case "july" :
+				return "000700";
 			
-			
-		default : 
-			return null;
+			case "8":
+			case "august" :
+				return "000800";
+				
+			case "9":
+		    case "september" :
+				return "000900";
+				
+		    case "10":
+			case "october":
+				return "001000";
+				
+			case "11":
+			case "november":
+				return "001100";
+				
+			case "12":
+			case "december":
+				return "001200";
+					
+			default : 
+				return null;
 		}
+	}
+	
+	private static void checkStartEndTime(String startStr, String endStr){
+		ValidationCheck.checkStartEndTime(startStr, endStr);
 	}
 }
