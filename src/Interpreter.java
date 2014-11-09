@@ -353,7 +353,9 @@ public class Interpreter {
 			time = words[pointer];
 			if ( isTime(time) ){ // right date format
 				exe.setEndingTime(time);
-				checkStartEndTime(exe.getStartingTime(), exe.getEndingTime());
+				if (exe.getEndingDate().equals(exe.getStartingDate())) {
+					checkStartEndTime(exe.getStartingTime(), exe.getEndingTime());
+				}
 			} else {
 				throw new IllegalArgumentException(ToDoManager.MESSAGE_WRONG_TIME_FORMAT);
 			}

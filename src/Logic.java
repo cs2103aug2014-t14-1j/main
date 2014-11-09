@@ -361,7 +361,11 @@ public class Logic {
 	}
 	
 	//@author A0128435E
-	private void executeDelete(Executable task){
+	private void executeDelete(Executable task) throws Exception{
+		if (displayList.isEmpty()) {
+			throw new Exception("Nothing to delete!");
+		}
+		
 		ArrayList<Integer> index = task.getDisplayIndex();
 		int removeIndex;
 		for(int i = 0 ; i < index.size(); i++){
