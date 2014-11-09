@@ -46,12 +46,12 @@ import javax.swing.text.StyleContext;
 
 import todo_manager.ToDoManager.CommandType;
 
+//@author A0085159W
 public class ToDoManagerGUI {
 	private static Logic logic;
 	private static UserInterface userInterface;
 	public static Storage storage;
 	private static ToDoManagerGUI toDoManagerGUI;
-
 	static final String HOTKEYS = "Hotkeys:\n" + 
 								  "esc: Exit ToDo Manager\n" + 
 								  "F1: Display Help Messages\n" + 
@@ -72,12 +72,14 @@ public class ToDoManagerGUI {
 	private JPanel inputBoxPanel;
 	private JScrollPane scrollPane;
 	private JTextField inputBox;
+	// top display box for ToDo Manager
 	private JTextField topTitle;
+	// feedback display box below the userinput area
 	private JTextField feedbackBox;
+	// display box for all tasks
 	private static JTextPane displayBox;
 
-	// private static JTextPane feedbackBox;
-
+	// @author A0085159W
 	public static void main(String[] args) {
 		toDoManagerGUI = new ToDoManagerGUI();
 		toDoManagerGUI.setup();
@@ -91,6 +93,7 @@ public class ToDoManagerGUI {
 
 	}
 
+	// @author A0085159W
 	public void setup() {
 		logic = Logic.getInstance();
 		userInterface = new UserInterface();
@@ -99,11 +102,13 @@ public class ToDoManagerGUI {
 		logic.setupGUI(this); // creation and filling out of linked lists
 	}
 
+	// @author A0085159W
 	public ToDoManagerGUI() {
 		initialize();
 		start();
 	}
 
+	// @author A0085159W
 	private void initialize() {
 		setupFrame();
 		setupTopTitle();
@@ -113,6 +118,7 @@ public class ToDoManagerGUI {
 		setupLayout();
 	}
 
+	// @author A0085159W
 	private void start() {
 		displayWelcomeMessage();
 		guiFrameListener();
@@ -120,6 +126,7 @@ public class ToDoManagerGUI {
 		displayBoxListener();
 	}
 
+	// @author A0085159W
 	// set up the application frame
 	private void setupFrame() {
 		frame = new JFrame();
@@ -132,6 +139,7 @@ public class ToDoManagerGUI {
 		// frame.setUndecorated(true);
 	}
 
+	// @author A0085159W
 	// set up top title
 	private void setupTopTitle() {
 		topTitle = new JTextField();
@@ -144,6 +152,7 @@ public class ToDoManagerGUI {
 		topTitle.setText("ToDo Manager");
 	}
 
+	// @author A0085159W
 	// add a text input box
 	private void setupTextInputBox() {
 		inputBox = new HintTextField("/cmd:");
@@ -164,6 +173,7 @@ public class ToDoManagerGUI {
 		inputBox.setPreferredSize(new Dimension(315, 20));
 	}
 
+	// @author A0085159W
 	// set up feedback display box
 	private void setupFeedbackBox() {
 		feedbackBox = new JTextField();
@@ -178,6 +188,7 @@ public class ToDoManagerGUI {
 		feedbackBox.setText("Command Feedback:");
 	}
 
+	// @author A0085159W
 	// text display box
 	private void setupTextDisplayBox() {
 		displayBox = new JTextPane();
@@ -199,6 +210,7 @@ public class ToDoManagerGUI {
 		scrollPane.setWheelScrollingEnabled(true);
 	}
 
+	// @author A0085159W
 	// setup frame layout
 	private void setupLayout() {
 		frame.getContentPane().setLayout(
@@ -209,11 +221,13 @@ public class ToDoManagerGUI {
 		frame.getContentPane().add(scrollPane, Component.CENTER_ALIGNMENT);
 	}
 
+	// @author A0085159W
 	// clear display box
 	private void clearDisplayBox() {
 		displayBox.setText("");
 	}
 
+	// @author A0085159W
 	// display a string on the display box
 	private void displayMessage(String message) {
 		StyleContext style = StyleContext.getDefaultStyleContext();
@@ -225,6 +239,7 @@ public class ToDoManagerGUI {
 		displayBox.replaceSelection(message + "\n");
 	}
 
+	// @author A0085159W
 	// read userinput
 	private String readUserInput() {
 		String userInput = null;
@@ -234,11 +249,13 @@ public class ToDoManagerGUI {
 		return userInput;
 	}
 
+	// @author A0085159W
 	// displays the latest messages
 	private void appendToDisplayBox(String message) {
 		displayBox.setText(message);
 	}
 
+	// @author A0085159W
 	// GUI frame Listener
 	private void guiFrameListener() {
 		frame.addFocusListener(new FocusAdapter() {
@@ -256,6 +273,7 @@ public class ToDoManagerGUI {
 		});
 	}
 
+	// @author A0085159W
 	// Listener for display box
 	private void displayBoxListener() {
 		displayBox.addMouseListener(new MouseAdapter() {
@@ -272,6 +290,7 @@ public class ToDoManagerGUI {
 		});
 	}
 
+	// @author A0085159W
 	// Pushes scroll bar to display the latest
 	private void updateScrollBar() {
 		displayBox.setCaretPosition(displayBox.getDocument().getLength());
@@ -279,12 +298,14 @@ public class ToDoManagerGUI {
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 	}
 
+	// @author A0085159W
 	// display welcome meesge
 	private void displayWelcomeMessage() {
 		displayBox.setText(MESSAGE_WELCOME + "\nToday's Date: "
 				+ getTodayDate() + "\n" + MESSAGE_SPLIT_LINE + "\n" + HOTKEYS);
 	}
 
+	// @author A0085159W
 	// get system date
 	private String getTodayDate() {
 		SimpleDateFormat dateFormatter = new SimpleDateFormat("dd-MMM-yyyy");
@@ -292,6 +313,7 @@ public class ToDoManagerGUI {
 		return dateFormatter.format(date.getTime());
 	}
 
+	// @author A0085159W
 	// Listener for input box
 	private void inputBoxListener() {
 		inputBox.addKeyListener(new KeyAdapter() {
@@ -347,6 +369,7 @@ public class ToDoManagerGUI {
 		});
 	}
 
+	// @author A0085159W
 	// display tasks and feedback to displaybox and feedbackbox
 	private void displayResult(Object displayObj) {
 		if (displayObj == null) {
@@ -405,6 +428,7 @@ public class ToDoManagerGUI {
 
 	}
 
+	// @author A0085159W
 	// display the display list on displaybox
 	private void displayLists(LinkedList<?> displayList) {
 		int count = 1;
@@ -514,6 +538,7 @@ public class ToDoManagerGUI {
 		return niceDate;
 	}
 
+	//@author A0085159W
 	// setup a prompt message
 	class HintTextField extends JTextField implements FocusListener {
 
