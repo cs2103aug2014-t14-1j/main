@@ -75,7 +75,7 @@ public class Interpreter {
 	private static final String EMPTY_STRING = "";
 	
 	//TODO : make one of this in ToDoManager and have all classes call it
-	private static final String DATE_FORMAT = "ddMMyy"; 
+	static final String DATE_FORMAT = "ddMMyy"; 
 	
 	static DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
 	private static final Date today = new Date();

@@ -120,4 +120,26 @@ public class ValidationCheck {
 		}
 	}
 	
+	public static void checkStartEndDate(String startStr, String endStr) throws Exception {
+		
+		if (startStr == null || endStr == null) {
+			return;
+		}
+		
+		//ddMMyy
+		DateFormat dateFormat = new SimpleDateFormat(Interpreter.DATE_FORMAT);
+		Date startDate = null;
+		Date endDate = null;
+		try {
+			startDate = dateFormat.parse(startStr);
+			endDate = dateFormat.parse(endStr);
+		} catch (Exception e) {
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_WRONG_DATE_FORMAT);
+		}
+		
+		if(endDate.before(startDate)){
+			throw new IllegalArgumentException("Start date is greater than end date");
+		}
+	}
+	
 }

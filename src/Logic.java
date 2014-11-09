@@ -319,7 +319,7 @@ public class Logic {
 	}
 
 	//@author A0098924M
-	private void executeAdd(Executable task) throws ParseException {
+	private void executeAdd(Executable task) throws Exception {
 
 		logObj.writeToLoggingFile("Trying to add");
 		
@@ -346,12 +346,10 @@ public class Logic {
 			entry.setEndingTime("0");
 		}
 		
-		if (entry.getEndingDate() != null && entry.getStartingDate() != null) {
-			if (! isGreater(entry.getEndingDate(), entry.getStartingDate())){
-				//start date greater than end date
-				throw new IllegalArgumentException("Start date greater than end date.");
-			}
-		}
+		ValidationCheck.checkStartEndDate(entry.getStartingDate(), 
+									      entry.getEndingDate());
+		ValidationCheck.checkStartEndTime(entry.getStartingTime(), 
+				                 	 	  entry.getEndingTime());
 		
 		entryList.add(entry);
 		writeToStorage();
@@ -415,6 +413,11 @@ public class Logic {
 		if (task.getEndingTime() != null){//edit endingTime
 			entryToEdit.setEndingTime(task.getEndingTime());
 		}
+		
+		ValidationCheck.checkStartEndDate(entryToEdit.getStartingDate(), 
+				                          entryToEdit.getEndingDate());
+		ValidationCheck.checkStartEndTime(entryToEdit.getStartingTime(), 
+                entryToEdit.getEndingTime());
 
 		writeToStorage();	
 	}
