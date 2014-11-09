@@ -51,7 +51,6 @@ public class Storage {
 					pos = end[i]+1;
 				}
 				
-				
 				//get the content of record
 				for(int i = 0; i < noOfItem; i++){
 					recordContent[i] = readLine.substring(start[i], end[i]);
@@ -122,26 +121,28 @@ public class Storage {
 		    	Entry writeRecord = storageList.get(i);
 		    	
 		    	// Set up the doneness
-		    	if(writeRecord.getDoneness() == true)
+		    	if(writeRecord.getDoneness() == true){
 		    		done = "Done";
-		    	else
+		    	}else{
 		    		done = "Not Yet Done";
+		    	}
 		    	
+		    	// Get the value into the record
 		    	String insertItem[] = {writeRecord.getName(), writeRecord.getStartingDate(), writeRecord.getEndingDate(), 
 		    						   writeRecord.getStartingTime(), writeRecord.getEndingTime(), done};
 		    	
+		    	// Write the record in certain format of the txt file
 		    	for(int j = 0; j < noOfItem; j++){
 		    		writeItem = writeItem.concat(insertTitle[j]);
 		    		if (insertItem[j] != null) {
 		    			writeItem = writeItem.concat(insertItem[j]);
-		    		} 
-		    		else {
+		    		} else {
 		    			writeItem = writeItem.concat("");
 		    		}
 		    		
 		    	}
 		    	
-		    	// insert the separator to separate each item
+		    	// insert the separator to separate the end item
 		    	writeItem = writeItem.concat("|\n");
 		    	writer.write(writeItem);
 		    }
