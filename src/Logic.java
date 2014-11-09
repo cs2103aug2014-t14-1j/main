@@ -424,45 +424,39 @@ public class Logic {
 		
 		String searchContent, searchContent1, startDate, endDate;
 		boolean doneness;
-		
+
 		LinkedList<Entry> searchResult = new LinkedList<Entry>();
 		
-		if(task.getInfo() != null){
+		if(task.getInfo() != null){ // search by keyword
 			ArrayList<Integer> match = noOfMatchWord(task.getInfo());
 			int maxMatch = Collections.max(match);
+			//display the records from the highest matched value to the lowest one
 			for(int i = maxMatch; i > 0; i--){
 				for(int j = 0; j < match.size(); j++){
 					if(match.get(j)==i){
 						searchResult.add(entryList.get(j));
-						System.out.println("record insert");
 					}
 				}
 			}
-		}
-		else if(task.getStartingDate() != null && task.getEndingDate() != null){
+			
+		}else if(task.getStartingDate() != null && task.getEndingDate() != null){ //search by starting date and ending date
 			searchContent = task.getStartingDate();
 			searchContent1 = task.getEndingDate();
-			if(isMonthValue(searchContent)){
-				int month = getMonth(searchContent);
-				for(Entry entry: entryList){
-					startDate = entry.getStartingDate();
-					endDate = entry.getEndingDate();
-					if(getMonth(startDate) == month && getMonth(endDate)== month){
-						searchResult.add(entry);
-					}
+			int month = getMonth(searchContent);
+			
+			for(Entry entry: entryList){
+				startDate = entry.getStartingDate();
+				endDate = entry.getEndingDate();
+				// select the record with matched month name or within startDate and endDate
+				if((isMonthValue(searchContent) && isEqualMonth(startDate, endDate, month))
+						|| isBetween(searchContent, searchContent1, startDate, endDate)){
+					searchResult.add(entry);
+				}else{
+					continue;
 				}
 			}
-			else{
-				for(Entry entry: entryList){
-					startDate = entry.getStartingDate();
-					endDate = entry.getEndingDate();
-					if(isGreater(startDate, searchContent) && isSmaller(endDate, searchContent1)){
-						searchResult.add(entry);
-					}
-				}
-			}
-		}
-		else if(task.getStartingDate() != null){
+			
+		}else if(task.getStartingDate() != null){
 			searchContent = task.getStartingDate();
 			for(Entry entry: entryList){
 				startDate = entry.getStartingDate();
@@ -470,34 +464,32 @@ public class Logic {
 					searchResult.add(entry);
 				}
 			}
-		}
-		else if(task.getEndingDate() != null){
+			
+		}else if(task.getEndingDate() != null){
 			searchContent = task.getEndingDate();
-			if(isMonthValue(searchContent)){
-				int month = getMonth(searchContent);
-				for(Entry entry: entryList){
-					endDate = entry.getEndingDate();
-					if(getMonth(endDate)== month){
+			int month = getMonth(searchContent);
+			
+			for(Entry entry: entryList){
+				endDate = entry.getEndingDate();
+				// insert the record with matched month name or within startDate and endDate
+				if((isMonthValue(searchContent) && (getMonth(endDate)== month)) || 
+					!isMonthValue(searchContent) && isGreater(endDate, searchContent)){
 						searchResult.add(entry);
-					}
+				}else{
+					continue;
 				}
 			}
-			else{
-				for(Entry entry: entryList){
-					endDate = entry.getEndingDate();
-					if(isGreater(endDate, searchContent)){
-						searchResult.add(entry);
-					}
-				}
-			}
-		}
-		else if(task.getDoneness() != null){
+			
+		}else if(task.getDoneness() != null){
 			doneness = task.getDoneness();
 			for(Entry entry: entryList){
 				if(entry.getDoneness() == doneness){
 					searchResult.add(entry);
 				}
 			}
+			
+		}else{
+			throw new IllegalArgumentException("incorrect record !");
 		}
 		
 		displayList = searchResult;
@@ -581,6 +573,22 @@ public class Logic {
 			noOfMatch.add(matchNo);
 		}
 		return noOfMatch;
+	}
+	
+	//@author A0128435E
+	private boolean isEqualMonth(String startDate, String endDate, int compareMonth) throws ParseException{
+		if(getMonth(startDate) == compareMonth && getMonth(endDate)== compareMonth)
+			return true;
+		else
+			return false;
+	}
+	
+	//@author A0128435E
+	private boolean isBetween(String searchStart, String searchEnd, String startDate, String endDate) throws ParseException{
+		if(!isMonthValue(searchStart) && isGreater(startDate, searchStart) && isSmaller(endDate, searchEnd))
+			return true;
+		else
+			return false;
 	}
 	
 	//@author A0128435E
