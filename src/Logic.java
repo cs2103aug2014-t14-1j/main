@@ -200,7 +200,7 @@ public class Logic {
 				executeDisplay(entryList);
 				result.setCommandType(CommandType.CMD_EDIT);
 				result.setSuccess(true);
-				result.setFeedback("Task edited successfully.");
+				result.setFeedback("Task edited successfully");
 				result.setDisplayList(entryList);
 				return result;
 			
