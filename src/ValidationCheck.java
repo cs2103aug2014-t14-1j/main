@@ -104,4 +104,20 @@ public class ValidationCheck {
 		return false;
 	}
 	
+	public static void checkStartEndTime(String startStr, String endStr){
+		int startInt, endInt;
+		if (startStr == null || endStr == null) {
+			return;
+		}
+		try {
+			startInt = Integer.parseInt(startStr);
+			endInt = Integer.parseInt(endStr);
+		} catch (Exception e) {
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_WRONG_TIME_FORMAT);
+		}
+		if (startInt > endInt){
+			throw new IllegalArgumentException("Start time is greater than end time");
+		}
+	}
+	
 }
