@@ -1,0 +1,41 @@
+//@author: a0098735m-unused
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\ToDoManager\src\todo_manager\UserInterface.java
+	 */
+
+//We switched to a GUI
+public class UserInterface {
+
+	static Scanner scannerInstance;
+	
+	private static final String MESSAGE_COMMAND_PROMPT = "command : ";
+	
+	/**
+	 * Prints text for the user to read, and goes to the next line
+	 * @param String s
+	 */
+	public static void showToUser(String s){
+		System.out.println(s);
+	}
+
+	public static String getNextCommand() {
+		System.out.print(MESSAGE_COMMAND_PROMPT);
+		String userCommand = scannerInstance.nextLine();
+		return userCommand;
+	}
+
+	public static void setup() {
+		scannerInstance = new Scanner(System.in);
+	}
+	
+}
+
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\ToDoManager\src\todo_manager\UserInterface.java
+
+
+
+
+

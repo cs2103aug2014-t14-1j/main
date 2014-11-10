@@ -1,0 +1,642 @@
+//@author: a0098924m
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Entry.java
+	 */
+
+	private long changeEndingDate(){
+		
+		long day = Integer.parseInt(this.endingDate.substring(0, 2));
+		long month = Integer.parseInt(this.endingDate.substring(2, 4));
+		long year = Integer.parseInt(this.endingDate.substring(4, 6));
+	
+		long time = Integer.parseInt(this.endingTime);
+		
+		long result= ((year*100000000) + (month*1000000) + (day*10000) + time);
+		
+		return result;
+	}
+    
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Entry.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Entry.java
+	 */
+
+	public int compareTo(Entry compareEntry) {
+		 
+		long compareDate = ((Entry) compareEntry).changeEndingDate(); 
+ 
+		//ascending order
+		if(this.changeEndingDate() - compareDate > 0){
+			return 1;
+		}else if(this.changeEndingDate() - compareDate == 0){
+			return 0;
+		}else{
+			return -1;
+		}
+		//descending order
+		//return compareQuantity - this.quantity;
+ 
+	}	
+    
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Entry.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Executable.java
+	 */
+
+/**
+ * Executable object that encapsulates everything that Logic needs to execute the command
+ * Properties cannot be changed after instantiation
+ * @param CommandType command		Enum type that is used to determine what is the command to run
+ * @param String info 				String containing task description or other input that doesnt fit into DateTime or CommandType
+ * @param DateTime dateTime 		Date object used to capture date and time of task
+ * @param DateTime dateTimeEnd 		Date object representing date at which the task ends
+ *
+ */
+
+import java.util.ArrayList;
+
+import todo_manager.ToDoManager.CommandType;
+
+public class Executable {
+	
+	private CommandType command = null;
+	
+	private String info = null;
+	private String startingDate = null;
+	private String endingDate = null;
+	private String startingTime = null;
+	private String endingTime = null;
+	private Boolean doneness = null;
+	private ArrayList<Integer> displayIndex = new ArrayList<Integer>();
+	private String preStr;
+	
+
+	public Executable(CommandType command){
+		this.command = command;
+	}
+	
+	public Executable(CommandType command, String info){
+		this.info = info;
+		this.command = command;
+	}
+	
+	public Executable(CommandType command, String info, String start, String end){
+		this.info = info;
+		this.command = command;
+		this.startingTime = start;
+		this.endingTime = end;
+	}
+
+	public CommandType getCommand() {
+		return command;
+	}
+
+	public void setCommand(CommandType command) {
+		this.command = command;
+	}
+
+	public String getInfo() {
+		return info;
+	}
+
+	public void setInfo(String info) {
+		this.info = info;
+	}
+
+	public String getStartingDate() {
+		return startingDate;
+	}
+
+	public void setStartingDate(String startingDate) {
+		this.startingDate = startingDate;
+	}
+
+	public String getEndingDate() {
+		return endingDate;
+	}
+
+	public void setEndingDate(String endingDate) {
+		this.endingDate = endingDate;
+	}
+
+	public String getStartingTime() {
+		return startingTime;
+	}
+
+	public void setStartingTime(String startingTime) {
+		this.startingTime = startingTime;
+	}
+
+	public String getEndingTime() {
+		return endingTime;
+	}
+
+	public void setEndingTime(String endingTime) {
+		this.endingTime = endingTime;
+	}
+
+	public Boolean getDoneness() {
+		return doneness;
+	}
+
+	public void setDoneness(Boolean doneness) {
+		this.doneness = doneness;
+	}
+	
+	public ArrayList<Integer> getDisplayIndex() {
+		return displayIndex;
+	}
+
+	public void setDisplayIndex(ArrayList<Integer> displayIndex) {
+		this.displayIndex = displayIndex;
+	}
+	
+	public String getPreStr() {
+		return preStr;
+	}
+
+	public void setPreStr(String preStr) {
+		this.preStr = preStr;
+	}
+}
+
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Executable.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logging.java
+	 */
+
+public class Logging {
+
+	private static Logging instance = null;
+	
+	private Logging() {
+	}
+	
+	public static Logging getInstance(){
+		if(instance == null){
+			instance = new Logging();
+		}
+		return instance;
+	}
+	
+	public boolean writeToLoggingFile(String str){
+		
+		String fileName = "LoggingFile.txt";
+		try 
+		{
+		    File file = new File(fileName);
+		    
+		    if(!file.exists()){
+		    	file.createNewFile();
+		    }
+		    
+		    FileWriter fw = new FileWriter(fileName,true); //the true will append the new data
+		    fw.write(str+"\n");//appends the string to the file
+		    fw.close();
+		    
+		} 
+		catch (IOException ex) 
+		{
+			System.out.println("Cannot output the file");
+			ex.printStackTrace();
+		} 
+		
+		return true;
+	}
+}
+
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logging.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+	 */
+
+	private Logic() {
+	}
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+	 */
+
+	public static Logic getInstance() {
+		if (instance == null) {
+			instance = new Logic();
+		}
+		return instance;
+	}
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+	 */
+
+	public static LinkedList<Entry> getEntryList() {
+		return entryList;
+	}
+
+	void setupGUI(ToDoManagerGUI toDoManagerGUI) {
+		storage = toDoManagerGUI.storage;
+		entryList = readFromStorage();
+	}
+	
+	void setup(ToDoManager toDoManager) {
+		storage = toDoManager.storage;
+		entryList = readFromStorage();
+	}
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+	 */
+
+	//UI module will call this method 
+	public Object actOnUserInput(String userInput) {
+		
+		Executable exe;
+		Object displayObj = null;
+		try {
+			
+			exe = Interpreter.parseCommand(userInput);
+			displayObj = execute(exe);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			//return printError(e);
+		}
+		
+		return displayObj;
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+	 */
+
+	public Object execute(Executable task) throws Exception{
+		
+		result = new Result();
+		CommandType command = task.getCommand();
+		switch (command) {
+		
+			case CMD_ADD: 
+				saveEntryListToPreList(); //save the pre-state of List
+				executeAdd(task);
+				executeDisplay(entryList);
+				result.setCommandType(CommandType.CMD_ADD);
+				result.setFeedback("A new task added successfully");
+				result.setSuccess(true);
+				result.setDisplayList(entryList);
+				return result;
+			
+			case CMD_CLEAR: 
+				saveEntryListToPreList();
+				executeClear(task);
+				executeDisplay(entryList);
+				result.setCommandType(CommandType.CMD_CLEAR);
+				result.setFeedback("All tasks cleared");
+				result.setSuccess(true);
+				return result;
+			
+			case CMD_DELETE: 
+				saveEntryListToPreList();
+				executeDelete(task);
+				executeDisplay(entryList);
+				result.setCommandType(CommandType.CMD_DELETE);
+				result.setFeedback("Task deleted");
+				result.setSuccess(true);
+				result.setDisplayList(entryList);
+				return result;
+			
+			case CMD_DISPLAY: 
+				executeDisplay(entryList);
+				result.setCommandType(CommandType.CMD_DISPLAY);
+				result.setFeedback("Display tasks");
+				result.setSuccess(true);
+				result.setDisplayList(entryList);
+				return result;
+			
+			case CMD_DONE: 
+				saveEntryListToPreList();
+				executeDone(task);
+				executeDisplay(entryList);
+				result.setCommandType(CommandType.CMD_DONE);
+				result.setFeedback("Task marked done");
+				result.setSuccess(true);
+				result.setDisplayList(entryList);
+				return result;
+			
+			case CMD_UNDONE: 
+				saveEntryListToPreList();
+				executeUndone(task);
+				executeDisplay(entryList);
+				result.setCommandType(CommandType.CMD_UNDO);
+				result.setFeedback("Task marked undone");
+				result.setSuccess(true);
+				result.setDisplayList(entryList);
+				return result;
+				
+			case CMD_HELP:
+				String out = executeHelp(task);
+				return "Help : \n" + out;
+				
+			case CMD_EDIT: 
+				saveEntryListToPreList();
+				executeEdit(task);
+				executeDisplay(entryList);
+				result.setCommandType(CommandType.CMD_EDIT);
+				result.setSuccess(true);
+				result.setFeedback("Task edited successfully");
+				result.setDisplayList(entryList);
+				return result;
+			
+			case CMD_SEARCH: 
+				executeSearch(task);
+				executeDisplay(displayList);
+				result.setSuccess(true);
+				return displayList;
+			
+			case CMD_UNDO: 
+				result.setCommandType(CommandType.CMD_UNDO);
+				Object outcome =  executeUndo();
+				if (outcome instanceof String) {
+					result.setFeedback((String) outcome);
+				}
+				result.setDisplayList(entryList);
+				return result;
+			
+			case CMD_SORT: 
+				executeSort();
+				executeDisplay(entryList);
+				return entryList;
+				
+			case CMD_SEARCHFREEDAY:
+				
+				String day = execute_searchFreeday();
+				executeDisplay(entryList);
+				result.setCommandType(CommandType.CMD_SEARCHFREEDAY);
+				result.setDisplayList(entryList);
+				result.setFeedback(day);
+				return result;
+		
+				
+			case CMD_EXIT:
+				preList.clear();
+				System.exit(0);
+				//return "exit";
+			default:
+				return ToDoManager.MESSAGE_ERROR_GENERIC;
+		}
+			
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+	 */
+
+	private String execute_searchFreeday() throws ParseException {
+		//search the next free day
+		boolean freedayfound = false;
+		
+		DateFormat dateFormat = new SimpleDateFormat("ddMMyy");
+		Calendar cal = Calendar.getInstance();
+		String day = dateFormat.format(cal.getTime()); //2014/08/06 16:00:22
+		
+		do{
+			freedayfound = matchDay(day);
+			if(freedayfound) break;
+			cal.add(Calendar.DATE, 1);  // number of days to add
+			day = dateFormat.format(cal.getTime());  // dt is now the new date
+		}while(freedayfound != true);
+		
+		return day;
+	}
+	
+	private boolean matchDay(String day) {
+		
+		for(Entry e : entryList){
+			
+			if(e.getDoneness()==false){
+				
+				if (e.getStartingDate() != null && e.getStartingDate().equals(day)) {
+					return false;
+				} else if (e.getEndingDate() != null && e.getEndingDate().equals(day)){
+					return false;
+				}
+				//if(((e.getStartingDate().compareToIgnoreCase(day) == -1) && (e.getEndingDate().compareToIgnoreCase(day) == 1))){ //the day is with a period
+					
+				//}
+			}
+		}
+		
+		return true;
+	}
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+	 */
+
+	private void executeUndone(Executable task) {
+	
+		ArrayList<Integer> index = task.getDisplayIndex(); //Get the index to be mark Undone
+		
+		for (int i = 0 ; i < index.size(); i++) {
+			entryList.get(index.get(i)-1).setDoneness(false);
+		}
+		writeToStorage();	
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+	 */
+
+	private Object executeUndo() {
+		
+		if (preList.isEmpty()) {
+			System.out.println("Nothing to Undo!");
+			return "Nothing to Undo!";
+		} else {
+			entryList = new LinkedList<Entry>(preList.getLast());
+			preList.removeLast();
+			return entryList;
+		}	
+	}
+
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+	 */
+
+	private void executeSort() {
+		// To sort the task by Ending Date and Time
+		Collections.sort(entryList);
+		writeToStorage();
+	}
+
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+	 */
+
+	private void executeAdd(Executable task) throws Exception {
+
+		logObj.writeToLoggingFile("Trying to add");
+		
+		Entry entry = new Entry();
+		
+		if (task.getInfo()!=null) {
+			entry.setName(task.getInfo());
+		}
+		if (task.getStartingDate()!=null) {
+			entry.setStartingDate(task.getStartingDate());
+		}
+		if (task.getEndingDate()!= null) {
+			entry.setEndingDate(task.getEndingDate());
+		} else {
+			entry.setEndingDate(NoEndingDate);
+		}
+		
+		if (task.getStartingTime()!= null) {
+			entry.setStartingTime(task.getStartingTime());
+		} if (task.getEndingTime()!= null) {
+			entry.setEndingTime(task.getEndingTime());
+		} else {
+			entry.setEndingTime(NoEndingTime);
+		}
+		
+		ValidationCheck.checkStartEndDate(entry.getStartingDate(), 
+									      entry.getEndingDate());
+		
+		if (entry.getStartingDate() != null && 
+			entry.getEndingDate() != null &&
+			entry.getStartingDate().equals(entry.getEndingDate())){
+			ValidationCheck.checkStartEndTime(entry.getStartingTime(), 
+				                 	 	  entry.getEndingTime());
+		}
+		
+		ValidationCheck.checkIllegalChars(entry.getName());
+		
+		entryList.add(entry);
+		writeToStorage();
+		
+		logObj.writeToLoggingFile("Done adding task");
+		
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+	 */
+
+	private void executeClear(Executable task) {
+		
+		entryList.clear();
+		writeToStorage();
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+	 */
+
+	private void executeDone(Executable task) {
+		//Mark Done something
+		ArrayList<Integer> index = task.getDisplayIndex();
+		
+		for (int i = 0 ; i < index.size(); i++) {
+			entryList.get(index.get(i)-1).setDoneness(true);
+		}
+		writeToStorage();
+	
+	}
+	
+	private void writeToStorage() {
+		storage.writeFile(entryList);
+	}
+	
+	private LinkedList<Entry> readFromStorage() {
+		return storage.readFile();
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+
+
+
+
+

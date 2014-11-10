@@ -1,0 +1,895 @@
+//@author: a0128435e
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+	 */
+
+	private static Executable processSearch(String[] words) throws IllegalArgumentException {
+		
+		
+		Executable exe = new Executable(CommandType.CMD_SEARCH);
+		
+		//set doneness null so that can differentiate between 
+		//search done (true), search undone (false), and others (null)
+		exe.setDoneness(null);
+		
+		if (doesNotHaveExtraText(words)) { // no search keywords
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
+		
+		//search Today
+		} else if (words.length == 2 && words[1].equals("today")) {  
+			exe.setStartingDate(dateFormat.format(getToday()));
+			exe.setEndingDate(dateFormat.format(getToday()));
+		
+			//search Tomorrow
+		} else if (words.length == 2 && (words[1].equals("tomorrow") || words[1].equals("tmr"))) {   
+			Date tommorow = new Date(getToday().getTime() + (1000 * 60 * 60 * 24));
+			exe.setStartingDate(dateFormat.format(tommorow));
+			exe.setEndingDate(dateFormat.format(tommorow));
+			
+		} else if (words.length == 3 && (words[1].equals("this") || words[1].equals("next")) 
+				&& (words[2].equals("week") || words[2].equals("month"))) { 
+			exe.setStartingDate(getStartDate(words[1], words[2]));
+			exe.setEndingDate(getEndDate(words[1], words[2]));
+			
+			//search for one date		
+		} else if (isDate(words[1])) { 
+			exe.setStartingDate(words[1]);
+			exe.setEndingDate(words[1]);
+			
+			//search by month name
+		} else if (monthValue(words[1]) != null) {
+			exe.setEndingDate(monthValue(words[1]));
+			
+			//search by starting date
+		} else if (words[1].equals("/start") && words.length == 3) { 
+			//search for entries after a particular date
+			if (words.length < 3 || !isDate(words[2])) { 
+				// no date or invalid date
+				throw new IllegalArgumentException();
+			}
+			exe.setStartingDate(words[2]);
+			
+			//search by starting and ending date
+		} else if (words[1].equals("/start") && words[3].equals("/by")) { //search for entries after a particular date
+			if (words.length != 5 || !isDate(words[2]) || !isDate(words[4])) { 
+				// no date or invalid date
+				throw new IllegalArgumentException();
+			}
+			exe.setStartingDate(words[2]);
+			exe.setEndingDate(words[4]);
+			
+			//search by ending date
+		} else if (words[1].equals("/by")) { //search for entries before a particular date
+			if (words.length < 3 || !isDate(words[2])) { 
+				// no date or invalid date
+				throw new IllegalArgumentException();
+			}
+			exe.setEndingDate(words[2]);
+			
+			//search for entries that are marked done
+		} else if (words[1].equals("done")) { 
+			exe.setDoneness(true);
+			
+		} else if (words[1].equals("undone")) { 
+			//search for entries that are marked undone
+			exe.setDoneness(false);
+			
+		} else { //searching for some keywords
+			String extraWords = recombine(words, 1, words.length);
+			exe.setInfo(extraWords);
+		}
+		
+		return exe;
+	}
+
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+	 */
+
+	private static boolean isGreaterToday(String s) throws ParseException{
+		return ValidationCheck.isGreater(s);
+	}
+	
+	//helper method for debugging
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+	 */
+
+	private static int getMonth(String date) {
+		int dateInt = Integer.parseInt(date);
+		int month = (dateInt/100) % 100;
+		return month;
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+	 */
+
+	private static String getStartDate(String status, String period) {
+		Date today = getToday();
+		int thisMonth = getMonth(dateFormat.format(today));
+		if	((status.equals("next") && period.equals("week"))) {
+			// count for the 7 days after today
+			Date nextWeek = new Date(today.getTime() + 7 * (1000 * 60 * 60 * 24));
+			return dateFormat.format(nextWeek);
+		
+		} else if (status.equals("this") && period.equals("week")) {
+			return dateFormat.format(today);
+		
+		} else if (status.equals("this") && period.equals("month")) {
+			return monthValue(Integer.toString(thisMonth));
+		
+		} else {
+			int nextNextMonth = thisMonth + 1;
+			return monthValue(Integer.toString(nextNextMonth));
+		}
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+	 */
+
+	private static String getEndDate(String status, String period) {
+		Date today = getToday();
+		int thisMonth = getMonth(dateFormat.format(today));
+		if	((status.equals("next") && period.equals("week"))) {
+			// count for the 14 days after today
+			Date nextNextWeek = new Date(today.getTime() + 14 * (1000 * 60 * 60 * 24));
+			return dateFormat.format(nextNextWeek);
+		
+		} else if (status.equals("this") && period.equals("week")) {
+			// count for the 7 days after today
+			Date nextWeek = new Date(today.getTime() + 7 * (1000 * 60 * 60 * 24));
+			return dateFormat.format(nextWeek);
+		
+		} else if (status.equals("this") && period.equals("month")) {
+			return monthValue(Integer.toString(thisMonth));
+		
+		} else {
+			int nextMonth = thisMonth + 1;
+			if (nextMonth > 12) {
+				nextMonth -= 12;
+			}	
+			return monthValue(Integer.toString(nextMonth));
+		}
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+	 */
+
+	//return null value of if the input is not a month
+	private static String monthValue(String word) {
+				
+		String keyword = word.toLowerCase();
+		
+		switch (keyword) {
+			case "1":
+			case "january" :
+				return "000100";
+			
+			case "2":
+			case "february" :
+				return "000200";
+			
+			case "3":
+			case "march" :
+				return "000300";
+			
+			case "4":
+			case "april" :
+				return "000400";
+			
+			case "5":
+			case "may" :
+				return "000500";
+			
+			case "6":
+			case "june" :
+				return "000600";
+				
+			case "7":
+			case "july" :
+				return "000700";
+			
+			case "8":
+			case "august" :
+				return "000800";
+				
+			case "9":
+		    case "september" :
+				return "000900";
+				
+		    case "10":
+			case "october":
+				return "001000";
+				
+			case "11":
+			case "november":
+				return "001100";
+				
+			case "12":
+			case "december":
+				return "001200";
+					
+			default : 
+				return null;
+		}
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+	 */
+
+	private void executeDelete(Executable task) throws Exception{
+		if (displayList.isEmpty()) {
+			throw new Exception("Nothing to delete!");
+		}
+		
+		ArrayList<Integer> index = task.getDisplayIndex();
+		int removeIndex;
+		for (int i = 0 ; i < index.size(); i++) {
+			removeIndex = index.get(i) - 1;
+			
+			if (i > 0) {
+				for (int j = 0; j < i; j++) {
+					if (index.get(j) < index.get(i))
+						removeIndex--;
+				}
+			}
+			
+			Entry removedEntry = displayList.remove(removeIndex);
+			if (! displayList.equals(entryList)) { 
+				//if they are the same then no need to remove again
+				entryList.remove(removedEntry);
+			}
+		}
+		writeToStorage();
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+	 */
+
+	public LinkedList<Entry> executeSearch(Executable task) throws ParseException{
+		
+		String searchContent, searchContent1, startDate, endDate;
+		boolean doneness;
+
+		LinkedList<Entry> searchResult = new LinkedList<Entry>();
+		
+		if (task.getInfo() != null) { // search by keyword
+			ArrayList<Integer> match = noOfMatchWord(task.getInfo());
+			int maxMatch = Collections.max(match);
+			//display the records from the highest matched value to the lowest one
+			for (int i = maxMatch; i > 0; i--) {
+				for (int j = 0; j < match.size(); j++) {
+					if (match.get(j)==i) {
+						searchResult.add(entryList.get(j));
+					}
+				}
+			}
+			
+		} else if (task.getStartingDate() != null && task.getEndingDate() != null) { //search by starting date and ending date
+			searchContent = task.getStartingDate();
+			searchContent1 = task.getEndingDate();
+			int month = getMonth(searchContent);
+		
+			for (Entry entry: entryList) {
+				startDate = entry.getStartingDate();
+				endDate = entry.getEndingDate();
+				if (startDate == null || endDate == null){
+					continue;
+				}
+				// select the record with matched month name or within startDate and endDate
+				if ((isMonthValue(searchContent) && isEqualMonth(startDate, endDate, month))
+						|| isBetween(searchContent, searchContent1, startDate, endDate)) {
+					searchResult.add(entry);
+				} else {
+					continue;
+				}
+			}
+		} else if (task.getStartingDate() != null) {
+			searchContent = task.getStartingDate();
+			for (Entry entry: entryList) {
+				startDate = entry.getStartingDate();
+				if (startDate != null && isGreater(startDate, searchContent)) {
+					searchResult.add(entry);
+				}
+			}
+			
+		} else if (task.getEndingDate() != null) {
+			searchContent = task.getEndingDate();
+			int month = getMonth(searchContent);
+			
+			for (Entry entry: entryList) {
+				endDate = entry.getEndingDate();
+				if (endDate == null) {
+					continue;
+				}
+				// insert the record with matched month name or within startDate and endDate
+				if ((isMonthValue(searchContent) && (getMonth(endDate)== month)) || 
+					!isMonthValue(searchContent) && isGreater(endDate, searchContent)) {
+						searchResult.add(entry);
+				} else {
+					continue;
+				}
+			}
+			
+		} else if (task.getDoneness() != null) {
+			doneness = task.getDoneness();
+			for (Entry entry: entryList) {
+				if (entry.getDoneness() == doneness) {
+					searchResult.add(entry);
+				}
+			}
+		} else {
+			throw new IllegalArgumentException("Incorrect record !");
+		}
+		
+		displayList = searchResult;
+		return displayList;
+	}
+
+	
+	private void executeDisplay(LinkedList<Entry> list) {
+
+		displayList = list;
+		int count = 1;
+		String entryString;
+		for (Entry e : list) {
+			entryString = count+". "+e.getName();
+			if (e.getStartingDate() != null && !e.getStartingDate().equals("")) {
+				entryString += " start: " + e.getStartingDate();
+			}
+			
+			if (e.getEndingDate() != null && !e.getEndingDate().equals("") && !e.getEndingDate().equals(NoEndingDate)) {
+				entryString += " end: " + e.getEndingDate();
+			}
+			
+			if (e.getDoneness() == true) {
+				entryString += " Done";
+			}
+		    count++;
+		    UserInterface.showToUser(entryString);
+		}
+		if (list.size() == 0) {
+			System.out.println("no entry found!");
+		}
+	}
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+	 */
+
+	private ArrayList<Integer> noOfMatchWord(String keyword) {
+		ArrayList<Integer> noOfMatch = new ArrayList<Integer>();
+		String[] searchKeyword = keyword.trim().toLowerCase().split(" ");
+		String[] recordName;
+		int matchNo = 0;
+		for (Entry entry : entryList) {
+			recordName = entry.getName().toLowerCase().split(" ");
+			matchNo = 0;
+			for (int i = 0; i < recordName.length; i++) {
+				for (int j = 0; j < searchKeyword.length; j++) {
+					if (searchKeyword[j].length() < 2) {
+						continue;
+					}
+					if (recordName[i].contains(searchKeyword[j])) {
+						matchNo++;
+					}
+				}
+			}
+			noOfMatch.add(matchNo);
+		}
+		return noOfMatch;
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+	 */
+
+	private boolean isEqualMonth(String startDate, String endDate, int compareMonth) throws ParseException{
+		if (getMonth(startDate) == compareMonth && getMonth(endDate)== compareMonth){
+			return true;
+		}
+		return false;
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+	 */
+
+	private boolean isBetween(String searchStart, String searchEnd, String startDate, String endDate) throws ParseException{
+		if (!isMonthValue(searchStart) && isGreater(startDate, searchStart) && isSmaller(endDate, searchEnd)) {
+			return true;
+		}
+		return false;			
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+	 */
+
+	private boolean isGreater(String newDateString, String compareDateString) throws ParseException{
+		DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+		Date newDate = dateFormat.parse(newDateString);
+		Date compareDate = dateFormat.parse(compareDateString);
+		
+		if (!newDate.before(compareDate)) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+	 */
+
+	private boolean isSmaller(String newDateString, String compareDateString) throws ParseException{
+		DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+		Date newDate = dateFormat.parse(newDateString);
+		Date compareDate = dateFormat.parse(compareDateString);
+		
+		if (!newDate.after(compareDate)) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+	 */
+
+	private boolean isMonthValue(String date) {
+		int amountOfZero = 0;
+		for (int i = 0; i < date.length(); i++) {
+			if (date.charAt(i) == '0') {
+				amountOfZero++;
+			}
+		}
+		if (amountOfZero >= 4) {
+			return true;
+			
+		} else {
+			return false;
+		}
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+	 */
+
+	private int getMonth(String date) {
+		int dateInt = Integer.parseInt(date);
+		int month = (dateInt/100) % 100;
+		return month;
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Storage.java
+	 */
+
+
+
+package todo_manager;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.io.PrintWriter;
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Storage.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Storage.java
+	 */
+
+public class Storage {
+	public final int noOfItem = 6;
+	public final String insertTitle[] = {"Name:","|Starting Date:","|Ending Date:","|Starting Time:","|Ending Time:", "|Doneness:"};
+	public LinkedList<Entry> storageList = new LinkedList<Entry>();
+	public String fileName = "ToDoManager.txt";
+	
+	public LinkedList<Entry> readFile(){
+		
+		try(BufferedReader reader = new BufferedReader(new FileReader(fileName)))
+		{
+			
+			String readLine;
+			String record;
+			int pos;
+			int start[] = {0,0,0,0,0,0};
+			int end[] = {0,0,0,0,0,0};
+			String recordContent[] = {null, null ,null, null ,null, null};
+			Entry insert;
+			
+			storageList.clear();
+			
+			while((readLine = reader.readLine()) != null){
+				
+				insert = new Entry();
+				
+				//get the starting index of each extracting string
+				pos = 0;
+				for(int i = 0; i < noOfItem; i++){
+					start[i] = readLine.indexOf(':', pos) + 1;
+					pos = start[i];
+				}
+				
+				//get the ending index of each extracting string
+				pos = 0;
+				for(int i = 0; i < noOfItem; i++){
+					end[i] = readLine.indexOf('|', pos);
+					pos = end[i]+1;
+				}
+				
+				//get the content of record
+				for(int i = 0; i < noOfItem; i++){
+					recordContent[i] = readLine.substring(start[i], end[i]);
+				}
+				
+				//set the value of each record (will change the magic numbers later)
+				//0: Name				1: Starting Date		2: Ending Date		
+				//3: Starting Time		4: Ending Time			5: Doneness
+				record = setNullIfEmpty(recordContent[0]);
+				insert.setName(record);
+				
+				record = setNullIfEmpty(recordContent[1]);
+				insert.setStartingDate(record);
+				
+				record = setNullIfEmpty(recordContent[2]);
+				insert.setEndingDate(record);
+				
+				record = setNullIfEmpty(recordContent[3]);
+				insert.setStartingTime(record);
+				
+				record = setNullIfEmpty(recordContent[4]);
+				insert.setEndingTime(record);
+				
+				
+				//set the doneness of each record
+				if(recordContent[5].equals("Done") ){
+					insert.setDoneness(true);
+				} else {
+					insert.setDoneness(false);
+				}
+				
+				storageList.add(insert);
+			}
+			
+		}
+		catch(FileNotFoundException e) 
+		{
+			File file = new File(fileName);
+		    try {
+				file.createNewFile();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		catch(IOException e)
+		{
+			System.out.println("Cannot output the file");
+			e.printStackTrace();
+		}
+		
+		return storageList; //TODO
+	}
+	
+	public void writeFile(LinkedList<Entry> entryList) {
+		try 
+		{
+			PrintWriter rewriter = new PrintWriter(fileName);
+			rewriter.print("");
+			rewriter.close();
+			
+			File file = new File(fileName);
+		    
+		    if(!file.exists()){
+		    	file.createNewFile();
+		    }
+		    
+		    
+		    String done;
+		    String writeItem;
+		    
+		    BufferedWriter writer = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
+		    for(int i=0; i<storageList.size(); i++){
+		    	
+		    	// Store the writing item
+		    	writeItem = "";
+		    	Entry writeRecord = storageList.get(i);
+		    	
+		    	// Set up the doneness
+		    	if(writeRecord.getDoneness() == true){
+		    		done = "Done";
+		    	}else{
+		    		done = "Not Yet Done";
+		    	}
+		    	
+		    	// Get the value into the record
+		    	String insertItem[] = {writeRecord.getName(), writeRecord.getStartingDate(), writeRecord.getEndingDate(), 
+		    						   writeRecord.getStartingTime(), writeRecord.getEndingTime(), done};
+		    	
+		    	// Write the record in certain format of the txt file
+		    	for(int j = 0; j < noOfItem; j++){
+		    		writeItem = writeItem.concat(insertTitle[j]);
+		    		if (insertItem[j] != null) {
+		    			writeItem = writeItem.concat(insertItem[j]);
+		    		} else {
+		    			writeItem = writeItem.concat("");
+		    		}
+		    		
+		    	}
+		    	
+		    	// insert the separator to separate the end item
+		    	writeItem = writeItem.concat("|\n");
+		    	writer.write(writeItem);
+		    }
+		    writer.close();
+		    
+		    
+		} 
+		catch (IOException ex) 
+		{
+			System.out.println("Cannot output the file");
+			ex.printStackTrace();
+		} 
+	}
+
+	private String setNullIfEmpty(String in) {
+		if ("".equals(in.trim())){
+			return null;
+		}
+		return in;
+	}
+}
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Storage.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\StorageTest.java
+	 */
+
+public class StorageTest {
+	
+	public final String insertTitle[] = {"Name:","|Starting Date:","|Ending Date:","|Starting Time:","|Ending Time:", "|Doneness:"};
+	public final int noOfItem = 6;
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\StorageTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\StorageTest.java
+	 */
+
+	public void test() {
+		String fileName = "ToDoManager.txt";
+		LinkedList<Entry> testList = new LinkedList<Entry>();
+	
+	// test the writing file function by inserting an entry
+		try 
+		{
+		    File file = new File(fileName);
+		    
+		    if(!file.exists()){
+		    	file.createNewFile();
+		    }
+		    
+		    
+		    String done = "Not Yet Done";
+		    String writeItem = "";
+		    Entry testRecord = new Entry();
+		    
+		    // set up a test record with a task name "Test Name"
+		    testRecord.setName("Test Name");
+		    
+		    BufferedWriter writer = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
+		    	
+		    	String insertItem[] = {testRecord.getName(), testRecord.getStartingDate(), testRecord.getEndingDate(), 
+		    			testRecord.getStartingTime(), testRecord.getEndingTime(), done};
+		    	
+		    	for(int j = 0; j < noOfItem; j++){
+		    		writeItem = writeItem.concat(insertTitle[j]);
+		    		if (insertItem[j] != null) {
+		    			writeItem = writeItem.concat(insertItem[j]);
+		    		} 
+		    		else {
+		    			writeItem = writeItem.concat("");
+		    		}
+		    		
+		    	}
+		    	
+		    	writeItem = writeItem.concat("|\n");
+		    	writer.write(writeItem);
+		    
+		    writer.close();
+		    
+		    
+		} 
+		catch (IOException ex) 
+		{
+			System.out.println("Cannot output the file");
+			ex.printStackTrace();
+		} 
+		
+	// test the reading file function of the inserting entry
+		
+		try(BufferedReader reader = new BufferedReader(new FileReader(fileName)))
+		{
+			
+			String readLine;
+	
+			int pos;
+			int start[] = {0,0,0,0,0,0};
+			int end[] = {0,0,0,0,0,0};
+			String recordContent[] = {null, null ,null, null ,null, null};
+			Entry insert;
+			
+			testList.clear();
+			
+			while((readLine = reader.readLine()) != null){
+				insert = new Entry();
+				
+				//get the starting index of each extracting string
+				pos = 0;
+				for(int i = 0; i < noOfItem; i++){
+					start[i] = readLine.indexOf(':', pos) + 1;
+					pos = start[i];
+				}
+				
+				//get the ending index of each extracting string
+				pos = 0;
+				for(int i = 0; i < noOfItem; i++){
+					end[i] = readLine.indexOf('|', pos);
+					pos = end[i]+1;
+				}
+				
+				//get the content of record
+				for(int i = 0; i < noOfItem; i++){
+					recordContent[i] = readLine.substring(start[i], end[i]);
+				}
+				
+				//set the value of each record
+				insert.setName(recordContent[0]);
+				insert.setStartingDate(recordContent[1]);
+				insert.setEndingDate(recordContent[2]);
+				insert.setStartingTime(recordContent[3]);
+				insert.setEndingTime(recordContent[4]);
+				
+				//set the doneness of each record
+				if(recordContent[5].equals("Done") ){
+					insert.setDoneness(true);
+				} else {
+					insert.setDoneness(false);
+				}
+					
+				testList.add(insert);
+			}
+			assertEquals("The first item name is ", "Test Name", testList.getLast().getName());
+			
+		}
+		catch(IOException e)
+		{
+			fail("Not yet find floder.");
+			e.printStackTrace();
+		}
+	}
+
+}
+
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\StorageTest.java
+
+
+
+
+

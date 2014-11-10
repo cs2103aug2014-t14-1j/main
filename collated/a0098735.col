@@ -1,0 +1,99 @@
+//@author: a0098735
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\ToDoManager\src\todo_manager\Interpreter.java
+	 */
+
+	private static void checkStartEndTime(String startStr, String endStr) {
+		ValidationCheck.checkStartEndTime(startStr, endStr);
+	}
+	
+	private static Date getToday() {
+		return new Date();
+	}
+}
+
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\ToDoManager\src\todo_manager\Interpreter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\ToDoManager\src\todo_manager\ValidationCheck.java
+	 */
+
+	public static void checkStartEndTime(String startStr, String endStr) {
+		int startInt, endInt;
+		if (startStr == null || endStr == null) {
+			return;
+		}
+		try {
+			startInt = Integer.parseInt(startStr);
+			endInt = Integer.parseInt(endStr);
+		} catch (Exception e) {
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_WRONG_TIME_FORMAT);
+		}
+		if (startInt > endInt){
+			throw new IllegalArgumentException("Start time is greater than end time");
+		}
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\ToDoManager\src\todo_manager\ValidationCheck.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\ToDoManager\src\todo_manager\ValidationCheck.java
+	 */
+
+	public static void checkStartEndDate(String startStr, String endStr) throws Exception {
+		
+		if (startStr == null || endStr == null) {
+			return;
+		}
+		
+		//ddMMyy
+		DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+		Date startDate = null;
+		Date endDate = null;
+		try {
+			startDate = dateFormat.parse(startStr);
+			endDate = dateFormat.parse(endStr);
+		} catch (Exception e) {
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_WRONG_DATE_FORMAT);
+		}
+		
+		if(endDate.before(startDate)){
+			throw new IllegalArgumentException("Start date is greater than end date");
+		}
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\ToDoManager\src\todo_manager\ValidationCheck.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\ToDoManager\src\todo_manager\ValidationCheck.java
+	 */
+
+	public static void checkIllegalChars(String name) {
+		if (name != null && name.contains("|")) {
+			throw new IllegalArgumentException("\"|\" is an illegal character.");
+		}
+	}
+	
+}
+
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\ToDoManager\src\todo_manager\ValidationCheck.java
+
+
+
+
+

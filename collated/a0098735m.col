@@ -1,0 +1,1605 @@
+//@author: a0098735m
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Entry.java
+	 */
+
+	public Entry copy(){
+		Entry exe = new Entry();
+		exe.setName(this.name);
+		exe.setStartingDate(this.startingDate);
+		exe.setEndingDate(this.endingDate);
+		exe.setStartingTime(this.startingTime);
+		exe.setEndingTime(this.endingTime);
+		exe.setDoneness(this.doneness);
+		return exe;
+	}
+}
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Entry.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+	 */
+
+/**
+ * Summary of the internal state of the Executable object that is returned
+ * (If variable not mentioned, defaults to default chosen in Executable class (current default is null))
+ * 
+ *  NO TIME GIVEN
+ *  /add : info filled, 
+ *  /add /start /by : info filled, startingDate is /start <date>, endingDate is /by <date>
+ *  /add /by : info filled, endingDate is /by date
+ *  /add /on : info filled, startingDate and endingDate are equal to /on date
+ *  
+ *  WITH TIME GIVEN 
+ *  /add <info> /start <date> <optional_Startingtime> /by  <date> <optional_Endingtime>
+ *  /add <info> /by <date> <optional_Endingtime> : endingTime filled, startingTime null;
+ *  /add <info> /on <date> <optional_time> : startingTime = endingTime = <optional_time>
+ *  /add <info> /on <date> <optional_Startingtime> <optional_Endingtime>
+ * 
+ *  /delete <int displayListIndex> : index given in exe.getdisplayIndex
+ *  
+ *  /undo : no extra info
+ *  /clear : no extra info
+ *  
+ *  /edit <int displaylist index> <new task name> : new name stored under exe info
+ *  /edit <int displaylist index> /start <new date> /by <new date2> : dates stored in startingDate and endingDate
+ *  /edit <int displaylist index> /by <new date> : date stored in endingDate
+ *  /edit <int displaylist index> /on <new date> : date stored in startingDate and endingDate 
+ *  
+ *  /view : command set to display, no other info will be given
+ *  
+ *  /view today : startingDate = endingDate = today's date
+ *  /view tomorrow(or tmr) : startingDate = endingDate = trm's date
+ *  /view this <week> (or <month>) : search the record of this week or month
+ *  /view next <week> (or <month>) : search the record of next week or month
+ *  /view <month> : on that month
+ *  /view <date> : startingDate = endingDate = <date>
+ *  /view <keyword> : info is the string of keyword or keywords as given by the user
+ *  /view /start <date> : startingDate after <date> (sorted)
+ *  /view /by <date> : endingDate after <date> (sorted)
+ *  /view /start <date> /by <date> : startingDate and endingDate between those period
+ *  /view done : doneness = true
+ *  /view undone : doneness = false
+ *  Note that Doneness will be set to null if doneness is not being searched for. False or true if it is being searched for.
+ *  doneness defaults to false for all other operations, like add or delete.
+ *  
+ *  ////MARK DONE//// -> command is CMD_DONE
+ *  /mark <displaylist index> : index(may have multiple) stored in displaylist index array
+ *  /mark <keywords> : info is filled with String of all keywords
+ *  
+ *  ///MARK UNDONE/// -> command is CMD_UNDONE
+ *  to mark undone, simply use the format for mark done as above, but include the 
+ *  word "undone" anywhere after "/mark"
+ *  
+ *  help : displays list of help topics
+ *  help </command> : displays help message for that command
+ *
+ *
+ */
+
+
+public class Interpreter {
+	
+	//change this to true to view contents of exe returned, for debugging
+	private static final boolean DO_DEBUG = false;
+	
+	static final String DATE_FORMAT = "ddMMyy"; 
+	
+	static DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);	
+	
+	public Interpreter() {
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+	 */
+
+	public static Executable parseCommand(String s) throws Exception{
+		
+		s = s.trim();
+		if (s.equals("")) {
+			throw new EmptyInputException();
+		}
+		
+		String[] words = s.split(" ");
+		String cmdWord = words[0].toLowerCase();
+		
+		Executable exe;
+		
+		switch (cmdWord) {
+			case "/add" :
+				exe = processAdd(words);
+				break;
+				
+			case "/delete" :
+				exe = processDelete(words);
+				break;
+				
+			case "/clear" :
+				exe = processClear(words);
+				break;
+				
+			case "/edit" :
+				exe = processEdit(words);
+				break;
+				
+			case "/undo" :
+				exe = processUndo(words);
+				break;
+				
+			case "/view" :
+				exe = processView(words);
+				break;
+				
+			case "/mark" :
+				exe = processMark(words);
+				break;
+				
+			case "/sort" :
+				exe = new Executable(CommandType.CMD_SORT);
+				break;
+				
+			case "/exit" :
+				exe = new Executable(CommandType.CMD_EXIT);
+				break;
+			
+			case "help" : 
+				// Fallthrough
+			case "/help" :
+				exe = processHelp(words);
+				break;
+			
+			case "/freeday" :
+				exe = new Executable(CommandType.CMD_SEARCHFREEDAY);
+				break;
+				
+			default : 
+				throw new IllegalArgumentException("Unrecognized command given.");
+		}
+		
+		if (DO_DEBUG) {
+			// for debugging, to view the contents of executable
+			printExe(exe); 
+		}
+		
+		return exe;
+	}
+	
+	private static Executable processView(String[] words){
+		if (words.length <= 1) {
+			return processDisplay(words);
+		} else {
+			return processSearch(words);
+		}
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+	 */
+
+	private static Executable processHelp(String[] words) {
+		Executable exe = new Executable(CommandType.CMD_HELP);
+		
+		//has keyword
+		if ( ! doesNotHaveExtraText(words)) { 
+			String extraWords = recombine(words, 1, words.length);
+			exe.setInfo(extraWords);
+		}
+		
+		return exe;
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+	 */
+
+	private static Executable processAdd(String[] words) throws Exception {
+		
+		Executable exe = new Executable(CommandType.CMD_ADD);
+	
+		String word;
+		boolean addBasic = true;
+		
+		if (doesNotHaveExtraText(words)) {
+			throw new EmptyInputException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
+		}
+		
+		//linearly read the words, stop when you find a keyword
+		for (int i = 1; i < words.length; i++) {
+			word = words[i];
+			if (word.equals("/start")) {
+				processAddFrom(exe, words, i);
+				addBasic = false;
+				break;
+			} else if (word.equals("/on")) {
+				processAddOn(exe, words, i);
+				addBasic = false;
+				break;
+			} else if (word.equals("/by")) {
+				processAddBy(exe, words, i);
+				addBasic = false;
+				break;
+			}
+		}
+		
+		if (addBasic) {
+			processAddBasic(exe, words);
+		}
+		
+		return exe;
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+	 */
+
+	private static void processAddBasic(Executable exe, String[] words) {
+		exe.setInfo(recombine(words, 1, words.length));
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+	 */
+
+	private static void processAddBy(Executable exe, String[] words, int i) throws ParseException {
+		
+		// i is where /by was found
+		exe.setInfo(recombine(words, 1, i));
+ 
+		//date
+		if (words.length == i + 1) { // nothing after keyword
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
+		} else if (! isDate(words[i+1] ) ) { // wrong date format
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_WRONG_DATE_FORMAT);
+		} else if (! isGreaterToday(words[i+1])) {
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_PAST_DATE);
+		}
+		
+		String date = words[i+1];
+		exe.setEndingDate(date);
+		
+		//time
+		if (words.length == i + 3) { //time given
+			if (! isTime(words[i+2]) ) { // wrong time format
+				throw new IllegalArgumentException(ToDoManager.MESSAGE_WRONG_DATE_FORMAT);
+			}
+			
+			String time = words[i+2];
+			exe.setEndingTime(time);
+		}
+		
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+	 */
+
+	private static void processAddOn(Executable exe, String[] words, int i) throws ParseException {
+		exe.setInfo(recombine(words, 1, i));
+		
+		//date
+		if (words.length <= i + 1) { // nothing after keyword
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
+		} else if (! isDate(words[i+1]) ) { // wrong date format
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_WRONG_DATE_FORMAT);
+		} else if (! isGreaterToday(words[i+1])) {
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_PAST_DATE);
+		}
+		
+		String date = words[i+1];
+		exe.setStartingDate(date); 
+		exe.setEndingDate(date);
+		
+		//time
+		if (words.length <= i+2) {
+			// return if no time argument given
+			return;
+		}
+		
+		//first time argument
+		String time;
+		if (! isTime(words[i+2]) ) { // wrong time format
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_WRONG_TIME_FORMAT);
+		} else {
+			time = words[i+2];
+			exe.setStartingTime(time);
+		}
+		
+		if (words.length <= i+3 ) {
+			// 1 time given, event occurs at a point in time
+			exe.setEndingTime(time);
+			return;
+		}
+		
+		// second time argument
+		if (! isTime(words[i+3]) ) { // wrong time format
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_WRONG_TIME_FORMAT);
+		} else {
+			time = words[i+3];
+			exe.setEndingTime(time);
+			checkStartEndTime(exe.getStartingTime(), exe.getEndingTime());
+		}
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+	 */
+
+	private static void processAddFrom(Executable exe, String[] words, int i) throws ParseException {
+		exe.setInfo(recombine(words, 1, i));
+		
+		int pointer = i + 1;
+		int end = words.length;
+		String time, date;
+		
+		//start date
+		if (pointer == end) {
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
+		} else {  
+			date = words[pointer];
+			if (! isDate(date)) {//wrong date format
+				throw new IllegalArgumentException(ToDoManager.MESSAGE_WRONG_DATE_FORMAT);
+			} else if (! isGreaterToday(date)) { // date is in the past
+				throw new IllegalArgumentException(ToDoManager.MESSAGE_PAST_DATE);
+			} else {
+				exe.setStartingDate(date);
+				pointer++;
+			}
+		}
+		
+		// start time
+		if (pointer == end) {
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
+		} else if (! words[pointer].equals("/by") ) {
+			time = words[pointer];
+			if ( isTime(time) ) { // right date format
+				exe.setStartingTime(time);
+				pointer++;
+			} else { // wrong fomat of time given
+				throw new IllegalArgumentException(ToDoManager.MESSAGE_WRONG_TIME_FORMAT);
+			}
+		}
+		
+		//  /by
+		if (pointer == end || !words[pointer].equals("/by")) {
+			throw new IllegalArgumentException();
+		} else {
+			pointer++;
+		}
+		
+		//end date
+		if (pointer == end) {
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
+		} else {  
+			date = words[pointer];
+			if (! isDate(date)) {//wrong date format
+				throw new IllegalArgumentException(ToDoManager.MESSAGE_WRONG_DATE_FORMAT);
+			} else if (! isGreaterToday(date)) { // date is in the past
+				throw new IllegalArgumentException(ToDoManager.MESSAGE_PAST_DATE);
+			} else {
+				exe.setEndingDate(date);
+				pointer++;
+			}
+		}
+		
+		// end time
+		if (pointer == end) {
+			return;
+		} else {
+			time = words[pointer];
+			if ( isTime(time) ) { // right date format
+				exe.setEndingTime(time);
+				if (exe.getEndingDate().equals(exe.getStartingDate())) {
+					checkStartEndTime(exe.getStartingTime(), exe.getEndingTime());
+				}
+			} else {
+				throw new IllegalArgumentException(ToDoManager.MESSAGE_WRONG_TIME_FORMAT);
+			}
+		}
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+	 */
+
+	private static Executable processDelete(String[] words) throws IllegalArgumentException {
+		Executable exe = new Executable(CommandType.CMD_DELETE);
+		ArrayList<Integer> index = new ArrayList<Integer>();
+		if (doesNotHaveExtraText(words)) { // no identifiers on what to delete
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
+		}
+		
+		try {
+			for (int i = 1; i < words.length; i++) {
+				index.add(Integer.parseInt( words[i] ));
+			}
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Number required for delete.");
+		}
+		
+		exe.setDisplayIndex(index);
+		return exe;
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+	 */
+
+	private static Executable processClear(String[] words) {
+		return new Executable(CommandType.CMD_CLEAR);
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+	 */
+
+	private static Executable processEdit(String[] words) throws IllegalArgumentException {
+		Executable exe = new Executable(CommandType.CMD_EDIT);
+		ArrayList<Integer> index = new ArrayList<Integer>();
+		
+		if (words.length <= 2) { // not enough info to edit
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
+		}
+		
+		try {
+			index.add(Integer.parseInt(words[1]));
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Number required for edit.");
+		}
+		
+		exe.setDisplayIndex(index);
+		
+		if (words[2].equals("/by")) { // edit date to "by" format
+			processEditBy(words, exe, 2);
+			
+		} else if (words[2].equals("/on")) { // edit date to "on" format
+			processEditOn(words, exe, 2);
+			
+		} else if (words[2].equals("/start")) { // edit date to "start, by" format
+			processEditStart(words, exe, 2);
+			
+		} else { // edit entry name
+			String keywords = recombine(words, 2, words.length);
+			exe.setInfo(keywords);
+		}
+		
+		return exe;
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+	 */
+
+	private static void processEditStart(String[] words, Executable exe, int i) {
+		// i is where /start is found
+		int pointer = i + 1;
+		int end = words.length;
+		Boolean date = null;
+		
+		if (pointer == end) { // check for insufficient length
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
+		} else if ( isDate(words[pointer]) ) { // change date
+			exe.setStartingDate(words[pointer]);
+			date = true;
+		} else if (isTime(words[pointer])) { //change time
+			exe.setStartingTime(words[pointer]);
+			date = false;
+		} else { // unrecognised format
+			throw new IllegalArgumentException();
+		}
+		
+		pointer++;
+		
+		if (pointer == end) { // check for insufficient length
+			return;
+		} if ( isDate(words[pointer]) && date == false) { //check that werent given two dates
+			exe.setStartingDate(words[pointer]);
+		} else if (isTime(words[pointer]) && date == true) { //check that werent given two times
+			exe.setStartingTime(words[pointer]);
+		} else { // unrecognised format
+			throw new IllegalArgumentException();
+		}
+
+		pointer++;
+		
+		if (pointer == end) {
+			return;
+		} else if (words[pointer] == "/by") {
+			processEditBy(words, exe, pointer);
+		}
+		
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+	 */
+
+	private static void processEditOn(String[] words, Executable exe, int i) {
+		// i is where /on is located in words
+		
+		int pointer = i + 1;
+		int end = words.length;
+		Boolean date = null;
+		
+		if (pointer == end) { // check for insufficient length
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
+		} else if ( isDate(words[pointer]) ) { // change date
+			exe.setStartingDate(words[pointer]);
+			exe.setEndingDate(words[pointer]);
+			date = true;
+		} else if (isTime(words[pointer])) { //change time
+			exe.setStartingTime(words[pointer]);
+			exe.setEndingTime(words[pointer]);
+			date = false;
+		} else { // unrecognised format
+			throw new IllegalArgumentException();
+		}
+		
+		pointer++;
+		
+		if (pointer == end) { // check for end
+			return;
+		} if ( isDate(words[pointer]) && date == false) { //check that werent given two dates
+			exe.setStartingDate(words[pointer]);
+			exe.setEndingDate(words[pointer]);
+		} else if (isTime(words[pointer]) && date == true) { //check that werent given two times
+			exe.setStartingTime(words[pointer]);
+			exe.setEndingTime(words[pointer]);
+		} else { // unrecognised format
+			throw new IllegalArgumentException();
+		}
+		return;
+	}
+
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+	 */
+
+	private static void processEditBy(String[] words, Executable exe, int i) {
+		// i is where /by is located in words
+		
+		int pointer = i + 1;
+		int end = words.length;
+		Boolean date = null;
+		
+		if (pointer == end) { // check for insufficient length
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
+		} else if ( isDate(words[pointer]) ) { // change date
+			exe.setEndingDate(words[pointer]);
+			date = true;
+		} else if (isTime(words[pointer])) { //change time
+			exe.setEndingTime(words[pointer]);
+			date = false;
+		} else { // unrecognised format
+			throw new IllegalArgumentException();
+		}
+		
+		pointer++;
+		
+		if (pointer == end) { // check for end
+			checkStartEndTime(exe.getStartingTime(), exe.getEndingTime());
+			return;
+		} if ( isDate(words[pointer]) && date == false) { //check that werent given two dates
+			exe.setEndingDate(words[pointer]);
+		} else if (isTime(words[pointer]) && date == true) { //check that werent given two times
+			exe.setEndingTime(words[pointer]);
+		} else { // unrecognised format
+			throw new IllegalArgumentException();
+		}
+		checkStartEndTime(exe.getStartingTime(), exe.getEndingTime());
+		return;
+	}
+
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+	 */
+
+	private static Executable processUndo(String[] words) {
+		return new Executable(CommandType.CMD_UNDO);
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+	 */
+
+	private static Executable processMark(String[] words) throws IllegalArgumentException {
+		Executable exe = new Executable(CommandType.CMD_DONE);
+		if (doesNotHaveExtraText(words)) { // no identifiers
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
+		} else {  //has more words
+			ArrayList<Integer> index = new ArrayList<Integer>();
+			String word;
+			//String info = "";
+			for (int i = 1; i < words.length; i++) {
+				word = words[i];
+				if (isNumber(word)) { // its a display index
+					index.add(Integer.parseInt(word));
+				} else if (word.equals("undone") ) {
+					exe.setCommand(CommandType.CMD_UNDONE);
+				} else if (! word.equals("done")) { 
+					//anticipate users including the word done even though it is not required
+					throw new IllegalArgumentException("Number required for mark.");
+				}
+			}
+			
+			if (! index.isEmpty()) {
+				exe.setDisplayIndex(index);
+			}
+		}
+		return exe;
+	}
+
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+	 */
+
+	private static String recombine(String[] words, int startIndex, int endIndex) {
+		String line = "";
+		for (int i = startIndex; i < endIndex; i++) {
+			line += words[i]+" ";
+		}
+		return line.trim();
+	}
+
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+	 */
+
+	private static boolean isDate(String date) {
+		return ValidationCheck.isValidDate(date);
+	}
+
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+	 */
+
+	private static void printExe(Executable exe) {
+		String out = "---Executable Begin---\n";
+		out += "Command : "      + exe.getCommand() + "\n";
+		out += "Name : "         + exe.getInfo() + "\n" ;
+		out += "StartingDate : " + exe.getStartingDate() + "\n";
+		out += "EndingDate : "   + exe.getEndingDate() + "\n";
+		out += "StartingTime : " + exe.getStartingTime() + "\n";
+		out += "EndingTime : "   + exe.getEndingTime() + "\n";
+		out += "Doneness : "     + exe.getDoneness() + "\n" ;
+		out += "displayIndex : " + exe.getDisplayIndex() + "\n";
+		out += "---Executable End---\n\n";
+		
+		System.out.println(out);
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+	 */
+
+	private static void checkStartEndTime(String startStr, String endStr) {
+		ValidationCheck.checkStartEndTime(startStr, endStr);
+	}
+	
+	private static Date getToday() {
+		return new Date();
+	}
+}
+
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Interpreter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\InterpreterTest.java
+	 */
+
+public class InterpreterTest {
+	
+	@Test(expected = EmptyInputException.class)  
+	public void EmptyInputShouldThrowException() throws Exception {
+		Executable exe = Interpreter.parseCommand("");
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void WrongInputShouldThrowException() throws Exception {
+		Executable exe = Interpreter.parseCommand("lollolol");
+	}
+	
+	@Test
+	public void basicAddShouldStoreName() throws Exception{
+		String name = "testname";
+		Executable exe = Interpreter.parseCommand("/add "+name);
+		assertEquals("Normal adding should return an executable with info stored", 
+					  exe.getInfo(), name);
+	}
+	
+	@Test(expected = EmptyInputException.class)
+	public void emptyAddShouldThrowException() throws Exception{
+		Executable exe = Interpreter.parseCommand("/add ");
+	}
+	
+	//next 3 tests seem to belong to an equivalence partition, and it seems ineffective to test all 3,
+	// but a bug was found where giving /from <date> only was accepted by the program (which it shouldnt)
+	@Test(expected = IllegalArgumentException.class)
+	public void incompleteAddFromShouldThrowException1() throws Exception{
+		Executable exe = Interpreter.parseCommand("/add stuff /from");
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void incompleteAddFromShouldThrowException2() throws Exception{
+		Executable exe = Interpreter.parseCommand("/add stuff /from 21032012");
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void incompleteAddFromShouldThrowException3() throws Exception{
+		Executable exe = Interpreter.parseCommand("/add stuff /from 21032012 /to");
+	}
+	
+	@Test
+	public void completeAddFromShouldStoreNameAndDate() throws Exception{
+		String name = "stuff and other", start = "21032012", end = "22031012";
+		
+		Executable exe = Interpreter.parseCommand("/add " + name + " /from " + start + " /to " + end);
+		
+		assertEquals("Name should be stored properly", exe.getInfo(), name);
+		assertEquals("Start Date should be stored properly", exe.getStartingDate(), start);
+		assertEquals("End Date should be stored properly", exe.getEndingDate(), end);
+	}
+
+}
+
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\InterpreterTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+	 */
+
+	public static final String HELP_NO_KEYWORD = 
+			  "Type \"help <command>\" to get help for that particular topic.\n"
+			+ "List of topics : \n"
+			+ "  /add         /view\n"
+			+ "  /delete     /clear\n"
+			+ "  /edit         /undo\n"
+			+ "  /mark       /sort\n"
+			+ "  /freeday     /exit\n"
+			+ "   date        time\n\n" 
+			+ "  Press F3 for the list of HOTKEYS.";
+	
+	private static final String HELP_INVALID_KEYWORD = " Invalid help topic given.\n";
+	private static final String HELP_ADD = " Format of add command : /add <task name>\n\n" +
+										   " The following can also be added after the basic add command : \n" +
+										   " /on <date> <start time> <end time>\n" +
+										   " /on <date> <single time>\n" +
+										   " /by <date> <end time>\n" +
+										   " /start <date> <start time> /by <date> <end time>\n" +
+										   " Note that each <time> is optional but each <date> is required.\n";
+	private static final String HELP_DELETE = " Format of delete command : \n" +
+											  " /delete <index no.> \n" +
+											  " This deletes the entry with that index in the most recently shown list.\n" +
+											  " Multiple indexes seperated by spaces also accepted, eg. : \n" +
+											  " /delete 1 4 5\n";
+	private static final String HELP_CLEAR = " \"/clear\" deletes all saved tasks.\n";
+	private static final String HELP_EDIT = " Format for edit command : \n" +
+											" /edit <index no.> <new task name>\n" + 
+											" /edit <index no.> /on <new date>\n" + 
+											" /edit <index no.> /by <new date>\n" + 
+											" /edit <index no.> /start <new date> /by <new date2>\n" +
+											" Note that <index no.> refers to the numbering in the most recently displayed list.\n" +
+											" Time can replace or be added after dates (separated with a space), to edit the time of an event.";
+	private static final String HELP_UNDO = " The /undo command reverses the most recent change made.\n" +
+											" This extends to all actions taken since the app was started.\n";
+	private static final String HELP_MARK = " This marks the item as done. Format of mark : \n" +
+											" /mark <keyword>\n" +
+											" /mark <index no.>\n" + 
+											" Note that <index no.> refers to the numbering in the most recently displayed list.\n" +
+											" <index no.> can be multiple numbers separated by spaces, to mark several items at one go.\n";
+	private static final String HELP_VIEW = " Format for view : \n" +
+											" /view         Shows all saved tasks\n" +
+											" /view today\n" +
+											" /view tmr or tomorrow\n" +
+											" /view <month name> \n" +
+											" /view <done or undone>\n" +
+											" /view <date>\n" +
+											" /view <keyword>\n";
+	private static final String HELP_SORT = " The /sort command arranges the tasks chronologically.\n";
+	private static final String HELP_EXIT = " The /exit command shuts down ToDoManager.\n";
+	private static final String HELP_DATE = " Format for date is ddMMyy, eg. 210315 for 21st March 2015.\n";
+	private static final String HELP_TIME = " Format for time is hhmm, eg. 1435 for 2.35pm.\n";
+	private static final String HELP_FREEDAY = "Format for finding the next free day is /freeday";
+
+	private static final String NoEndingDate = "999999";
+
+	private static final String NoEndingTime = "0000";
+
+
+
+	Storage storage;
+	
+	private static LinkedList<LinkedList<Entry>> preList = new LinkedList<LinkedList<Entry>>(); // preState
+	
+	private static Logic instance = null;
+	
+	public static LinkedList<Entry> entryList = new LinkedList<Entry>();
+	private static LinkedList<Entry> displayList = new LinkedList<Entry>();
+	
+	private static Logging logObj = Logging.getInstance();
+	private Result result;
+	private static String DATE_FORMAT = Interpreter.DATE_FORMAT;
+
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+	 */
+
+	private String executeHelp(Executable task) {
+		
+		String topic = task.getInfo();
+		if (topic == null) {
+			UserInterface.showToUser(HELP_NO_KEYWORD);
+			return HELP_NO_KEYWORD;
+		}
+		
+		switch (topic) {
+			case "/add":
+				UserInterface.showToUser(HELP_ADD);
+				return HELP_ADD;
+			case "/delete":
+				UserInterface.showToUser(HELP_DELETE);
+				return HELP_DELETE;
+			case "/clear":
+				UserInterface.showToUser(HELP_CLEAR);
+				return HELP_CLEAR;
+			case "/edit":
+				UserInterface.showToUser(HELP_EDIT);
+				return HELP_EDIT;
+			case "/undo":
+				UserInterface.showToUser(HELP_UNDO);
+				return HELP_UNDO;
+			case "/mark":
+				UserInterface.showToUser(HELP_MARK);
+				return HELP_MARK;
+			case "/view":
+				UserInterface.showToUser(HELP_VIEW);
+				return HELP_VIEW;
+			case "/sort":
+				UserInterface.showToUser(HELP_SORT);
+				return HELP_SORT;
+			case "/exit":
+				UserInterface.showToUser(HELP_EXIT);
+				return HELP_EXIT;
+			case "date" :
+				UserInterface.showToUser(HELP_DATE);
+				return HELP_DATE;
+			case "time" :
+				UserInterface.showToUser(HELP_TIME);
+				return HELP_TIME;
+			case "/freeday":
+				UserInterface.showToUser(HELP_FREEDAY);
+				return HELP_FREEDAY;
+			default : 
+				UserInterface.showToUser(HELP_INVALID_KEYWORD);
+				UserInterface.showToUser(HELP_NO_KEYWORD);
+				return HELP_INVALID_KEYWORD+"\n"+HELP_NO_KEYWORD;
+		}
+	}
+
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+	 */
+
+	private void executeEdit(Executable task) throws Exception {
+		
+		int displayIndex = task.getDisplayIndex().get(0) - 1;
+		Entry entryToEdit = displayList.get(displayIndex);
+		
+		if (task.getInfo() != null) { //edit name
+			entryToEdit.setName(task.getInfo());
+		} 
+		
+		if (task.getStartingDate() != null) { //edit startingDate
+			entryToEdit.setStartingDate(task.getStartingDate());
+		}
+		
+		if (task.getEndingDate() != null) {//edit endingDate
+			entryToEdit.setEndingDate(task.getEndingDate());
+		}
+		
+		if (task.getStartingTime() != null) { //edit startingTime
+			entryToEdit.setStartingTime(task.getStartingTime());
+		}
+		
+		if (task.getEndingTime() != null) {//edit endingTime
+			entryToEdit.setEndingTime(task.getEndingTime());
+		}
+		
+		ValidationCheck.checkStartEndDate(entryToEdit.getStartingDate(), 
+				                          entryToEdit.getEndingDate());
+		
+		if (entryToEdit.getStartingDate() != null && 
+			entryToEdit.getEndingDate()   != null &&
+			entryToEdit.getStartingDate().equals(entryToEdit.getEndingDate())){
+				ValidationCheck.checkStartEndTime(entryToEdit.getStartingTime(), 
+						entryToEdit.getEndingTime());
+		}
+		
+		ValidationCheck.checkIllegalChars(entryToEdit.getName());
+
+		writeToStorage();	
+	}
+
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+	 */
+
+	private void saveEntryListToPreList() {
+		LinkedList<Entry> newList = new LinkedList<Entry>();
+		for (Entry e : entryList) {
+			newList.add(e.copy());
+		}
+		preList.add(newList);
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+	 */
+
+	private String printError(Exception e) {
+		
+		if (e.getMessage() != null) {
+			return e.getMessage();
+		}
+		
+		if (e instanceof IllegalArgumentException) {
+			return "Incorrect argument given.";
+		} else if (e instanceof EmptyInputException) {
+			return ToDoManager.MESSAGE_ERROR_EMPTY_INPUT;
+		} else {
+			return ToDoManager.MESSAGE_ERROR_GENERIC;
+		}
+	}
+	
+} 
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\Logic.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\TestDriver.java
+	 */
+
+public class TestDriver {
+	private static Logic logic;
+	private static ToDoManagerGUI toDoManagerGUI;
+	private static Object resultObj;
+	private static Result result;
+	private static String resultStr;
+	private static LinkedList<Entry> displayList;
+	private static Entry entry;
+	
+	@BeforeClass 
+	public static void Initialise() {
+		toDoManagerGUI = new ToDoManagerGUI();
+		toDoManagerGUI.setup();
+		logic = Logic.getInstance();
+	}
+	
+	@Before
+	@After
+	public void ClearStorage() {
+		logic.actOnUserInput("/clear");
+	}
+	
+	@Test
+	public void testClear() {
+		logic.actOnUserInput("/add test case 1");
+		//try and clear
+		resultObj = logic.actOnUserInput("/clear");
+		result = castToResult(resultObj);
+		assertEquals("Clear should return success message.", "All tasks cleared", result.getFeedback());
+		
+		//check that there is no more entry
+		resultObj = logic.actOnUserInput("/view");
+		result = castToResult(resultObj);
+		assertEquals("Should have no entries left.", 0, result.getDisplayList().size());
+	}
+	
+	@Test
+	public void testAddBasicAndDisplay(){
+		//try and add
+		resultObj = logic.actOnUserInput("/add test case 2");
+		result = castToResult(resultObj);
+		assertEquals("Add should return success message.", "A new task added successfully", result.getFeedback());
+		
+		//check that there is an Entry
+		resultObj = logic.actOnUserInput("/view");
+		result = castToResult(resultObj);
+		displayList = result.getDisplayList();
+		assertEquals("Should have the added Entry.", "test case 2", displayList.get(0).getName());
+		assertEquals("Should have no other Entries.", 1, displayList.size());
+	}
+	
+	@Test
+	public void testAddOn() {
+		//try and add with one time
+		resultObj = logic.actOnUserInput("/add test case 3 /on 231215 1432");
+		result = castToResult(resultObj);
+		assertEquals("Add should return success message.", "A new task added successfully", result.getFeedback());
+		
+		//check that the Entry is correct
+		resultObj = logic.actOnUserInput("/view");
+		result = castToResult(resultObj);
+		entry = result.getDisplayList().get(0);
+		assertEquals("Should have the added Entry.",   "test case 3", entry.getName());
+		assertEquals("Start date should be correct.",  "231215", entry.getStartingDate());
+		assertEquals("End date should be correct.",    "231215", entry.getEndingDate());
+		assertEquals("Start time should be correct.",  "1432", entry.getStartingTime());
+		assertEquals("End time should be correct.",    "1432", entry.getEndingTime());
+		
+		//clear the previous entry
+		logic.actOnUserInput("/clear");
+		
+		//try and add with multiple time
+		resultObj = logic.actOnUserInput("/add test case 3 /on 231215 1432 1955");
+		result = castToResult(resultObj);
+		assertEquals("Add should return success message.", "A new task added successfully", result.getFeedback());
+		
+		//check that the Entry is correct
+		resultObj = logic.actOnUserInput("/view");
+		result = castToResult(resultObj);
+		entry = result.getDisplayList().get(0);
+		assertEquals("Start time should be correct.", "1432", entry.getStartingTime());
+		assertEquals("End time should be correct.", "1955", entry.getEndingTime());
+	}
+	
+	@Test
+	public void testAddBy() {
+		//try and add
+		resultObj = logic.actOnUserInput("/add test case 4 /by 010315 1234");
+		result = castToResult(resultObj);
+		assertEquals("Add should return success message.", "A new task added successfully", result.getFeedback());
+		
+		//check that the Entry is correct
+		resultObj = logic.actOnUserInput("/view");
+		result = castToResult(resultObj);
+		entry = result.getDisplayList().get(0);
+		assertEquals("Should have the added Entry.", "test case 4", entry.getName());
+		assertNull("Should have no starting date.", entry.getStartingDate());
+		assertNull("Should have no starting time.", entry.getStartingTime());
+		assertEquals("End date should be correct.", "010315", entry.getEndingDate());
+		assertEquals("End time should be correct.", "1234", entry.getEndingTime());
+	}
+	
+	@Test
+	public void testAddStartBy() {
+		//try and add
+		resultObj = logic.actOnUserInput("/add test case 5 /start 030215 1345 /by 010315 1234");
+		result = castToResult(resultObj);
+		assertEquals("Add should return success message.", "A new task added successfully", result.getFeedback());
+		
+		//check that the Entry is correct
+		resultObj = logic.actOnUserInput("/view");
+		result = castToResult(resultObj);
+		entry = result.getDisplayList().get(0);
+		assertEquals("Should have the added Entry.",  "test case 5", entry.getName());
+		assertEquals("Start date should be correct.", "030215", entry.getStartingDate());
+		assertEquals("Start time should be correct.", "1345", entry.getStartingTime());
+		assertEquals("End date should be correct.",   "010315", entry.getEndingDate());
+		assertEquals("End time should be correct.",   "1234", entry.getEndingTime());
+	}
+	
+	@Test
+	public void testDelete() {
+		//add an entry first
+		logic.actOnUserInput("/add test case 6.1");
+		
+		//try to delete it
+		resultObj = logic.actOnUserInput("/delete 1");
+		result = castToResult(resultObj);
+		assertEquals("Delete should return success message.", "Task deleted", result.getFeedback());
+		
+		//check that there is no more entry
+		resultObj = logic.actOnUserInput("/view");
+		result = castToResult(resultObj);
+		assertEquals("Should have no entries left.", 0, result.getDisplayList().size());
+		
+		//add multiple entries
+		logic.actOnUserInput("/add test case 6.1");
+		logic.actOnUserInput("/add test case 6.2");
+		logic.actOnUserInput("/add test case 6.3");
+		logic.actOnUserInput("/add test case 6.4");
+		logic.actOnUserInput("/add test case 6.5");
+		
+		//try to delete multiple entries
+		resultObj = logic.actOnUserInput("/delete 2 4");
+		result = castToResult(resultObj);
+		assertEquals("Multiple delete should return success message.", "Task deleted", result.getFeedback());
+		
+		//check that the correct entries remain
+		resultObj = logic.actOnUserInput("/view");
+		result = castToResult(resultObj);
+		displayList = result.getDisplayList();
+		assertEquals("Should have no entries left.", 3, displayList.size());
+		assertEquals("First entry after multiple deleting should be 6.1", "test case 6.1", displayList.get(0).getName());
+		assertEquals("First entry after multiple deleting should be 6.1", "test case 6.3", displayList.get(1).getName());
+		assertEquals("First entry after multiple deleting should be 6.1", "test case 6.5", displayList.get(2).getName());
+	}
+	
+	@Test
+	public void testEdit() {
+		//add some entries first
+		logic.actOnUserInput("/add test case 7.1 /on 121214 1234");
+		logic.actOnUserInput("/add test case 7.2 /on 130115 1414");
+		logic.actOnUserInput("/add test case 7.3 /on 140315 1759");
+		
+		//test edit name
+		resultObj = logic.actOnUserInput("/edit 2 new name");
+		result = castToResult(resultObj);
+		assertEquals("Edit should return success message.", "Task edited successfully", result.getFeedback());
+		entry = result.getDisplayList().get(1);
+		assertEquals("Edit name should change the name.", "new name", entry.getName());
+		
+		//test edit starting time and date
+		resultObj = logic.actOnUserInput("/edit 2 /start 311214 1010");
+		result = castToResult(resultObj);
+		assertEquals("Edit should return success message.", "Task edited successfully", result.getFeedback());
+		entry = result.getDisplayList().get(1);
+		assertEquals("Edit starting date should change the date.", "311214", entry.getStartingDate());
+		assertEquals("Edit starting time should change the time.", "1010", entry.getStartingTime());
+		
+		//test edit ending time and date
+		resultObj = logic.actOnUserInput("/edit 2 /by 290115 2350");
+		result = castToResult(resultObj);
+		assertEquals("Edit should return success message.", "Task edited successfully", result.getFeedback());
+		entry = result.getDisplayList().get(1);
+		assertEquals("Edit ending date should change the date.", "290115", entry.getEndingDate());
+		assertEquals("Edit ending time should change the time.", "2350", entry.getEndingTime());
+		
+		//check that the others werent edited
+		resultObj = logic.actOnUserInput("/view");
+		result = castToResult(resultObj);
+		displayList = result.getDisplayList();
+		entry = displayList.get(0);
+		assertEquals("Edit should not alter other entries.", "test case 7.1", entry.getName());
+		assertEquals("Edit should not alter other entries.", "121214", entry.getStartingDate());
+		assertEquals("Edit should not alter other entries.", "121214", entry.getEndingDate());
+		assertEquals("Edit should not alter other entries.", "1234", entry.getStartingTime());
+		assertEquals("Edit should not alter other entries.", "1234", entry.getEndingTime());
+		
+		entry = displayList.get(2);
+		assertEquals("Edit should not alter other entries.", "test case 7.3", entry.getName());
+		assertEquals("Edit should not alter other entries.", "140315", entry.getStartingDate());
+		assertEquals("Edit should not alter other entries.", "140315", entry.getEndingDate());
+		assertEquals("Edit should not alter other entries.", "1759", entry.getStartingTime());
+		assertEquals("Edit should not alter other entries.", "1759", entry.getEndingTime());
+	}
+	
+	@Test
+	public void testMark() {
+		//add some entries first
+		logic.actOnUserInput("/add test case 8.1 /by 121214 1234");
+		logic.actOnUserInput("/add test case 8.2 /on 130115 1414");
+		logic.actOnUserInput("/add test case 8.3 /by 140315 1759");
+		
+		//mark 1  entry done
+		resultObj = logic.actOnUserInput("/mark 2");
+		result = castToResult(resultObj);
+		assertEquals("Mark should return success message.", "Task marked done", result.getFeedback());
+		displayList = result.getDisplayList();
+		entry = displayList.get(0);
+		assertEquals("Mark should not change other entries.", false, entry.getDoneness());
+		entry = displayList.get(1);
+		assertEquals("Mark should mark the right entry.", true, entry.getDoneness());
+		entry = displayList.get(2);
+		assertEquals("Mark should not change other entries.", false, entry.getDoneness());
+		
+		//mark multiple entries done
+		resultObj = logic.actOnUserInput("/mark 1 3");
+		result = castToResult(resultObj);
+		assertEquals("Mark should return success message.", "Task marked done", result.getFeedback());
+		displayList = result.getDisplayList();
+		entry = displayList.get(0);
+		assertEquals("Mark should not change other entries.", true, entry.getDoneness());
+		entry = displayList.get(1);
+		assertEquals("Mark should mark the right entry.", true, entry.getDoneness());
+		entry = displayList.get(2);
+		assertEquals("Mark should not change other entries.", true, entry.getDoneness());
+		
+		//mark 1 entry undone
+		resultObj = logic.actOnUserInput("/mark 3 undone");
+		result = castToResult(resultObj);
+		assertEquals("Mark should return success message.", "Task marked undone", result.getFeedback());
+		displayList = result.getDisplayList();
+		entry = displayList.get(0);
+		assertEquals("Mark should not change other entries.", true, entry.getDoneness());
+		entry = displayList.get(1);
+		assertEquals("Mark should mark the right entry.", true, entry.getDoneness());
+		entry = displayList.get(2);
+		assertEquals("Mark should not change other entries.", false, entry.getDoneness());
+		
+		//mark multiple entries undone
+		resultObj = logic.actOnUserInput("/mark 1 2 undone");
+		result = castToResult(resultObj);
+		assertEquals("Mark should return success message.", "Task marked undone", result.getFeedback());
+		displayList = result.getDisplayList();
+		entry = displayList.get(0);
+		assertEquals("Mark should not change other entries.", false, entry.getDoneness());
+		entry = displayList.get(1);
+		assertEquals("Mark should mark the right entry.", false, entry.getDoneness());
+		entry = displayList.get(2);
+		assertEquals("Mark should not change other entries.", false, entry.getDoneness());
+	}
+	
+	@Test
+	public void testUndo(){
+		//add some entries first
+		logic.actOnUserInput("/add test case 9.1 /by 121214 1234");
+		logic.actOnUserInput("/add test case 9.2 /on 130115 1414");
+		logic.actOnUserInput("/add test case 9.3 /by 140315 1759");
+		
+		//undo add
+		resultObj = logic.actOnUserInput("/undo");
+		result = castToResult(resultObj);
+		displayList = result.getDisplayList();
+		assertEquals("Undo add should remove the added entry", 2, displayList.size());
+		assertEquals("Undo add should not change unrelated entries.", "test case 9.1", displayList.get(0).getName());
+		assertEquals("Undo add should not change unrelated entries.", "test case 9.2", displayList.get(1).getName());
+		
+		//add more entries first
+		logic.actOnUserInput("/add test case 9.3 /by 121214 1234");
+		logic.actOnUserInput("/add test case 9.4 /on 130115 1414");
+		logic.actOnUserInput("/add test case 9.5 /by 140315 1759");
+		
+		//delete some entries
+		logic.actOnUserInput("/delete 2 5");
+		
+		//undo delete
+		resultObj = logic.actOnUserInput("/undo");
+		result = castToResult(resultObj);
+		displayList = result.getDisplayList();
+		assertEquals("Undo delete should restore the deleted entry.", 5, displayList.size());
+		
+		//clear all saved entries
+		logic.actOnUserInput("/clear");
+		
+		//undo clear
+		resultObj = logic.actOnUserInput("/undo");
+		result = castToResult(resultObj);
+		displayList = result.getDisplayList();
+		assertEquals("Undo clear should restore the deleted entries.", 5, displayList.size());
+		
+		logic.actOnUserInput("/mark 1");
+		logic.actOnUserInput("/mark 3");
+		
+		//undo mark
+		resultObj = logic.actOnUserInput("/undo");
+		result = castToResult(resultObj);
+		displayList = result.getDisplayList();
+		assertEquals("Undo mark should restore the previous status.", true, displayList.get(0).getDoneness());
+		assertEquals("Undo mark should not change unrelated doneness.", false, displayList.get(2).getDoneness());
+		
+		//multiple undo
+		resultObj = logic.actOnUserInput("/undo");
+		result = castToResult(resultObj);
+		displayList = result.getDisplayList();
+		assertEquals("Undo mark should restore the previous status.", false, displayList.get(0).getDoneness());
+		assertEquals("Undo mark should not change unrelated doneness.", false, displayList.get(2).getDoneness());
+		
+	}
+
+	private static Result castToResult(Object input){
+		assertTrue("Returned object should be a Result, is instead : " + input.getClass(), input instanceof Result);
+		Result output = (Result) resultObj;
+		return output;
+	}
+	
+	private static String castToString(Object input){
+		assertTrue("Returned object should be a String", input instanceof String);
+		String output = (String) resultObj;
+		return output;
+	}
+	
+}
+
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\TestDriver.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\ToDoManager.java
+	 */
+
+	//commands received from user	
+	enum CommandType {
+		CMD_ADD,    CMD_DELETE,  CMD_CLEAR, CMD_EDIT, CMD_UNDO, 
+		CMD_SEARCH, CMD_DISPLAY, CMD_DONE,  CMD_SORT, CMD_EXIT,
+		CMD_HELP, CMD_UNDONE, CMD_SEARCHFREEDAY
+	}
+	
+	static final String MESSAGE_WELCOME = "Welcome to ToDo Manager!";
+	static final String MESSAGE_ERROR_GENERIC = "An error has occurred.";
+	static final String MESSAGE_ERROR_EMPTY_INPUT = "No command was given.";
+	static final String MESSAGE_WRONG_INPUT_FORMAT = "Wrong input format given"; 
+	static final String MESSAGE_INSUFFICIENT_ARGUMENT = "Insufficient arguments given."; 
+	static final String MESSAGE_WRONG_DATE_FORMAT = "Wrong date format given."; 
+	static final String MESSAGE_WRONG_TIME_FORMAT = "Wrong time format given."; 
+	static final String MESSAGE_PAST_DATE = "Date given is in the past.";
+	
+	Logic logic;
+	UserInterface userInterface;
+	Storage storage;
+	
+	public static void main(String[] args){
+		ToDoManager toDoManager = new ToDoManager();
+		toDoManager.setup();
+		
+		String userInput;
+		UserInterface.showToUser(MESSAGE_WELCOME);
+		
+		while (true) {
+			
+			userInput = UserInterface.getNextCommand();
+			toDoManager.logic.actOnUserInput(userInput);
+			
+		}
+	}
+	
+	
+//TODO	
+	public void setup(){
+		 logic = Logic.getInstance();
+		 userInterface = new UserInterface();
+		 storage = new Storage();		
+		
+	     UserInterface.setup();
+//			Interpreter.setup();
+	     logic.setup(this);   //creation and filling out of linked lists
+//			storage.setup(); //initializing of reader / writer
+   }
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\ToDoManager.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\ToDoManagerGUI.java
+	 */
+
+	private static String prettyDate(String uglyDate) {
+		if (uglyDate == null || uglyDate.equals("999999")){
+			return "";
+		}
+		String myFormat;
+
+		int thisYear = Calendar.getInstance().get(Calendar.YEAR) % 100;
+		int givenYear = (Integer.parseInt(uglyDate)) % 100;
+
+		if (thisYear == givenYear) {
+			myFormat = "dd MMM EEE";
+		} else {
+			myFormat = "dd MMM EEE yyyy";
+		}
+
+		Date uglyDateObj;
+		try {
+			uglyDateObj = new SimpleDateFormat(Interpreter.DATE_FORMAT).parse(uglyDate);
+		} catch (ParseException e) {
+			return "ERROR";
+		}
+		String niceDate = new SimpleDateFormat(myFormat).format(uglyDateObj);
+		return niceDate;
+	}
+
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\ToDoManagerGUI.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\ValidationCheck.java
+	 */
+
+	public static void checkStartEndTime(String startStr, String endStr) {
+		int startInt, endInt;
+		if (startStr == null || endStr == null) {
+			return;
+		}
+		try {
+			startInt = Integer.parseInt(startStr);
+			endInt = Integer.parseInt(endStr);
+		} catch (Exception e) {
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_WRONG_TIME_FORMAT);
+		}
+		if (startInt > endInt){
+			throw new IllegalArgumentException("Start time is greater than end time");
+		}
+	}
+	
+	public static void checkStartEndDate(String startStr, String endStr) throws Exception {
+		
+		if (startStr == null || endStr == null) {
+			return;
+		}
+		
+		//ddMMyy
+		DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+		Date startDate = null;
+		Date endDate = null;
+		try {
+			startDate = dateFormat.parse(startStr);
+			endDate = dateFormat.parse(endStr);
+		} catch (Exception e) {
+			throw new IllegalArgumentException(ToDoManager.MESSAGE_WRONG_DATE_FORMAT);
+		}
+		
+		if(endDate.before(startDate)){
+			throw new IllegalArgumentException("Start date is greater than end date");
+		}
+	}
+	
+	public static void checkIllegalChars(String name) {
+		if (name != null && name.contains("|")) {
+			throw new IllegalArgumentException("\"|\" is an illegal character.");
+		}
+	}
+	
+}
+
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\ValidationCheck.java
+
+
+
+
+

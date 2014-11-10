@@ -1,0 +1,74 @@
+//@author: generated
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\ToDoManager.java
+	 */
+
+	public static class InvalidDateException extends Exception {
+
+		/**
+		 * No idea what this is for, but if i dont put this here eclipse complains. Anyone knows?
+		 */
+		private static final long serialVersionUID = -2426097127326357613L;
+
+		public InvalidDateException() { 
+			  super(); 
+		}
+		
+		public InvalidDateException(String message) { 
+			super(message); 
+		}
+		
+		public InvalidDateException(String message, Throwable cause) { 
+			super(message, cause); 
+		}
+		
+		public InvalidDateException(Throwable cause) { 
+			super(cause); 
+		}
+	}
+	
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\ToDoManager.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\ToDoManager.java
+	 */
+
+	public static class EmptyInputException extends Exception {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 8501096073450889230L;
+
+		public EmptyInputException() { 
+			  super(); 
+		}
+		
+		public EmptyInputException(String message) { 
+			super(message); 
+		}
+		
+		public EmptyInputException(String message, Throwable cause) { 
+			super(message, cause); 
+		}
+		
+		public EmptyInputException(Throwable cause) { 
+			super(cause); 
+		}
+	}
+		
+}
+
+	// End of segment: C:\Users\Khye An\Desktop\CS2103 Software Engineering\todo_manager\todo_manager\src\ToDoManager.java
+
+
+
+
+
