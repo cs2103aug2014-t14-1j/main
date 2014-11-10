@@ -1,5 +1,5 @@
 package todo_manager;
-
+//@author A0098924M
 /**
  * Executable object that encapsulates everything that Logic needs to execute the command
  * Properties cannot be changed after instantiation
@@ -7,7 +7,6 @@ package todo_manager;
  * @param String info 				String containing task description or other input that doesnt fit into DateTime or CommandType
  * @param DateTime dateTime 		Date object used to capture date and time of task
  * @param DateTime dateTimeEnd 		Date object representing date at which the task ends
- * @author Zeng Qingtao
  *
  */
 

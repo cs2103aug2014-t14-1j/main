@@ -3,12 +3,12 @@ package todo_manager;
 /**
  * UserInterface will show welcome message. 
  * Waiting user to key in, (getNextCommand) return the user input as a string to be process 
- * @author Zeng Qingtao
+ * 
  *
  */
 
 import java.util.Scanner;
-//@author A0098735M-unused
+//@author A0098924M-unused
 //We switched to a GUI
 public class UserInterface {
 
