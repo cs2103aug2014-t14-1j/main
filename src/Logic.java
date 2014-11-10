@@ -277,15 +277,16 @@ public class Logic {
 			
 			if(e.getDoneness()==false){
 				
-				if(e.getStartingDate().equals(day) || e.getEndingDate().equals(day)) 
+				if (e.getStartingDate() != null && e.getStartingDate().equals(day)) {
 					return false;
-				
+				} else if (e.getEndingDate() != null && e.getEndingDate().equals(day)){
+					return false;
+				}
 				//if(((e.getStartingDate().compareToIgnoreCase(day) == -1) && (e.getEndingDate().compareToIgnoreCase(day) == 1))){ //the day is with a period
 					
 				//}
 			}
 		}
-		
 		
 		return true;
 	}
