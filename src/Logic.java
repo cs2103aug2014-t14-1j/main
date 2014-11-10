@@ -706,6 +706,7 @@ public class Logic {
 		}
 		if (amountOfZero >= 4) {
 			return true;
+			
 		} else {
 			return false;
 		}

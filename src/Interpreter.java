@@ -738,10 +738,13 @@ public class Interpreter {
 			// count for the 7 days after today
 			Date nextWeek = new Date(today.getTime() + 7 * (1000 * 60 * 60 * 24));
 			return dateFormat.format(nextWeek);
+		
 		} else if (status.equals("this") && period.equals("week")) {
 			return dateFormat.format(today);
+		
 		} else if (status.equals("this") && period.equals("month")) {
 			return monthValue(Integer.toString(thisMonth));
+		
 		} else {
 			int nextNextMonth = thisMonth + 1;
 			return monthValue(Integer.toString(nextNextMonth));
@@ -756,13 +759,15 @@ public class Interpreter {
 			// count for the 14 days after today
 			Date nextNextWeek = new Date(today.getTime() + 14 * (1000 * 60 * 60 * 24));
 			return dateFormat.format(nextNextWeek);
-		}
-		else if (status.equals("this") && period.equals("week")) {
+		
+		} else if (status.equals("this") && period.equals("week")) {
 			// count for the 7 days after today
 			Date nextWeek = new Date(today.getTime() + 7 * (1000 * 60 * 60 * 24));
 			return dateFormat.format(nextWeek);
+		
 		} else if (status.equals("this") && period.equals("month")) {
 			return monthValue(Integer.toString(thisMonth));
+		
 		} else {
 			int nextMonth = thisMonth + 1;
 			if (nextMonth > 12) {
