@@ -421,6 +421,10 @@ public class ToDoManagerGUI {
 					feedbackBox.setText(((Result) displayObj).getFeedback());
 					displayLists(((Result) displayObj).getDisplayList());
 					break;
+				case CMD_SEARCHFREEDAY:
+					feedbackBox.setText("Next Free Day @" + prettyDate(((Result) displayObj).getFeedback()));
+					displayLists(((Result) displayObj).getDisplayList());
+					break;
 				default:
 					break;
 			}

@@ -229,9 +229,13 @@ public class Logic {
 				return entryList;
 				
 			case CMD_SEARCHFREEDAY:
+				
 				String day = execute_searchFreeday();
 				executeDisplay(entryList);
-				return day;
+				result.setCommandType(CommandType.CMD_SEARCHFREEDAY);
+				result.setDisplayList(entryList);
+				result.setFeedback(day);
+				return result;
 		
 				
 			case CMD_EXIT:
