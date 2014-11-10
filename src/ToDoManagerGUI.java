@@ -463,7 +463,7 @@ public class ToDoManagerGUI {
 						entryString += "\n";
 						entryString += "     from " + prettyTime(e.getStartingTime());
 					}
-					if (e.getEndingTime() != null && !e.getEndingTime().equals("0")) {
+					if (e.getEndingTime() != null && !e.getEndingTime().equals("0000")) {
 						if (first) {
 							entryString += "\n";
 						}
@@ -479,7 +479,7 @@ public class ToDoManagerGUI {
 				}
 				if (e.getEndingDate() != null && !e.getEndingDate().equals("999999")){
 					entryString += "\n" + "     end : " + prettyDate(e.getEndingDate());
-					if (e.getEndingTime() != null && !e.getEndingTime().equals("0")) {
+					if (e.getEndingTime() != null && !e.getEndingTime().equals("0000")) {
 						entryString += "     " + prettyTime(e.getEndingTime());
 					}
 				}
@@ -497,7 +497,7 @@ public class ToDoManagerGUI {
 	}
 	
 	private static String prettyTime(String uglyTime) {
-		if (uglyTime == null || uglyTime.equals("0")){
+		if (uglyTime == null || uglyTime.equals("0000")){
 			return "";
 		}
 		uglyTime = uglyTime.trim();

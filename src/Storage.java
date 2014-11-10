@@ -25,6 +25,7 @@ public class Storage {
 		{
 			
 			String readLine;
+			String record;
 			int pos;
 			int start[] = {0,0,0,0,0,0};
 			int end[] = {0,0,0,0,0,0};
@@ -59,11 +60,20 @@ public class Storage {
 				//set the value of each record (will change the magic numbers later)
 				//0: Name				1: Starting Date		2: Ending Date		
 				//3: Starting Time		4: Ending Time			5: Doneness
-				insert.setName(recordContent[0]);
-				insert.setStartingDate(recordContent[1]);
-				insert.setEndingDate(recordContent[2]);
-				insert.setStartingTime(recordContent[3]);
-				insert.setEndingTime(recordContent[4]);
+				record = setNullIfEmpty(recordContent[0]);
+				insert.setName(record);
+				
+				record = setNullIfEmpty(recordContent[1]);
+				insert.setStartingDate(record);
+				
+				record = setNullIfEmpty(recordContent[2]);
+				insert.setEndingDate(record);
+				
+				record = setNullIfEmpty(recordContent[3]);
+				insert.setStartingTime(record);
+				
+				record = setNullIfEmpty(recordContent[4]);
+				insert.setEndingTime(record);
 				
 				
 				//set the doneness of each record
@@ -155,5 +165,12 @@ public class Storage {
 			System.out.println("Cannot output the file");
 			ex.printStackTrace();
 		} 
+	}
+
+	private String setNullIfEmpty(String in) {
+		if ("".equals(in.trim())){
+			return null;
+		}
+		return in;
 	}
 }

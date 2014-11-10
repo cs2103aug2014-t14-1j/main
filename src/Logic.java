@@ -117,14 +117,15 @@ public class Logic {
 	public Object actOnUserInput(String userInput) {
 		
 		Executable exe;
-		Object displayObj;
+		Object displayObj = null;
 		try {
 			
 			exe = Interpreter.parseCommand(userInput);
 			displayObj = execute(exe);
 			
 		} catch (Exception e) {
-			return printError(e);
+			e.printStackTrace();
+			//return printError(e);
 		}
 		
 		return displayObj;
@@ -507,10 +508,13 @@ public class Logic {
 			searchContent = task.getStartingDate();
 			searchContent1 = task.getEndingDate();
 			int month = getMonth(searchContent);
-			
+		
 			for (Entry entry: entryList) {
 				startDate = entry.getStartingDate();
 				endDate = entry.getEndingDate();
+				if (startDate == null || endDate == null){
+					continue;
+				}
 				// select the record with matched month name or within startDate and endDate
 				if ((isMonthValue(searchContent) && isEqualMonth(startDate, endDate, month))
 						|| isBetween(searchContent, searchContent1, startDate, endDate)) {
@@ -519,12 +523,11 @@ public class Logic {
 					continue;
 				}
 			}
-			
 		} else if (task.getStartingDate() != null) {
 			searchContent = task.getStartingDate();
 			for (Entry entry: entryList) {
 				startDate = entry.getStartingDate();
-				if (isGreater(startDate, searchContent)) {
+				if (startDate != null && isGreater(startDate, searchContent)) {
 					searchResult.add(entry);
 				}
 			}
@@ -535,6 +538,9 @@ public class Logic {
 			
 			for (Entry entry: entryList) {
 				endDate = entry.getEndingDate();
+				if (endDate == null) {
+					continue;
+				}
 				// insert the record with matched month name or within startDate and endDate
 				if ((isMonthValue(searchContent) && (getMonth(endDate)== month)) || 
 					!isMonthValue(searchContent) && isGreater(endDate, searchContent)) {
