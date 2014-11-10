@@ -72,9 +72,14 @@ public class Interpreter {
 	//change this to true to view contents of exe returned, for debugging
 	private static final boolean DO_DEBUG = false;
 	
+	private static final String EMPTY_STRING = "";
+	
+	//TODO : make one of this in ToDoManager and have all classes call it
 	static final String DATE_FORMAT = "ddMMyy"; 
 	
-	static DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);	
+	static DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+	private static final Date today = new Date();
+	
 	
 	public Interpreter() {
 	}
@@ -83,7 +88,7 @@ public class Interpreter {
 	public static Executable parseCommand(String s) throws Exception{
 		
 		s = s.trim();
-		if (s.equals("")) {
+		if (s.equals(EMPTY_STRING)){
 			throw new EmptyInputException();
 		}
 		
@@ -172,7 +177,7 @@ public class Interpreter {
 		String word;
 		boolean addBasic = true;
 		
-		if (doesNotHaveExtraText(words)) {
+		if (doesNotHaveExtraText(words)){
 			throw new EmptyInputException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
 		}
 		
@@ -213,11 +218,11 @@ public class Interpreter {
 		exe.setInfo(recombine(words, 1, i));
  
 		//date
-		if (words.length == i + 1) { // nothing after keyword
+		if (words.length == i + 1){ // nothing after keyword
 			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
-		} else if (! isDate(words[i+1] ) ) { // wrong date format
+		} else if (! isDate(words[i+1] ) ){ // wrong date format
 			throw new IllegalArgumentException(ToDoManager.MESSAGE_WRONG_DATE_FORMAT);
-		} else if (! isGreaterToday(words[i+1])) {
+		} else if (! isGreaterToday(words[i+1])){
 			throw new IllegalArgumentException(ToDoManager.MESSAGE_PAST_DATE);
 		}
 		
@@ -241,11 +246,11 @@ public class Interpreter {
 		exe.setInfo(recombine(words, 1, i));
 		
 		//date
-		if (words.length <= i + 1) { // nothing after keyword
+		if (words.length <= i + 1){ // nothing after keyword
 			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
-		} else if (! isDate(words[i+1]) ) { // wrong date format
+		} else if (! isDate(words[i+1]) ){ // wrong date format
 			throw new IllegalArgumentException(ToDoManager.MESSAGE_WRONG_DATE_FORMAT);
-		} else if (! isGreaterToday(words[i+1])) {
+		} else if (! isGreaterToday(words[i+1])){
 			throw new IllegalArgumentException(ToDoManager.MESSAGE_PAST_DATE);
 		}
 		
@@ -254,7 +259,7 @@ public class Interpreter {
 		exe.setEndingDate(date);
 		
 		//time
-		if (words.length <= i+2) {
+		if (words.length <= i+2){
 			// return if no time argument given
 			return;
 		}
@@ -312,7 +317,7 @@ public class Interpreter {
 			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
 		} else if (! words[pointer].equals("/by") ) {
 			time = words[pointer];
-			if ( isTime(time) ) { // right date format
+			if ( isTime(time) ){ // right date format
 				exe.setStartingTime(time);
 				pointer++;
 			} else { // wrong fomat of time given
@@ -347,7 +352,7 @@ public class Interpreter {
 			return;
 		} else {
 			time = words[pointer];
-			if ( isTime(time) ) { // right date format
+			if ( isTime(time) ){ // right date format
 				exe.setEndingTime(time);
 				if (exe.getEndingDate().equals(exe.getStartingDate())) {
 					checkStartEndTime(exe.getStartingTime(), exe.getEndingTime());
@@ -367,7 +372,7 @@ public class Interpreter {
 		}
 		
 		try {
-			for (int i = 1; i < words.length; i++) {
+			for(int i = 1; i < words.length; i++){
 				index.add(Integer.parseInt( words[i] ));
 			}
 		} catch (Exception e) {
@@ -388,7 +393,7 @@ public class Interpreter {
 		Executable exe = new Executable(CommandType.CMD_EDIT);
 		ArrayList<Integer> index = new ArrayList<Integer>();
 		
-		if (words.length <= 2) { // not enough info to edit
+		if (words.length <= 2){ // not enough info to edit
 			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
 		}
 		
@@ -551,18 +556,18 @@ public class Interpreter {
 			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
 		
 		//search Today
-		} else if (words.length == 2 && words[1].equals("today")) {  
-			exe.setStartingDate(dateFormat.format(getToday()));
-			exe.setEndingDate(dateFormat.format(getToday()));
+		} else if (words.length == 2 && words[1].equals("today")){  
+			exe.setStartingDate(dateFormat.format(today));
+			exe.setEndingDate(dateFormat.format(today));
 		
 			//search Tomorrow
-		} else if (words.length == 2 && (words[1].equals("tomorrow") || words[1].equals("tmr"))) {   
-			Date tommorow = new Date(getToday().getTime() + (1000 * 60 * 60 * 24));
+		} else if (words.length == 2 && (words[1].equals("tomorrow") || words[1].equals("tmr"))){   
+			Date tommorow = new Date(today.getTime() + (1000 * 60 * 60 * 24));
 			exe.setStartingDate(dateFormat.format(tommorow));
 			exe.setEndingDate(dateFormat.format(tommorow));
 			
 		} else if (words.length == 3 && (words[1].equals("this") || words[1].equals("next")) 
-				&& (words[2].equals("week") || words[2].equals("month"))) { 
+				&& (words[2].equals("week") || words[2].equals("month"))){ 
 			exe.setStartingDate(getStartDate(words[1], words[2]));
 			exe.setEndingDate(getEndDate(words[1], words[2]));
 			
@@ -572,13 +577,13 @@ public class Interpreter {
 			exe.setEndingDate(words[1]);
 			
 			//search by month name
-		} else if (monthValue(words[1]) != null) {
+		} else if (monthValue(words[1]) != null){
 			exe.setEndingDate(monthValue(words[1]));
 			
 			//search by starting date
 		} else if (words[1].equals("/start") && words.length == 3) { 
 			//search for entries after a particular date
-			if (words.length < 3 || !isDate(words[2])) { 
+			if (words.length < 3 || !isDate(words[2])){ 
 				// no date or invalid date
 				throw new IllegalArgumentException();
 			}
@@ -586,7 +591,7 @@ public class Interpreter {
 			
 			//search by starting and ending date
 		} else if (words[1].equals("/start") && words[3].equals("/by")) { //search for entries after a particular date
-			if (words.length != 5 || !isDate(words[2]) || !isDate(words[4])) { 
+			if (words.length != 5 || !isDate(words[2]) || !isDate(words[4])){ 
 				// no date or invalid date
 				throw new IllegalArgumentException();
 			}
@@ -595,7 +600,7 @@ public class Interpreter {
 			
 			//search by ending date
 		} else if (words[1].equals("/by")) { //search for entries before a particular date
-			if (words.length < 3 || !isDate(words[2])) { 
+			if (words.length < 3 || !isDate(words[2])){ 
 				// no date or invalid date
 				throw new IllegalArgumentException();
 			}
@@ -618,7 +623,7 @@ public class Interpreter {
 	}
 
 	//@author A0098735M	
-	private static Executable processDisplay(String[] words) {
+	private static Executable processDisplay(String[] words){
 		Executable exe = new Executable(CommandType.CMD_DISPLAY);
 		return exe;
 	}
@@ -626,7 +631,7 @@ public class Interpreter {
 	//@author A0098735M
 	private static Executable processMark(String[] words) throws IllegalArgumentException {
 		Executable exe = new Executable(CommandType.CMD_DONE);
-		if (doesNotHaveExtraText(words)) { // no identifiers
+		if (doesNotHaveExtraText(words)){ // no identifiers
 			throw new IllegalArgumentException(ToDoManager.MESSAGE_INSUFFICIENT_ARGUMENT);
 		} else {  //has more words
 			ArrayList<Integer> index = new ArrayList<Integer>();
@@ -634,25 +639,28 @@ public class Interpreter {
 			//String info = "";
 			for (int i = 1; i < words.length; i++) {
 				word = words[i];
-				if (isNumber(word)) { // its a display index
+				if (isNumber(word)){ // its a display index
 					index.add(Integer.parseInt(word));
 				} else if (word.equals("undone") ) {
 					exe.setCommand(CommandType.CMD_UNDONE);
-				} else if (! word.equals("done")) { 
-					//anticipate users including the word done even though it is not required
+				} else { 
+					//info += word + " ";
 					throw new IllegalArgumentException("Number required for mark.");
 				}
 			}
 			
-			if (! index.isEmpty()) {
+			if (! index.isEmpty()){
 				exe.setDisplayIndex(index);
 			}
+//			if (info != "") {
+//				exe.setInfo(info);
+//			}
 		}
 		return exe;
 	}
 
 	//@author A0098735M	
-	private static boolean doesNotHaveExtraText(String[] words) {
+	private static boolean doesNotHaveExtraText(String[] words){
 		return (words.length <= 1);
 	}
 	
@@ -665,7 +673,7 @@ public class Interpreter {
 	 * @return String sentence
 	 */
 	//@author A0098735M
-	private static String recombine(String[] words, int startIndex, int endIndex) {
+	private static String recombine(String[] words, int startIndex, int endIndex){
 		String line = "";
 		for (int i = startIndex; i < endIndex; i++) {
 			line += words[i]+" ";
@@ -683,10 +691,10 @@ public class Interpreter {
 		return ValidationCheck.isValidTime(time);
 	}
 	
-	private static boolean isNumber(String s) {
+	private static boolean isNumber(String s){
 		try{
 			Integer.parseInt(s);
-		} catch (NumberFormatException e) {
+		} catch (NumberFormatException e){
 			return false;
 		}
 		return true;
@@ -699,7 +707,7 @@ public class Interpreter {
 	
 	//helper method for debugging
 	//@author A0098735M
-	private static void printExe(Executable exe) {
+	private static void printExe(Executable exe){
 		String out = "---Executable Begin---\n";
 		out += "Command : "      + exe.getCommand() + "\n";
 		out += "Name : "         + exe.getInfo() + "\n" ;
@@ -715,57 +723,60 @@ public class Interpreter {
 	}
 	
 	//@author A0128435E
-	private static int getMonth(String date) {
+	private static int getMonth(String date){
 		int dateInt = Integer.parseInt(date);
 		int month = (dateInt/100) % 100;
 		return month;
 	}
 	
 	//@author A0128435E
-	private static String getStartDate(String status, String period) {
-		Date today = getToday();
+	private static String getStartDate(String status, String period){
 		int thisMonth = getMonth(dateFormat.format(today));
-		if	((status.equals("next") && period.equals("week"))) {
+		if	((status.equals("next") && period.equals("week"))){
 			// count for the 7 days after today
 			Date nextWeek = new Date(today.getTime() + 7 * (1000 * 60 * 60 * 24));
 			return dateFormat.format(nextWeek);
-		} else if (status.equals("this") && period.equals("week")) {
+		}
+		else if(status.equals("this") && period.equals("week")){
 			return dateFormat.format(today);
-		} else if (status.equals("this") && period.equals("month")) {
+		}
+		else if(status.equals("this") && period.equals("month")){
 			return monthValue(Integer.toString(thisMonth));
-		} else {
+		}
+		else{
 			int nextNextMonth = thisMonth + 1;
 			return monthValue(Integer.toString(nextNextMonth));
 		}
 	}
 	
 	//@author A0128435E
-	private static String getEndDate(String status, String period) {
-		Date today = getToday();
+	private static String getEndDate(String status, String period){
 		int thisMonth = getMonth(dateFormat.format(today));
-		if	((status.equals("next") && period.equals("week"))) {
+		
+		if	((status.equals("next") && period.equals("week"))){
 			// count for the 14 days after today
 			Date nextNextWeek = new Date(today.getTime() + 14 * (1000 * 60 * 60 * 24));
 			return dateFormat.format(nextNextWeek);
 		}
-		else if (status.equals("this") && period.equals("week")) {
+		else if(status.equals("this") && period.equals("week")){
 			// count for the 7 days after today
 			Date nextWeek = new Date(today.getTime() + 7 * (1000 * 60 * 60 * 24));
 			return dateFormat.format(nextWeek);
-		} else if (status.equals("this") && period.equals("month")) {
+		}
+		else if(status.equals("this") && period.equals("month")){
 			return monthValue(Integer.toString(thisMonth));
-		} else {
+		}
+		else{
 			int nextMonth = thisMonth + 1;
-			if (nextMonth > 12) {
+			if(nextMonth > 12)
 				nextMonth -= 12;
-			}	
 			return monthValue(Integer.toString(nextMonth));
 		}
 	}
 	
 	//@author A0128435E
 	//return null value of if the input is not a month
-	private static String monthValue(String word) {
+	private static String monthValue(String word){
 				
 		String keyword = word.toLowerCase();
 		
@@ -823,12 +834,7 @@ public class Interpreter {
 		}
 	}
 	
-	//@author A0098735
-	private static void checkStartEndTime(String startStr, String endStr) {
+	private static void checkStartEndTime(String startStr, String endStr){
 		ValidationCheck.checkStartEndTime(startStr, endStr);
-	}
-	
-	private static Date getToday() {
-		return new Date();
 	}
 }

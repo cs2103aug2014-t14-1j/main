@@ -530,7 +530,7 @@ public class ToDoManagerGUI {
 
 		Date uglyDateObj;
 		try {
-			uglyDateObj = new SimpleDateFormat(Interpreter.DATE_FORMAT).parse(uglyDate);
+			uglyDateObj = new SimpleDateFormat("ddMMyy").parse(uglyDate);
 		} catch (ParseException e) {
 			return "ERROR";
 		}
