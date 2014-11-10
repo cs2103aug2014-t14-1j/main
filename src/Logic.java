@@ -26,7 +26,7 @@ public class Logic {
 			+ "  /delete     /clear\n"
 			+ "  /edit         /undo\n"
 			+ "  /mark       /sort\n"
-			+ "  /exit\n"
+			+ "  /freeday     /exit\n"
 			+ "   date        time\n\n" 
 			+ "  Press F3 for the list of HOTKEYS.";
 	
@@ -70,10 +70,13 @@ public class Logic {
 	private static final String HELP_EXIT = " The /exit command shuts down ToDoManager.\n";
 	private static final String HELP_DATE = " Format for date is ddMMyy, eg. 210315 for 21st March 2015.\n";
 	private static final String HELP_TIME = " Format for time is hhmm, eg. 1435 for 2.35pm.\n";
+	private static final String HELP_FREEDAY = "Format for finding the next free day is /freeday";
 
 	private static final String NoEndingDate = "999999";
 
 	private static final String NoEndingTime = "0000";
+
+
 
 	Storage storage;
 	
@@ -339,6 +342,9 @@ public class Logic {
 			case "time" :
 				UserInterface.showToUser(HELP_TIME);
 				return HELP_TIME;
+			case "/freeday":
+				UserInterface.showToUser(HELP_FREEDAY);
+				return HELP_FREEDAY;
 			default : 
 				UserInterface.showToUser(HELP_INVALID_KEYWORD);
 				UserInterface.showToUser(HELP_NO_KEYWORD);
