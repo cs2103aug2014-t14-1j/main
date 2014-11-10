@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
@@ -70,6 +71,10 @@ public class Logic {
 	private static final String HELP_DATE = " Format for date is ddMMyy, eg. 210315 for 21st March 2015.\n";
 	private static final String HELP_TIME = " Format for time is hhmm, eg. 1435 for 2.35pm.\n";
 
+	private static final String NoEndingDate = "999999";
+
+	private static final String NoEndingTime = "0000";
+
 	Storage storage;
 	
 	private static LinkedList<LinkedList<Entry>> preList = new LinkedList<LinkedList<Entry>>(); // preState
@@ -133,7 +138,7 @@ public class Logic {
 		switch (command) {
 		
 			case CMD_ADD: 
-				saveEntryListToPreList();
+				saveEntryListToPreList(); //save the pre-state of List
 				executeAdd(task);
 				executeDisplay(entryList);
 				result.setCommandType(CommandType.CMD_ADD);
@@ -223,6 +228,12 @@ public class Logic {
 				executeDisplay(entryList);
 				return entryList;
 				
+			case CMD_SEARCHFREEDAY:
+				String day = execute_searchFreeday();
+				executeDisplay(entryList);
+				return day;
+		
+				
 			case CMD_EXIT:
 				preList.clear();
 				System.exit(0);
@@ -232,16 +243,53 @@ public class Logic {
 		}
 			
 	}
+	
+	//@author A0098924M
+	private String execute_searchFreeday() throws ParseException {
+		//search the next free day
+		boolean freedayfound = false;
+		
+		DateFormat dateFormat = new SimpleDateFormat("ddMMyy");
+		Calendar cal = Calendar.getInstance();
+		String day = dateFormat.format(cal.getTime()); //2014/08/06 16:00:22
+		
+		do{
+			freedayfound = matchDay(day);
+			if(freedayfound) break;
+			cal.add(Calendar.DATE, 1);  // number of days to add
+			day = dateFormat.format(cal.getTime());  // dt is now the new date
+		}while(freedayfound != true);
+		
+		return day;
+	}
+	
+	private boolean matchDay(String day) {
+		
+		for(Entry e : entryList){
+			
+			if(e.getDoneness()==false){
+				
+				if(e.getStartingDate().equals(day) || e.getEndingDate().equals(day)) 
+					return false;
+				
+				//if(((e.getStartingDate().compareToIgnoreCase(day) == -1) && (e.getEndingDate().compareToIgnoreCase(day) == 1))){ //the day is with a period
+					
+				//}
+			}
+		}
+		
+		
+		return true;
+	}
 	//@author A0098924M
 	private void executeUndone(Executable task) {
-	ArrayList<Integer> index = task.getDisplayIndex();
+	
+		ArrayList<Integer> index = task.getDisplayIndex(); //Get the index to be mark Undone
 		
 		for (int i = 0 ; i < index.size(); i++) {
 			entryList.get(index.get(i)-1).setDoneness(false);
 		}
-		writeToStorage();
-		
-		
+		writeToStorage();	
 	}
 	
 	//@author A0098735M
@@ -309,7 +357,7 @@ public class Logic {
 
 	//@author A0098924M
 	private void executeSort() {
-		// To sort the task by Date line
+		// To sort the task by Ending Date and Time
 		Collections.sort(entryList);
 		writeToStorage();
 	}
@@ -330,7 +378,7 @@ public class Logic {
 		if (task.getEndingDate()!= null) {
 			entry.setEndingDate(task.getEndingDate());
 		} else {
-			entry.setEndingDate("999999");
+			entry.setEndingDate(NoEndingDate);
 		}
 		
 		if (task.getStartingTime()!= null) {
@@ -338,7 +386,7 @@ public class Logic {
 		} if (task.getEndingTime()!= null) {
 			entry.setEndingTime(task.getEndingTime());
 		} else {
-			entry.setEndingTime("0");
+			entry.setEndingTime(NoEndingTime);
 		}
 		
 		ValidationCheck.checkStartEndDate(entry.getStartingDate(), 
@@ -523,7 +571,7 @@ public class Logic {
 				entryString += " start: " + e.getStartingDate();
 			}
 			
-			if (e.getEndingDate() != null && !e.getEndingDate().equals("") && !e.getEndingDate().equals("999999")) {
+			if (e.getEndingDate() != null && !e.getEndingDate().equals("") && !e.getEndingDate().equals(NoEndingDate)) {
 				entryString += " end: " + e.getEndingDate();
 			}
 			
@@ -539,7 +587,7 @@ public class Logic {
 	}
 	//@author A0098924M
 	private void executeDone(Executable task) {
-		//Done something
+		//Mark Done something
 		ArrayList<Integer> index = task.getDisplayIndex();
 		
 		for (int i = 0 ; i < index.size(); i++) {

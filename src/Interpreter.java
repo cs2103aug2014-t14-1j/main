@@ -134,6 +134,10 @@ public class Interpreter {
 			case "/help" :
 				exe = processHelp(words);
 				break;
+			
+			case "/freeday" :
+				exe = new Executable(CommandType.CMD_SEARCHFREEDAY);
+				break;
 				
 			default : 
 				throw new IllegalArgumentException("Unrecognized command given.");
