@@ -272,6 +272,63 @@ public class TestDriver {
 		entry = displayList.get(2);
 		assertEquals("Mark should not change other entries.", false, entry.getDoneness());
 	}
+	
+	@Test
+	public void testUndo(){
+		//add some entries first
+		logic.actOnUserInput("/add test case 9.1 /by 121214 1234");
+		logic.actOnUserInput("/add test case 9.2 /on 130115 1414");
+		logic.actOnUserInput("/add test case 9.3 /by 140315 1759");
+		
+		//undo add
+		resultObj = logic.actOnUserInput("/undo");
+		result = castToResult(resultObj);
+		displayList = result.getDisplayList();
+		assertEquals("Undo add should remove the added entry", 2, displayList.size());
+		assertEquals("Undo add should not change unrelated entries.", "test case 9.1", displayList.get(0).getName());
+		assertEquals("Undo add should not change unrelated entries.", "test case 9.2", displayList.get(1).getName());
+		
+		//add more entries first
+		logic.actOnUserInput("/add test case 9.3 /by 121214 1234");
+		logic.actOnUserInput("/add test case 9.4 /on 130115 1414");
+		logic.actOnUserInput("/add test case 9.5 /by 140315 1759");
+		
+		//delete some entries
+		logic.actOnUserInput("/delete 2 5");
+		
+		//undo delete
+		resultObj = logic.actOnUserInput("/undo");
+		result = castToResult(resultObj);
+		displayList = result.getDisplayList();
+		assertEquals("Undo delete should restore the deleted entry.", 5, displayList.size());
+		
+		//clear all saved entries
+		logic.actOnUserInput("/clear");
+		
+		//undo clear
+		resultObj = logic.actOnUserInput("/undo");
+		result = castToResult(resultObj);
+		displayList = result.getDisplayList();
+		assertEquals("Undo clear should restore the deleted entries.", 5, displayList.size());
+		
+		logic.actOnUserInput("/mark 1");
+		logic.actOnUserInput("/mark 3");
+		
+		//undo mark
+		resultObj = logic.actOnUserInput("/undo");
+		result = castToResult(resultObj);
+		displayList = result.getDisplayList();
+		assertEquals("Undo mark should restore the previous status.", true, displayList.get(0).getDoneness());
+		assertEquals("Undo mark should not change unrelated doneness.", false, displayList.get(2).getDoneness());
+		
+		//multiple undo
+		resultObj = logic.actOnUserInput("/undo");
+		result = castToResult(resultObj);
+		displayList = result.getDisplayList();
+		assertEquals("Undo mark should restore the previous status.", false, displayList.get(0).getDoneness());
+		assertEquals("Undo mark should not change unrelated doneness.", false, displayList.get(2).getDoneness());
+		
+	}
 
 	private static Result castToResult(Object input){
 		assertTrue("Returned object should be a Result", input instanceof Result);
