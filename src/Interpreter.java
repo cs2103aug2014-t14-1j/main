@@ -70,7 +70,7 @@ import todo_manager.ToDoManager.EmptyInputException;
 public class Interpreter {
 	
 	//change this to true to view contents of exe returned, for debugging
-	private static final boolean DEBUG = false;
+	private static final boolean DO_DEBUG = false;
 	
 	private static final String EMPTY_STRING = "";
 	
@@ -134,12 +134,13 @@ public class Interpreter {
 				exe = new Executable(CommandType.CMD_SORT);
 				break;
 				
-			case "/exit":
+			case "/exit" :
 				exe = new Executable(CommandType.CMD_EXIT);
 				break;
 			
-			case "help": // intentional fallthrough to catch both cases
-			case "/help":
+			case "help" : 
+				// Fallthrough
+			case "/help" :
 				exe = processHelp(words);
 				break;
 				
@@ -147,7 +148,7 @@ public class Interpreter {
 				throw new IllegalArgumentException("Unrecognized command given.");
 		}
 		
-		if (DEBUG) {
+		if (DO_DEBUG) {
 			// for debugging, to view the contents of executable
 			printExe(exe); 
 		}

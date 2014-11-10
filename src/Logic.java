@@ -350,6 +350,7 @@ public class Logic {
 									      entry.getEndingDate());
 		ValidationCheck.checkStartEndTime(entry.getStartingTime(), 
 				                 	 	  entry.getEndingTime());
+		ValidationCheck.checkIllegalChars(entry.getName());
 		
 		entryList.add(entry);
 		writeToStorage();
@@ -393,7 +394,7 @@ public class Logic {
 	}
 	
 	//@author A0098735M
-	private void executeEdit(Executable task) throws Exception{
+	private void executeEdit(Executable task) throws Exception {
 		
 		int displayIndex = task.getDisplayIndex().get(0) - 1;
 		Entry entryToEdit = displayList.get(displayIndex);
@@ -422,6 +423,7 @@ public class Logic {
 				                          entryToEdit.getEndingDate());
 		ValidationCheck.checkStartEndTime(entryToEdit.getStartingTime(), 
                 entryToEdit.getEndingTime());
+		ValidationCheck.checkIllegalChars(entryToEdit.getName());
 
 		writeToStorage();	
 	}
