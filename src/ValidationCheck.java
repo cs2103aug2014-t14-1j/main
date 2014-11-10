@@ -9,7 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class ValidationCheck {
-	private static final String DATE_FORMAT = null;
+	private static final String DATE_FORMAT = Interpreter.DATE_FORMAT;
 
 
 	public static boolean isValidDate(String input) {
@@ -51,7 +51,6 @@ public class ValidationCheck {
 	
 	private static boolean validateDate(String date) 
 	{
-		String DATE_FORMAT = "ddMMyy";
         try {
             DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
             dateFormat.setLenient(false);
@@ -91,7 +90,7 @@ public class ValidationCheck {
 
 
 	public static boolean isGreater(String date) throws ParseException{
-		DateFormat dateFormat = new SimpleDateFormat("ddMMyy");
+		DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
 		Date newDate = dateFormat.parse(date);
 		Date today = new Date();
 		// minus the date by 1 day
@@ -129,7 +128,7 @@ public class ValidationCheck {
 		}
 		
 		//ddMMyy
-		DateFormat dateFormat = new SimpleDateFormat(Interpreter.DATE_FORMAT);
+		DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
 		Date startDate = null;
 		Date endDate = null;
 		try {

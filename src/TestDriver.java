@@ -331,7 +331,7 @@ public class TestDriver {
 	}
 
 	private static Result castToResult(Object input){
-		assertTrue("Returned object should be a Result", input instanceof Result);
+		assertTrue("Returned object should be a Result, is instead : " + input.getClass(), input instanceof Result);
 		Result output = (Result) resultObj;
 		return output;
 	}

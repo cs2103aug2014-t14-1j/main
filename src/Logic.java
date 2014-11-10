@@ -82,13 +82,14 @@ public class Logic {
 	
 	private static Logging logObj = Logging.getInstance();
 	private Result result;
+	private static String DATE_FORMAT = Interpreter.DATE_FORMAT;
 
 	//@author A0098924M
-	private Logic(){
+	private Logic() {
 	}
 	//@author A0098924M
-	public static Logic getInstance(){
-		if(instance == null){
+	public static Logic getInstance() {
+		if (instance == null) {
 			instance = new Logic();
 		}
 		return instance;
@@ -98,18 +99,18 @@ public class Logic {
 		return entryList;
 	}
 
-	void setupGUI(ToDoManagerGUI toDoManagerGUI){
+	void setupGUI(ToDoManagerGUI toDoManagerGUI) {
 		storage = toDoManagerGUI.storage;
 		entryList = readFromStorage();
 	}
 	
-	void setup(ToDoManager toDoManager){
+	void setup(ToDoManager toDoManager) {
 		storage = toDoManager.storage;
 		entryList = readFromStorage();
 	}
 	//@author A0098924M
 	//UI module will call this method 
-	public Object actOnUserInput(String userInput){
+	public Object actOnUserInput(String userInput) {
 		
 		Executable exe;
 		Object displayObj;
@@ -213,7 +214,7 @@ public class Logic {
 			case CMD_UNDO: 
 				result.setCommandType(CommandType.CMD_UNDO);
 				Object outcome =  executeUndo();
-				if (outcome instanceof String){
+				if (outcome instanceof String) {
 					result.setFeedback((String) outcome);
 				}
 				result.setDisplayList(entryList);
@@ -237,7 +238,7 @@ public class Logic {
 	private void executeUndone(Executable task) {
 	ArrayList<Integer> index = task.getDisplayIndex();
 		
-		for(int i = 0 ; i < index.size(); i++){
+		for (int i = 0 ; i < index.size(); i++) {
 			entryList.get(index.get(i)-1).setDoneness(false);
 		}
 		writeToStorage();
@@ -325,31 +326,36 @@ public class Logic {
 		
 		Entry entry = new Entry();
 		
-		if(task.getInfo()!=null){
+		if (task.getInfo()!=null) {
 			entry.setName(task.getInfo());
 		}
-		if(task.getStartingDate()!=null){
+		if (task.getStartingDate()!=null) {
 			entry.setStartingDate(task.getStartingDate());
 		}
-		if(task.getEndingDate()!= null){
+		if (task.getEndingDate()!= null) {
 			entry.setEndingDate(task.getEndingDate());
-		}else{
+		} else {
 			entry.setEndingDate("999999");
 		}
 		
-		if(task.getStartingTime()!= null){
+		if (task.getStartingTime()!= null) {
 			entry.setStartingTime(task.getStartingTime());
-		}
-		if(task.getEndingTime()!= null){
+		} if (task.getEndingTime()!= null) {
 			entry.setEndingTime(task.getEndingTime());
-		}else{
+		} else {
 			entry.setEndingTime("0");
 		}
 		
 		ValidationCheck.checkStartEndDate(entry.getStartingDate(), 
 									      entry.getEndingDate());
-		ValidationCheck.checkStartEndTime(entry.getStartingTime(), 
+		
+		if (entry.getStartingDate() != null && 
+			entry.getEndingDate() != null &&
+			entry.getStartingDate().equals(entry.getEndingDate())){
+			ValidationCheck.checkStartEndTime(entry.getStartingTime(), 
 				                 	 	  entry.getEndingTime());
+		}
+		
 		ValidationCheck.checkIllegalChars(entry.getName());
 		
 		entryList.add(entry);
@@ -367,18 +373,18 @@ public class Logic {
 		
 		ArrayList<Integer> index = task.getDisplayIndex();
 		int removeIndex;
-		for(int i = 0 ; i < index.size(); i++){
+		for (int i = 0 ; i < index.size(); i++) {
 			removeIndex = index.get(i) - 1;
 			
-			if(i > 0){
-				for(int j = 0; j < i; j++){
-					if(index.get(j) < index.get(i))
+			if (i > 0) {
+				for (int j = 0; j < i; j++) {
+					if (index.get(j) < index.get(i))
 						removeIndex--;
 				}
 			}
 			
 			Entry removedEntry = displayList.remove(removeIndex);
-			if (! displayList.equals(entryList)){ 
+			if (! displayList.equals(entryList)) { 
 				//if they are the same then no need to remove again
 				entryList.remove(removedEntry);
 			}
@@ -387,7 +393,7 @@ public class Logic {
 	}
 	
 	//@author A0098924M
-	private void executeClear(Executable task){
+	private void executeClear(Executable task) {
 		
 		entryList.clear();
 		writeToStorage();
@@ -399,30 +405,36 @@ public class Logic {
 		int displayIndex = task.getDisplayIndex().get(0) - 1;
 		Entry entryToEdit = displayList.get(displayIndex);
 		
-		if (task.getInfo() != null){ //edit name
+		if (task.getInfo() != null) { //edit name
 			entryToEdit.setName(task.getInfo());
 		} 
 		
-		if (task.getStartingDate() != null){ //edit startingDate
+		if (task.getStartingDate() != null) { //edit startingDate
 			entryToEdit.setStartingDate(task.getStartingDate());
 		}
 		
-		if (task.getEndingDate() != null){//edit endingDate
+		if (task.getEndingDate() != null) {//edit endingDate
 			entryToEdit.setEndingDate(task.getEndingDate());
 		}
 		
-		if (task.getStartingTime() != null){ //edit startingTime
+		if (task.getStartingTime() != null) { //edit startingTime
 			entryToEdit.setStartingTime(task.getStartingTime());
 		}
 		
-		if (task.getEndingTime() != null){//edit endingTime
+		if (task.getEndingTime() != null) {//edit endingTime
 			entryToEdit.setEndingTime(task.getEndingTime());
 		}
 		
 		ValidationCheck.checkStartEndDate(entryToEdit.getStartingDate(), 
 				                          entryToEdit.getEndingDate());
-		ValidationCheck.checkStartEndTime(entryToEdit.getStartingTime(), 
-                entryToEdit.getEndingTime());
+		
+		if (entryToEdit.getStartingDate() != null && 
+			entryToEdit.getEndingDate()   != null &&
+			entryToEdit.getStartingDate().equals(entryToEdit.getEndingDate())){
+				ValidationCheck.checkStartEndTime(entryToEdit.getStartingTime(), 
+						entryToEdit.getEndingTime());
+		}
+		
 		ValidationCheck.checkIllegalChars(entryToEdit.getName());
 
 		writeToStorage();	
@@ -436,69 +448,68 @@ public class Logic {
 
 		LinkedList<Entry> searchResult = new LinkedList<Entry>();
 		
-		if(task.getInfo() != null){ // search by keyword
+		if (task.getInfo() != null) { // search by keyword
 			ArrayList<Integer> match = noOfMatchWord(task.getInfo());
 			int maxMatch = Collections.max(match);
 			//display the records from the highest matched value to the lowest one
-			for(int i = maxMatch; i > 0; i--){
-				for(int j = 0; j < match.size(); j++){
-					if(match.get(j)==i){
+			for (int i = maxMatch; i > 0; i--) {
+				for (int j = 0; j < match.size(); j++) {
+					if (match.get(j)==i) {
 						searchResult.add(entryList.get(j));
 					}
 				}
 			}
 			
-		}else if(task.getStartingDate() != null && task.getEndingDate() != null){ //search by starting date and ending date
+		} else if (task.getStartingDate() != null && task.getEndingDate() != null) { //search by starting date and ending date
 			searchContent = task.getStartingDate();
 			searchContent1 = task.getEndingDate();
 			int month = getMonth(searchContent);
 			
-			for(Entry entry: entryList){
+			for (Entry entry: entryList) {
 				startDate = entry.getStartingDate();
 				endDate = entry.getEndingDate();
 				// select the record with matched month name or within startDate and endDate
-				if((isMonthValue(searchContent) && isEqualMonth(startDate, endDate, month))
-						|| isBetween(searchContent, searchContent1, startDate, endDate)){
+				if ((isMonthValue(searchContent) && isEqualMonth(startDate, endDate, month))
+						|| isBetween(searchContent, searchContent1, startDate, endDate)) {
 					searchResult.add(entry);
-				}else{
+				} else {
 					continue;
 				}
 			}
 			
-		}else if(task.getStartingDate() != null){
+		} else if (task.getStartingDate() != null) {
 			searchContent = task.getStartingDate();
-			for(Entry entry: entryList){
+			for (Entry entry: entryList) {
 				startDate = entry.getStartingDate();
-				if(isGreater(startDate, searchContent)){
+				if (isGreater(startDate, searchContent)) {
 					searchResult.add(entry);
 				}
 			}
 			
-		}else if(task.getEndingDate() != null){
+		} else if (task.getEndingDate() != null) {
 			searchContent = task.getEndingDate();
 			int month = getMonth(searchContent);
 			
-			for(Entry entry: entryList){
+			for (Entry entry: entryList) {
 				endDate = entry.getEndingDate();
 				// insert the record with matched month name or within startDate and endDate
-				if((isMonthValue(searchContent) && (getMonth(endDate)== month)) || 
-					!isMonthValue(searchContent) && isGreater(endDate, searchContent)){
+				if ((isMonthValue(searchContent) && (getMonth(endDate)== month)) || 
+					!isMonthValue(searchContent) && isGreater(endDate, searchContent)) {
 						searchResult.add(entry);
-				}else{
+				} else {
 					continue;
 				}
 			}
 			
-		}else if(task.getDoneness() != null){
+		} else if (task.getDoneness() != null) {
 			doneness = task.getDoneness();
-			for(Entry entry: entryList){
-				if(entry.getDoneness() == doneness){
+			for (Entry entry: entryList) {
+				if (entry.getDoneness() == doneness) {
 					searchResult.add(entry);
 				}
 			}
-			
-		}else{
-			throw new IllegalArgumentException("incorrect record !");
+		} else {
+			throw new IllegalArgumentException("Incorrect record !");
 		}
 		
 		displayList = searchResult;
@@ -506,75 +517,75 @@ public class Logic {
 	}
 
 	
-	private void executeDisplay(LinkedList<Entry> list){
+	private void executeDisplay(LinkedList<Entry> list) {
 
 		displayList = list;
 		int count = 1;
 		String entryString;
 		for (Entry e : list) {
 			entryString = count+". "+e.getName();
-			if (e.getStartingDate() != null && !e.getStartingDate().equals("")){
+			if (e.getStartingDate() != null && !e.getStartingDate().equals("")) {
 				entryString += " start: " + e.getStartingDate();
 			}
 			
-			if (e.getEndingDate() != null && !e.getEndingDate().equals("") && !e.getEndingDate().equals("999999")){
+			if (e.getEndingDate() != null && !e.getEndingDate().equals("") && !e.getEndingDate().equals("999999")) {
 				entryString += " end: " + e.getEndingDate();
 			}
 			
-			if(e.getDoneness() == true){
+			if (e.getDoneness() == true) {
 				entryString += " Done";
 			}
 		    count++;
 		    UserInterface.showToUser(entryString);
 		}
-		if (list.size() == 0){
+		if (list.size() == 0) {
 			System.out.println("no entry found!");
 		}
 	}
 	//@author A0098924M
-	private void executeDone(Executable task){
+	private void executeDone(Executable task) {
 		//Done something
 		ArrayList<Integer> index = task.getDisplayIndex();
 		
-		for(int i = 0 ; i < index.size(); i++){
+		for (int i = 0 ; i < index.size(); i++) {
 			entryList.get(index.get(i)-1).setDoneness(true);
 		}
 		writeToStorage();
 	
 	}
 	
-	private void writeToStorage(){
+	private void writeToStorage() {
 		storage.writeFile(entryList);
 	}
 	
-	private LinkedList<Entry> readFromStorage(){
+	private LinkedList<Entry> readFromStorage() {
 		return storage.readFile();
 	}
 	
 	//@author A0098735M
-	private void saveEntryListToPreList(){
+	private void saveEntryListToPreList() {
 		LinkedList<Entry> newList = new LinkedList<Entry>();
-		for (Entry e : entryList){
+		for (Entry e : entryList) {
 			newList.add(e.copy());
 		}
 		preList.add(newList);
 	}
 	
 	//@author A0128435E
-	private ArrayList<Integer> noOfMatchWord(String keyword){
+	private ArrayList<Integer> noOfMatchWord(String keyword) {
 		ArrayList<Integer> noOfMatch = new ArrayList<Integer>();
 		String[] searchKeyword = keyword.trim().toLowerCase().split(" ");
 		String[] recordName;
 		int matchNo = 0;
-		for(Entry entry: entryList){
+		for (Entry entry : entryList) {
 			recordName = entry.getName().toLowerCase().split(" ");
 			matchNo = 0;
-			for(int i = 0; i < recordName.length; i++){
-				for(int j = 0; j < searchKeyword.length; j++){
-					if(searchKeyword[j].length() < 2){
+			for (int i = 0; i < recordName.length; i++) {
+				for (int j = 0; j < searchKeyword.length; j++) {
+					if (searchKeyword[j].length() < 2) {
 						continue;
 					}
-					if(recordName[i].contains(searchKeyword[j])){
+					if (recordName[i].contains(searchKeyword[j])) {
 						matchNo++;
 					}
 				}
@@ -586,27 +597,27 @@ public class Logic {
 	
 	//@author A0128435E
 	private boolean isEqualMonth(String startDate, String endDate, int compareMonth) throws ParseException{
-		if(getMonth(startDate) == compareMonth && getMonth(endDate)== compareMonth)
+		if (getMonth(startDate) == compareMonth && getMonth(endDate)== compareMonth){
 			return true;
-		else
-			return false;
+		}
+		return false;
 	}
 	
 	//@author A0128435E
 	private boolean isBetween(String searchStart, String searchEnd, String startDate, String endDate) throws ParseException{
-		if(!isMonthValue(searchStart) && isGreater(startDate, searchStart) && isSmaller(endDate, searchEnd))
+		if (!isMonthValue(searchStart) && isGreater(startDate, searchStart) && isSmaller(endDate, searchEnd)) {
 			return true;
-		else
-			return false;
+		}
+		return false;			
 	}
 	
 	//@author A0128435E
 	private boolean isGreater(String newDateString, String compareDateString) throws ParseException{
-		DateFormat dateFormat = new SimpleDateFormat("ddMMyy");
+		DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
 		Date newDate = dateFormat.parse(newDateString);
 		Date compareDate = dateFormat.parse(compareDateString);
 		
-		if(!newDate.before(compareDate)){
+		if (!newDate.before(compareDate)) {
 			return true;
 		}
 		
@@ -615,11 +626,11 @@ public class Logic {
 	
 	//@author A0128435E
 	private boolean isSmaller(String newDateString, String compareDateString) throws ParseException{
-		DateFormat dateFormat = new SimpleDateFormat("ddMMyy");
+		DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
 		Date newDate = dateFormat.parse(newDateString);
 		Date compareDate = dateFormat.parse(compareDateString);
 		
-		if(!newDate.after(compareDate)){
+		if (!newDate.after(compareDate)) {
 			return true;
 		}
 		
@@ -627,37 +638,37 @@ public class Logic {
 	}
 	
 	//@author A0128435E
-	private boolean isMonthValue(String date){
+	private boolean isMonthValue(String date) {
 		int amountOfZero = 0;
-		for(int i = 0; i < date.length(); i++){
-			if(date.charAt(i) == '0'){
+		for (int i = 0; i < date.length(); i++) {
+			if (date.charAt(i) == '0') {
 				amountOfZero++;
 			}
 		}
-		if(amountOfZero >= 4){
+		if (amountOfZero >= 4) {
 			return true;
-		}
-		else{
+		} else {
 			return false;
 		}
 	}
 	
 	//@author A0128435E
-	private int getMonth(String date){
+	private int getMonth(String date) {
 		int dateInt = Integer.parseInt(date);
 		int month = (dateInt/100) % 100;
 		return month;
 	}
 	
-	private String printError(Exception e){
+	//@author A0098735M
+	private String printError(Exception e) {
 		
-		if (e.getMessage() != null){
+		if (e.getMessage() != null) {
 			return e.getMessage();
 		}
 		
 		if (e instanceof IllegalArgumentException) {
 			return "Incorrect argument given.";
-		} else if (e instanceof EmptyInputException){
+		} else if (e instanceof EmptyInputException) {
 			return ToDoManager.MESSAGE_ERROR_EMPTY_INPUT;
 		} else {
 			return ToDoManager.MESSAGE_ERROR_GENERIC;
