@@ -58,7 +58,7 @@ public class ToDoManagerGUI {
 								  "F2: Clear Screen\n" + 
 								  "F3: Display Hotkeys\n" + 
 								  "F4: Undo\n" + 
-								  "F5: Display\n" + 
+								  "F5: View All\n" + 
 								  "Page_Up: Scroll Up\n" + 
 								  "Page_Down: Scroll Down\n" + 
 								  "Home: Scroll Up To the Top\n" + 
@@ -361,7 +361,7 @@ public class ToDoManagerGUI {
 					displayResult(action);
 				} else if (e.getKeyCode() == KeyEvent.VK_F5) {
 					Object action;
-					action = toDoManagerGUI.logic.actOnUserInput("/display");
+					action = toDoManagerGUI.logic.actOnUserInput("/view");
 					displayResult(action);
 				}
 

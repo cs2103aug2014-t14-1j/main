@@ -42,7 +42,7 @@ public class TestDriver {
 		assertEquals("Clear should return success message.", "All tasks cleared", result.getFeedback());
 		
 		//check that there is no more entry
-		resultObj = logic.actOnUserInput("/display");
+		resultObj = logic.actOnUserInput("/view");
 		result = castToResult(resultObj);
 		assertEquals("Should have no entries left.", 0, result.getDisplayList().size());
 	}
@@ -55,7 +55,7 @@ public class TestDriver {
 		assertEquals("Add should return success message.", "A new task added successfully", result.getFeedback());
 		
 		//check that there is an Entry
-		resultObj = logic.actOnUserInput("/display");
+		resultObj = logic.actOnUserInput("/view");
 		result = castToResult(resultObj);
 		displayList = result.getDisplayList();
 		assertEquals("Should have the added Entry.", "test case 2", displayList.get(0).getName());
@@ -70,7 +70,7 @@ public class TestDriver {
 		assertEquals("Add should return success message.", "A new task added successfully", result.getFeedback());
 		
 		//check that the Entry is correct
-		resultObj = logic.actOnUserInput("/display");
+		resultObj = logic.actOnUserInput("/view");
 		result = castToResult(resultObj);
 		entry = result.getDisplayList().get(0);
 		assertEquals("Should have the added Entry.",   "test case 3", entry.getName());
@@ -88,7 +88,7 @@ public class TestDriver {
 		assertEquals("Add should return success message.", "A new task added successfully", result.getFeedback());
 		
 		//check that the Entry is correct
-		resultObj = logic.actOnUserInput("/display");
+		resultObj = logic.actOnUserInput("/view");
 		result = castToResult(resultObj);
 		entry = result.getDisplayList().get(0);
 		assertEquals("Start time should be correct.", "1432", entry.getStartingTime());
@@ -103,7 +103,7 @@ public class TestDriver {
 		assertEquals("Add should return success message.", "A new task added successfully", result.getFeedback());
 		
 		//check that the Entry is correct
-		resultObj = logic.actOnUserInput("/display");
+		resultObj = logic.actOnUserInput("/view");
 		result = castToResult(resultObj);
 		entry = result.getDisplayList().get(0);
 		assertEquals("Should have the added Entry.", "test case 4", entry.getName());
@@ -121,7 +121,7 @@ public class TestDriver {
 		assertEquals("Add should return success message.", "A new task added successfully", result.getFeedback());
 		
 		//check that the Entry is correct
-		resultObj = logic.actOnUserInput("/display");
+		resultObj = logic.actOnUserInput("/view");
 		result = castToResult(resultObj);
 		entry = result.getDisplayList().get(0);
 		assertEquals("Should have the added Entry.",  "test case 5", entry.getName());
@@ -142,7 +142,7 @@ public class TestDriver {
 		assertEquals("Delete should return success message.", "Task deleted", result.getFeedback());
 		
 		//check that there is no more entry
-		resultObj = logic.actOnUserInput("/display");
+		resultObj = logic.actOnUserInput("/view");
 		result = castToResult(resultObj);
 		assertEquals("Should have no entries left.", 0, result.getDisplayList().size());
 		
@@ -159,7 +159,7 @@ public class TestDriver {
 		assertEquals("Multiple delete should return success message.", "Task deleted", result.getFeedback());
 		
 		//check that the correct entries remain
-		resultObj = logic.actOnUserInput("/display");
+		resultObj = logic.actOnUserInput("/view");
 		result = castToResult(resultObj);
 		displayList = result.getDisplayList();
 		assertEquals("Should have no entries left.", 3, displayList.size());
@@ -199,7 +199,7 @@ public class TestDriver {
 		assertEquals("Edit ending time should change the time.", "2350", entry.getEndingTime());
 		
 		//check that the others werent edited
-		resultObj = logic.actOnUserInput("/display");
+		resultObj = logic.actOnUserInput("/view");
 		result = castToResult(resultObj);
 		displayList = result.getDisplayList();
 		entry = displayList.get(0);

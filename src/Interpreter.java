@@ -35,20 +35,20 @@ import todo_manager.ToDoManager.EmptyInputException;
  *  /edit <int displaylist index> /by <new date> : date stored in endingDate
  *  /edit <int displaylist index> /on <new date> : date stored in startingDate and endingDate 
  *  
- *  /display : command set to display, no other info will be given
+ *  /view : command set to display, no other info will be given
  *  
- *  /search today : startingDate = endingDate = today's date
- *  /search tomorrow(or tmr) : startingDate = endingDate = trm's date
- *  /search this <week> (or <month>) : search the record of this week or month
- *  /search next <week> (or <month>) : search the record of next week or month
- *  /search <month> : on that month
- *  /search <date> : startingDate = endingDate = <date>
- *  /search <keyword> : info is the string of keyword or keywords as given by the user
- *  /search /start <date> : startingDate after <date> (sorted)
- *  /search /by <date> : endingDate after <date> (sorted)
- *  /search /start <date> /by <date> : startingDate and endingDate between those period
- *  /search done : doneness = true
- *  /search undone : doneness = false
+ *  /view today : startingDate = endingDate = today's date
+ *  /view tomorrow(or tmr) : startingDate = endingDate = trm's date
+ *  /view this <week> (or <month>) : search the record of this week or month
+ *  /view next <week> (or <month>) : search the record of next week or month
+ *  /view <month> : on that month
+ *  /view <date> : startingDate = endingDate = <date>
+ *  /view <keyword> : info is the string of keyword or keywords as given by the user
+ *  /view /start <date> : startingDate after <date> (sorted)
+ *  /view /by <date> : endingDate after <date> (sorted)
+ *  /view /start <date> /by <date> : startingDate and endingDate between those period
+ *  /view done : doneness = true
+ *  /view undone : doneness = false
  *  Note that Doneness will be set to null if doneness is not being searched for. False or true if it is being searched for.
  *  doneness defaults to false for all other operations, like add or delete.
  *  
@@ -113,12 +113,8 @@ public class Interpreter {
 				exe = processUndo(words);
 				break;
 				
-			case "/search" :
-				exe = processSearch(words);
-				break;
-				
-			case "/display" :
-				exe = processDisplay(words);
+			case "/view" :
+				exe = processView(words);
 				break;
 				
 			case "/mark" :
@@ -149,6 +145,14 @@ public class Interpreter {
 		}
 		
 		return exe;
+	}
+	
+	private static Executable processView(String[] words){
+		if (words.length <= 1) {
+			return processDisplay(words);
+		} else {
+			return processSearch(words);
+		}
 	}
 	
 	//@author A0098735M

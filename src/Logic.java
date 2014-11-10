@@ -21,11 +21,11 @@ public class Logic {
 	public static final String HELP_NO_KEYWORD = 
 			  "Type \"help <command>\" to get help for that particular topic.\n"
 			+ "List of topics : \n"
-			+ "  /add         /display\n"
+			+ "  /add         /view\n"
 			+ "  /delete     /clear\n"
 			+ "  /edit         /undo\n"
-			+ "  /mark       /search\n"
-			+ "  /sort         /exit\n"
+			+ "  /mark       /sort\n"
+			+ "  /exit\n"
 			+ "   date        time\n\n" 
 			+ "  Press F3 for the list of HOTKEYS.";
 	
@@ -37,8 +37,6 @@ public class Logic {
 										   " /by <date> <end time>\n" +
 										   " /start <date> <start time> /by <date> <end time>\n" +
 										   " Note that each <time> is optional but each <date> is required.\n";
-								
-	private static final String HELP_DISPLAY = " The /display command will list all saved tasks on the screen.\n";
 	private static final String HELP_DELETE = " Format of delete command : \n" +
 											  " /delete <index no.> \n" +
 											  " This deletes the entry with that index in the most recently shown list.\n" +
@@ -59,13 +57,14 @@ public class Logic {
 											" /mark <index no.>\n" + 
 											" Note that <index no.> refers to the numbering in the most recently displayed list.\n" +
 											" <index no.> can be multiple numbers separated by spaces, to mark several items at one go.\n";
-	private static final String HELP_SEARCH = " Format for search : \n" +
-											  " /search today\n" +
-											  " /search tmr or tomorrow\n" +
-											  " /search <month name> \n" +
-											  " /search <done or undone>\n" +
-											  " /search <date>\n" +
-											  " /search <keyword>\n";
+	private static final String HELP_VIEW = " Format for view : \n" +
+											" /view         Shows all saved tasks\n" +
+											" /view today\n" +
+											" /view tmr or tomorrow\n" +
+											" /view <month name> \n" +
+											" /view <done or undone>\n" +
+											" /view <date>\n" +
+											" /view <keyword>\n";
 	private static final String HELP_SORT = " The /sort command arranges the tasks chronologically.\n";
 	private static final String HELP_EXIT = " The /exit command shuts down ToDoManager.\n";
 	private static final String HELP_DATE = " Format for date is ddMMyy, eg. 210315 for 21st March 2015.\n";
@@ -131,7 +130,6 @@ public class Logic {
 		
 		result = new Result();
 		CommandType command = task.getCommand();
-		
 		switch (command) {
 		
 			case CMD_ADD: 
@@ -259,9 +257,6 @@ public class Logic {
 			case "/add":
 				UserInterface.showToUser(HELP_ADD);
 				return HELP_ADD;
-			case "/display":
-				UserInterface.showToUser(HELP_DISPLAY);
-				return HELP_DISPLAY;
 			case "/delete":
 				UserInterface.showToUser(HELP_DELETE);
 				return HELP_DELETE;
@@ -277,9 +272,9 @@ public class Logic {
 			case "/mark":
 				UserInterface.showToUser(HELP_MARK);
 				return HELP_MARK;
-			case "/search":
-				UserInterface.showToUser(HELP_SEARCH);
-				return HELP_SEARCH;
+			case "/view":
+				UserInterface.showToUser(HELP_VIEW);
+				return HELP_VIEW;
 			case "/sort":
 				UserInterface.showToUser(HELP_SORT);
 				return HELP_SORT;
