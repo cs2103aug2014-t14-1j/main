@@ -103,7 +103,7 @@ public class ValidationCheck {
 		return false;
 	}
 	
-	//@author A0098735
+	//@author A0098735M
 	public static void checkStartEndTime(String startStr, String endStr) {
 		int startInt, endInt;
 		if (startStr == null || endStr == null) {
@@ -120,7 +120,6 @@ public class ValidationCheck {
 		}
 	}
 	
-	//@author A0098735
 	public static void checkStartEndDate(String startStr, String endStr) throws Exception {
 		
 		if (startStr == null || endStr == null) {
@@ -143,7 +142,6 @@ public class ValidationCheck {
 		}
 	}
 	
-	//@author A0098735
 	public static void checkIllegalChars(String name) {
 		if (name != null && name.contains("|")) {
 			throw new IllegalArgumentException("\"|\" is an illegal character.");
