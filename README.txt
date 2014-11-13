@@ -93,6 +93,16 @@ You can also sync your non-master branch. This creates another branch on the onl
 They can also clone your branch onto their local machine to do testing or whatnot
 
 
+CHANGE OF REPO NAME
+
+Hi guys, I have changed the repo name to follow the standard set in the module handbook.
+If you encounter an error when opening github locally, or if you cant connect to the repo, do the following : 
+1. Run git shell. It has a purple window icon with the symbol ">_"
+2. Navigate to your local repo of todo_manager master branch (use cd <path>, cd .., and dir. Google if dunno how)
+   	--- it should say [master] somewhere in the command line, then you know you are at the right place
+3. Type this into your git shell :
+	git remote set-url origin https://github.com/cs2103aug2014-t14-1j/main.git
+
 
 
 @Author  Khye An
